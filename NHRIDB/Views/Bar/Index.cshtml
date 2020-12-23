@@ -1,0 +1,240 @@
+﻿@model NHRIDB.Models.ViewModels.BarViewModel
+@{
+    ViewBag.Title = "總結數量";
+}
+<style>
+    td {
+        border: solid 1px #fff;
+    }
+
+    th {
+        border: solid 1px #ccc;
+    }
+</style>
+<script src="~/Scripts/chartjs.js"></script>
+<script src="~/Scripts/chartjs-plugin-datalabels.js"></script>
+@if (Model.treeId.HasValue)
+{
+    <a href="Javascript:history.go(-1)">回上一頁</a>
+}
+<label>醫院：</label>
+@if (Model.leapProject)
+{
+    @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>, "全部")
+}
+else
+{
+    @Model.selfHos.name_tw
+}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                病例數
+            </th>
+            <th>
+                血液
+            </th>
+            <th>
+                血液-檢體少
+            </th>
+            <th>
+                冷凍組織
+            </th>
+            <th>
+                冷凍組織-檢體少
+            </th>
+            <th>
+                蠟塊
+            </th>
+            <th>
+                蠟塊-檢體少
+            </th>
+            <th>
+                尿液
+            </th>
+            <th>
+                尿液-檢體少
+            </th>
+            <th>
+                胸水
+            </th>
+            <th>
+                胸水-檢體少
+            </th>
+
+            <th>
+                腹水
+            </th>
+            <th>
+                腹水-檢體少
+            </th>
+            <th>
+                骨髓液
+            </th>
+            <th>
+                骨髓液-檢體少
+            </th>
+
+            <th>
+                腦脊髓液
+            </th>
+            <th>
+                腦脊髓液-檢體少
+            </th>
+            <th>
+                糞便DNA
+            </th>
+            <th>
+                糞便DNA-檢體少
+            </th>
+
+            <th>
+                其他 (如膽汁，毛髮，口水)
+            </th>
+
+            <th>
+                沒有檢體
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.items)
+        {
+            <tr>
+                <td>
+                    @if (item.childCount > 1)
+                    {
+                        <a href="@Url.Action("Index",new { treeId=item.id,hosId=Model.hosId })"> @item.name</a>
+                    }
+                    else
+                    {
+                        @item.name
+                    }
+
+
+                </td>
+                <td>@item.sumCount</td>
+                <td>@item.sumBlood</td>
+                <td>@item.sumSampleblood</td>
+                <td>@item.sumFrozenTissue</td>
+                <td>@item.sumSamplefrozenTissue</td>
+                <td>@item.sumWaxBlock</td>
+                <td>@item.sumSamplewaxBlock</td>
+                <td>@item.sumUrine</td>
+                <td>@item.sumSampleurine</td>
+                <td>@item.sumPleuraleffusion</td>
+                <td>@item.sumSamplepleuraleffusion</td>
+                <td>@item.sumAscites</td>
+                <td>@item.sumSampleAscites</td>
+                <td>@item.sumBoneMarrow</td>
+                <td>@item.sumSampleBoneMarrow</td>
+                <td>@item.sumCSF</td>
+                <td>@item.sumSampleCSF</td>
+                <td>@item.sumStool</td>
+                <td>@item.sumSamplestool</td>
+                <td>@item.sumOthers_bilejuice_hair_saliva</td>
+                <td>@item.sumSampleless</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<canvas id="barChart">
+</canvas>
+<script>
+    $("#hosId").on("change", function (e) {
+        window.location = "@Url.Action("Index")?treeId=@Model.treeId&hosId=" + $(this).val();
+    });
+    //============
+    var columns = [];
+    var datasets = [];
+    $("td:first-child").each(function (index, el) {
+        if (el.innerText) {
+            columns.push(el.innerText);
+        }
+    });
+
+    let ths = $("th");
+    for (var i = 1; i < ths.length; i++) {
+        let dataitem = {};
+        let data = [];
+        $("td:nth-child(" + (i + 1) + ")").each(function (index, el) {
+            if (el.innerText) {
+                data.push(parseInt(el.innerText));
+            } else {
+                data.push(0);
+            }
+        });
+        dataitem.label = ths[i].innerText;
+        dataitem.data = data;
+        dataitem.backgroundColor = getColor();
+        dataitem.borderColor = getColor();
+        dataitem.borderWidth = 2;
+        datasets.push(dataitem);
+    }
+
+    //$("tbody tr").each(function (index, el) {
+    //    let dataitem = {};
+    //    let data = [];
+    //    let tds = $(el).find("td");
+    //    for (var i = 0; i < tds.length; i++) {
+    //        let td = tds[i];
+    //        if (i == 0) {
+    //            dataitem.label = td.innerText;
+    //        } else if (td.innerText) {
+    //            data.push(parseInt(td.innerText));
+    //        } else {
+    //            data.push(0);
+    //        }
+    //    }
+    //    dataitem.data = data;
+    //    dataitem.backgroundColor = getColor();
+    //    dataitem.borderColor = getColor();
+    //    dataitem.borderWidth = 2;
+    //    datasets.push(dataitem);
+    //});
+
+    function getColor() {
+        return '#' + (function (color) {
+            return (color += '0123456789abcdef'[Math.floor(Math.random() * 16)])
+                && (color.length == 6) ? color : arguments.callee(color);
+        })('');
+    }; //end getColor;
+
+
+
+    var UserVsMyAppsData = {
+        labels: columns,
+        datasets: datasets
+
+    };
+
+    var ctx = $("#barChart");
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: UserVsMyAppsData,
+        options: {
+            responsive: true,
+            legend: { //各區塊的顏色表示
+                position: 'top',
+                display: true,
+
+            },
+            "hover": {
+                "animationDuration": 0
+            },
+            title: {
+                display: false,
+                text: ''
+            },
+            plugins: { //bar的內容文字
+                datalabels: {
+                    display: false,
+                }
+            }
+        }
+    });
+</script>

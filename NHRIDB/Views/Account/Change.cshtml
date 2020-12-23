@@ -1,0 +1,68 @@
+﻿@model NHRIDB.Models.ViewModels.AccountViewModel
+@{
+    ViewBag.Title = "變更資料";
+}
+<style>
+    form {
+        border: solid 1px #ff8000;
+        margin: 3px;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    #chagemail {
+        margin-top: 10px;
+    }
+
+    .btn {
+        background-color: #ff8000;
+        color: #fff;
+    }
+</style>
+<div class="text-danger">
+    @Model.msg
+
+</div>
+
+@using (Html.BeginForm("ChangePasswd", "Account", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+
+
+
+    <div class="formPanel">
+
+        <label>舊密碼</label>
+        @Html.PasswordFor(e => e.passwd, new { @class = "form-control" })
+
+        <label>新密碼</label>
+        @Html.PasswordFor(e => e.newpasswd, new { @class = "form-control" })
+
+        <label>確認密碼</label>
+        @Html.PasswordFor(e => e.repasswd, new { @class = "form-control" })
+
+    </div>
+
+    <button class="btn" type="submit">變更密碼</button>
+}
+
+
+@using (Html.BeginForm("ChangeEmail", "Account", FormMethod.Post, new { @id = "chagemail" }))
+{
+
+    @Html.AntiForgeryToken()
+
+    
+
+    <div class="formPanel">
+        <label>姓名</label>
+        @Html.TextBoxFor(e => e.name, new { @class = "form-control" })
+        <label>信箱</label>
+        @Html.TextBoxFor(e => e.email, new { @class = "form-control" })
+
+
+    </div>
+
+    <button class="btn" type="submit">變更基本資料</button>
+}

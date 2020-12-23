@@ -1,0 +1,63 @@
+﻿@model NHRIDB.Models.ViewModels.UserEdit
+@{
+    ViewBag.Title = "修改使用者";
+}
+
+
+@using (Html.BeginForm("Edit", "User", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(e => e.uid)
+    <div class="text-danger">
+        @Model.errorMsg
+        @Html.ValidationMessageFor(model => model.username, "", new { @class = "text-danger" })
+        @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="formPanel">
+        <label>醫院</label>
+        @Html.DropDownListFor(e => e.hospitalId, Model.hospitalSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
+
+
+        <label>帳號</label>
+        @Html.TextBoxFor(e => e.username, new { @class = "form-control" })
+
+        <label>Email</label>
+        @Html.TextBoxFor(e => e.email, new { @class = "form-control" })
+
+
+        <label>群組</label>
+        @Html.DropDownListFor(e => e.groupId, Model.msSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
+
+
+    </div>
+    <a class="btn" href="@Url.Action("List", "User")">放棄</a>
+    <button class="btn" type="submit">儲存</button>
+}
+
+
+@using (Html.BeginForm("ChangePasswd", "User", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(e => e.uid)
+    @TempData["msg"]
+
+    <div class="formPanel">
+
+        <label>管理員密碼</label>
+        @Html.PasswordFor(e => e.passwd, new { @class = "form-control" })
+
+        <label>使用者新密碼</label>
+        @Html.PasswordFor(e => e.newpasswd, new { @class = "form-control" })
+
+        <label>使用者確認密碼</label>
+        @Html.PasswordFor(e => e.repasswd, new { @class = "form-control" })
+
+    </div>
+
+    <button class="btn" type="submit">變更密碼</button>
+}
+

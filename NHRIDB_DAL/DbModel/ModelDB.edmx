@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="NHRIDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="GroupUser">
+          <Key>
+            <PropertyRef Name="groupId" />
+          </Key>
+          <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="gName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="leapProject" Type="bit" Nullable="false" />
+          <Property Name="alwaysOpen" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Hospital">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="name_tw" Type="nvarchar" MaxLength="100" />
+          <Property Name="name_en" Type="nvarchar" MaxLength="100" />
+          <Property Name="isLock" Type="bit" Nullable="false" />
+          <Property Name="Unlock" Type="bit" Nullable="false" />
+          <Property Name="FileExtension" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="MenuName">
+          <Key>
+            <PropertyRef Name="menuId" />
+          </Key>
+          <Property Name="menuId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="menuText" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="controllerName" Type="varchar" MaxLength="25" />
+          <Property Name="enable" Type="bit" Nullable="false" />
+          <Property Name="parentMenu" Type="int" />
+          <Property Name="sortIndex" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NodeData">
+          <Key>
+            <PropertyRef Name="nodeId" />
+          </Key>
+          <Property Name="nodeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="parentId" Type="uniqueidentifier" />
+          <Property Name="name_tw" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="name_en" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="sort" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Permissions">
+          <Key>
+            <PropertyRef Name="groupId" />
+            <PropertyRef Name="menuId" />
+          </Key>
+          <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="purview" Type="smallint" Nullable="false" />
+          <Property Name="menuId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userId" />
+          </Key>
+          <Property Name="userId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="userName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="varchar(max)" Nullable="false" />
+          <Property Name="del" Type="bit" Nullable="false" />
+          <Property Name="id_Hospital" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="level" Type="int" Nullable="false" />
+          <Property Name="email" Type="nvarchar(max)" />
+          <Property Name="name" Type="nvarchar" MaxLength="10" />
+          <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Permissions_GroupUser">
+          <End Role="GroupUser" Type="Self.GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="Permissions">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Permissions_MenuName">
+          <End Role="MenuName" Type="Self.MenuName" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MenuName">
+              <PropertyRef Name="menuId" />
+            </Principal>
+            <Dependent Role="Permissions">
+              <PropertyRef Name="menuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_GroupUser">
+          <End Role="GroupUser" Type="Self.GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Hospital">
+          <End Role="Hospital" Type="Self.Hospital" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hospital">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="id_Hospital" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="GetTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="level" Type="varchar(max)" Mode="In" />
+          <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
+        </Function>
+        <EntityContainer Name="NHRIDBModelStoreContainer">
+          <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NodeData" EntityType="Self.NodeData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Permissions_GroupUser" Association="Self.FK_Permissions_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="Permissions" EntitySet="Permissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Permissions_MenuName" Association="Self.FK_Permissions_MenuName">
+            <End Role="MenuName" EntitySet="MenuName" />
+            <End Role="Permissions" EntitySet="Permissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_GroupUser" Association="Self.FK_User_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Hospital" Association="Self.FK_User_Hospital">
+            <End Role="Hospital" EntitySet="Hospital" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="NHRIDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Hospital">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Guid" Nullable="false" />
+          <Property Name="name_tw" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="name_en" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="isLock" Type="Boolean" Nullable="false" />
+          <Property Name="Unlock" Type="Boolean" Nullable="false" />
+          <Property Name="FileExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Self.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userId" />
+          </Key>
+          <Property Name="userId" Type="Guid" Nullable="false" />
+          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="del" Type="Boolean" Nullable="false" />
+          <Property Name="id_Hospital" Type="Guid" Nullable="false" />
+          <Property Name="level" Type="Int32" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Hospital" Relationship="Self.FK_User_Hospital" FromRole="User" ToRole="Hospital" />
+          <Property Name="name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="groupId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="User" ToRole="GroupUser" />
+        </EntityType>
+        <Association Name="FK_User_Hospital">
+          <End Role="Hospital" Type="Self.Hospital" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hospital">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="id_Hospital" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="NHRIDBEntitiesDB" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Hospital" EntityType="Self.Hospital" />
+          <EntitySet Name="User" EntityType="Self.User" />
+          <AssociationSet Name="FK_User_Hospital" Association="Self.FK_User_Hospital">
+            <End Role="Hospital" EntitySet="Hospital" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
+            <Parameter Name="level" Mode="In" Type="String" />
+            <Parameter Name="hospitalId" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="NodeData" EntityType="NHRIDBModel.NodeData" />
+          <EntitySet Name="GroupUser" EntityType="NHRIDBModel.GroupUser" />
+          <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <EntitySet Name="MenuName" EntityType="NHRIDBModel.MenuName" />
+          <EntitySet Name="Permissions" EntityType="NHRIDBModel.Permissions" />
+          <AssociationSet Name="FK_Permissions_GroupUser" Association="NHRIDBModel.FK_Permissions_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="Permissions" EntitySet="Permissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Permissions_MenuName" Association="NHRIDBModel.FK_Permissions_MenuName">
+            <End Role="MenuName" EntitySet="MenuName" />
+            <End Role="Permissions" EntitySet="Permissions" />
+          </AssociationSet>
+        </EntityContainer>
+        <ComplexType Name="GetTotal_Result">
+          <Property Type="Guid" Name="id" Nullable="true" />
+          <Property Type="String" Name="name" Nullable="true" />
+          <Property Type="Int32" Name="childCount" Nullable="true" />
+          <Property Type="Int32" Name="sumCount" Nullable="true" />
+          <Property Type="Int32" Name="sumBlood" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleblood" Nullable="true" />
+          <Property Type="Int32" Name="sumFrozenTissue" Nullable="true" />
+          <Property Type="Int32" Name="sumSamplefrozenTissue" Nullable="true" />
+          <Property Type="Int32" Name="sumWaxBlock" Nullable="true" />
+          <Property Type="Int32" Name="sumSamplewaxBlock" Nullable="true" />
+          <Property Type="Int32" Name="sumUrine" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleurine" Nullable="true" />
+          <Property Type="Int32" Name="sumDna" Nullable="true" />
+          <Property Type="Int32" Name="sumSampledna" Nullable="true" />
+          <Property Type="Int32" Name="sumStool" Nullable="true" />
+          <Property Type="Int32" Name="sumSamplestool" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleless" Nullable="true" />
+          <Property Type="Int32" Name="sumPleuraleffusion" Nullable="true" />
+          <Property Type="Int32" Name="sumSamplepleuraleffusion" Nullable="true" />
+          <Property Type="Int32" Name="sumCSF" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleCSF" Nullable="true" />
+          <Property Type="Int32" Name="sumAscites" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleAscites" Nullable="true" />
+          <Property Type="Int32" Name="sumBoneMarrow" Nullable="true" />
+          <Property Type="Int32" Name="sumSampleBoneMarrow" Nullable="true" />
+          <Property Type="Int32" Name="sumOthers_bilejuice_hair_saliva" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="NodeData">
+          <Key>
+            <PropertyRef Name="nodeId" />
+          </Key>
+          <Property Name="nodeId" Type="Guid" Nullable="false" />
+          <Property Name="parentId" Type="Guid" />
+          <Property Name="name_tw" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="sort" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="GroupUser">
+          <Key>
+            <PropertyRef Name="groupId" />
+          </Key>
+          <Property Name="groupId" Type="Guid" Nullable="false" />
+          <Property Name="gName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="leapProject" Type="Boolean" Nullable="false" />
+          <Property Name="alwaysOpen" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="GroupUser" ToRole="User" />
+          <NavigationProperty Name="Permissions" Relationship="NHRIDBModel.FK_Permissions_GroupUser" FromRole="GroupUser" ToRole="Permissions" />
+        </EntityType>
+        <Association Name="FK_User_GroupUser">
+          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MenuName">
+          <Key>
+            <PropertyRef Name="menuId" />
+          </Key>
+          <Property Name="menuId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="menuText" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="controllerName" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="enable" Type="Boolean" Nullable="false" />
+          <Property Name="parentMenu" Type="Int32" />
+          <Property Name="sortIndex" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Permissions" Relationship="NHRIDBModel.FK_Permissions_MenuName" FromRole="MenuName" ToRole="Permissions" />
+        </EntityType>
+        <EntityType Name="Permissions">
+          <Key>
+            <PropertyRef Name="groupId" />
+            <PropertyRef Name="menuId" />
+          </Key>
+          <Property Name="groupId" Type="Guid" Nullable="false" />
+          <Property Name="purview" Type="Int16" Nullable="false" />
+          <Property Name="menuId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_Permissions_GroupUser" FromRole="Permissions" ToRole="GroupUser" />
+          <NavigationProperty Name="MenuName" Relationship="NHRIDBModel.FK_Permissions_MenuName" FromRole="Permissions" ToRole="MenuName" />
+        </EntityType>
+        <Association Name="FK_Permissions_GroupUser">
+          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.Permissions" Role="Permissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="Permissions">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Permissions_MenuName">
+          <End Type="NHRIDBModel.MenuName" Role="MenuName" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.Permissions" Role="Permissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MenuName">
+              <PropertyRef Name="menuId" />
+            </Principal>
+            <Dependent Role="Permissions">
+              <PropertyRef Name="menuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="NHRIDBModelStoreContainer" CdmEntityContainer="NHRIDBEntitiesDB">
+          <EntitySetMapping Name="Hospital">
+            <EntityTypeMapping TypeName="NHRIDBModel.Hospital">
+              <MappingFragment StoreEntitySet="Hospital">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
+                <ScalarProperty Name="name_en" ColumnName="name_en" />
+                <ScalarProperty Name="isLock" ColumnName="isLock" />
+                <ScalarProperty Name="Unlock" ColumnName="Unlock" />
+                <ScalarProperty Name="FileExtension" ColumnName="FileExtension" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="NHRIDBModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="del" ColumnName="del" />
+                <ScalarProperty Name="id_Hospital" ColumnName="id_Hospital" />
+                <ScalarProperty Name="level" ColumnName="level" />
+                <ScalarProperty Name="email" ColumnName="email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetTotal" FunctionName="NHRIDBModel.Store.GetTotal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetTotal_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="childCount" ColumnName="childCount" />
+                <ScalarProperty Name="sumCount" ColumnName="sumCount" />
+                <ScalarProperty Name="sumBlood" ColumnName="sumBlood" />
+                <ScalarProperty Name="sumSampleblood" ColumnName="sumSampleblood" />
+                <ScalarProperty Name="sumFrozenTissue" ColumnName="sumFrozenTissue" />
+                <ScalarProperty Name="sumSamplefrozenTissue" ColumnName="sumSamplefrozenTissue" />
+                <ScalarProperty Name="sumWaxBlock" ColumnName="sumWaxBlock" />
+                <ScalarProperty Name="sumSamplewaxBlock" ColumnName="sumSamplewaxBlock" />
+                <ScalarProperty Name="sumUrine" ColumnName="sumUrine" />
+                <ScalarProperty Name="sumSampleurine" ColumnName="sumSampleurine" />
+                <ScalarProperty Name="sumDna" ColumnName="sumDna" />
+                <ScalarProperty Name="sumSampledna" ColumnName="sumSampledna" />
+                <ScalarProperty Name="sumStool" ColumnName="sumStool" />
+                <ScalarProperty Name="sumSamplestool" ColumnName="sumSamplestool" />
+                <ScalarProperty Name="sumSampleless" ColumnName="sumSampleless" />
+                <ScalarProperty Name="sumPleuraleffusion" ColumnName="sumPleuraleffusion" />
+                <ScalarProperty Name="sumSamplepleuraleffusion" ColumnName="sumSamplepleuraleffusion" />
+                <ScalarProperty Name="sumCSF" ColumnName="sumCSF" />
+                <ScalarProperty Name="sumSampleCSF" ColumnName="sumSampleCSF" />
+                <ScalarProperty Name="sumAscites" ColumnName="sumAscites" />
+                <ScalarProperty Name="sumSampleAscites" ColumnName="sumSampleAscites" />
+                <ScalarProperty Name="sumBoneMarrow" ColumnName="sumBoneMarrow" />
+                <ScalarProperty Name="sumSampleBoneMarrow" ColumnName="sumSampleBoneMarrow" />
+                <ScalarProperty Name="sumOthers_bilejuice_hair_saliva" ColumnName="sumOthers_bilejuice_hair_saliva" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="NodeData">
+            <EntityTypeMapping TypeName="NHRIDBModel.NodeData">
+              <MappingFragment StoreEntitySet="NodeData">
+                <ScalarProperty Name="sort" ColumnName="sort" />
+                <ScalarProperty Name="name_en" ColumnName="name_en" />
+                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
+                <ScalarProperty Name="parentId" ColumnName="parentId" />
+                <ScalarProperty Name="nodeId" ColumnName="nodeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GroupUser">
+            <EntityTypeMapping TypeName="NHRIDBModel.GroupUser">
+              <MappingFragment StoreEntitySet="GroupUser">
+                <ScalarProperty Name="alwaysOpen" ColumnName="alwaysOpen" />
+                <ScalarProperty Name="leapProject" ColumnName="leapProject" />
+                <ScalarProperty Name="gName" ColumnName="gName" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MenuName">
+            <EntityTypeMapping TypeName="NHRIDBModel.MenuName">
+              <MappingFragment StoreEntitySet="MenuName">
+                <ScalarProperty Name="sortIndex" ColumnName="sortIndex" />
+                <ScalarProperty Name="parentMenu" ColumnName="parentMenu" />
+                <ScalarProperty Name="enable" ColumnName="enable" />
+                <ScalarProperty Name="controllerName" ColumnName="controllerName" />
+                <ScalarProperty Name="menuText" ColumnName="menuText" />
+                <ScalarProperty Name="menuId" ColumnName="menuId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Permissions">
+            <EntityTypeMapping TypeName="NHRIDBModel.Permissions">
+              <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="menuId" ColumnName="menuId" />
+                <ScalarProperty Name="purview" ColumnName="purview" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="無" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

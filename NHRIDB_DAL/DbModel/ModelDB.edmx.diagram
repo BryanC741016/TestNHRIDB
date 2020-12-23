@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bc39c4cf3ce3496cb04b320d6d478cc5" Name="Diagram1">
+        <EntityTypeShape EntityType="NHRIDBModel.Hospital" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="NHRIDBModel.NodeData" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.GroupUser" Width="1.5" PointX="6.875" PointY="3" />
+        <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
+        <EntityTypeShape EntityType="NHRIDBModel.MenuName" Width="1.5" PointX="5.375" PointY="6.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.Permissions" Width="1.5" PointX="9.125" PointY="5" />
+        <AssociationConnector Association="NHRIDBModel.FK_Permissions_GroupUser" />
+        <AssociationConnector Association="NHRIDBModel.FK_Permissions_MenuName" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

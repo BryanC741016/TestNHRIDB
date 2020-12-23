@@ -1,0 +1,90 @@
+﻿@model NHRIDB.Models.ViewModels.EditGroup
+@{
+    ViewBag.Title = "編輯群組";
+       int index = 0;
+}
+    <style>
+        .permissionsDiv {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+            .permissionsDiv ul {
+                list-style: none;
+            }
+
+            .permissionsDiv > div {
+                border-bottom: solid 1px #ccc;
+                background-color: #FFFCEC;
+                padding: 5px;
+            }
+
+            .permissionsDiv li {
+                border-bottom: solid 1px #ccc;
+                padding: 5px;
+            }
+    </style>
+@using (Html.BeginForm("Edit", "Group", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+    <div class="text-danger">
+        @Html.ValidationSummary()
+        @*@Html.ValidationMessageFor(model => model.gName, "", new { @class = "text-danger" })*@
+
+    </div>
+    @Html.HiddenFor(e => e.gId)
+    <div class="formPanel">
+        <label>群組名稱</label>
+        @Html.TextBoxFor(e => e.gName, new { @class = "form-control" })
+        <label>是否可查詢其它醫院</label>
+        @Html.EnumDropDownListFor(e => e.leapProject, new { @class = "form-control" })
+        <label>是否不受限於填寫時間</label>
+        @Html.EnumDropDownListFor(e => e.alwaysOpen, new { @class = "form-control" })
+
+
+
+    </div>
+
+    <div class="permissionsDiv">
+        @foreach (var item in Model.menu.Where(e => e.parentMenu == null).OrderBy(e=>e.sortIndex))
+        {
+            var child = Model.menu.Where(e => e.parentMenu == item.menuId);
+            if (!string.IsNullOrEmpty(item.controllName))
+            {
+                
+                <div>
+                    @item.menuText
+                    @Html.Hidden("setMenu[" + index.ToString() + "].menuId", item.menuId)
+                    @Html.EnumDropDownListFor(e => item.purview, new { @Name = "setMenu[" + index.ToString() + "].purview" })
+                </div>
+                index++;
+            }
+            else
+            {
+                <div>@item.menuText</div>
+                <ul>
+                    @foreach (var childitem in child.OrderBy(e=>e.sortIndex))
+                    {
+
+                        <li>
+                            @childitem.menuText
+                            @Html.Hidden("setMenu[" + index.ToString() + "].menuId", childitem.menuId)
+                            @Html.EnumDropDownListFor(e => childitem.purview, new { @Name = "setMenu[" + index.ToString() + "].purview" })
+
+                        </li>
+                        index++;
+                    }
+                </ul>
+            }
+
+        }
+    </div>
+
+    <a class="btn" href="@Url.Action("List", "Group")">放棄</a>
+    <button class="btn" type="submit">儲存</button>
+}
+
+
+
+

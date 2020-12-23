@@ -1,0 +1,257 @@
+﻿@using System.ComponentModel
+@using System.Web.Mvc
+@using System.Linq.Expressions
+@using System.Reflection
+
+
+@helper pageDiv(string url, int pageNumber, int pageEnd)
+{
+    <div class="pageation">
+
+        @if (pageNumber == 1)
+        {
+            <div class="page-item"><i class="fa fa-angle-left"></i></div>
+        }
+        else
+        {
+            int newNum = pageNumber - 1;
+            <div class="page-item"><a href="@url?pageNumber=@newNum"><i class="fa fa-angle-left"></i></a></div>
+        }
+
+
+        <select id="goToPage" class="page-item">
+            @for (int i = 1; i <= pageEnd; i++)
+            {
+                if (i == pageNumber)
+                {
+                    <option value="@i" selected>@i</option>
+                }
+                else
+                {
+                    <option value="@i">@i</option>
+                }
+
+
+            }
+        </select>
+
+
+        @if (pageNumber == pageEnd)
+        {
+            <div class="page-item"><i class="fa fa-angle-right"></i></div>
+        }
+        else
+        {
+            int newNum = pageNumber + 1;
+            <div class="page-item">
+                <a class="page-link" href="@url?pageNumber=@newNum">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    <script>
+        $("#goToPage").unbind("change").on("change", function () {
+            window.location = '@url?pageNumber=' + $(this).val();
+        });
+    </script>
+}
+
+@helper OrderByColumns(string[][] Columns, WebViewPage _thisPage)
+{
+
+    object sort = _thisPage.Model.GetType().GetProperty("sortColumn").GetValue(_thisPage.Model, null);
+    string sortColumn = sort != null ? sort.ToString() : "";
+    object type = _thisPage.Model.GetType().GetProperty("sortType").GetValue(_thisPage.Model, null);
+    string sortType = type != null ? type.ToString() : "";
+
+    for (int i = 0; i < Columns.Length; i++)
+    {
+        string displayName = Columns[i][0];
+        string name = Columns[i][1];
+        string className = "fa-sort";
+
+        string typeColumn = sortType;
+        if (sortColumn.Equals(name))
+        {
+            className = sortType.Equals("asc") ? "fa-sort-up" : "fa-sort-down";
+
+            typeColumn = sortType.Equals("desc") ? "asc" : "desc";
+        }
+
+        <th class='sort'>
+            <a href="?sortColumn=@name&sortType=@typeColumn">
+                <span class="fa @className"></span>
+                @displayName
+            </a>
+
+        </th>
+    }
+}
+
+@helper showColumns(System.Web.Mvc.HtmlHelper htmlHelper, object columns, object routeValues, string action, string controller, UrlHelper urlHelper)
+{
+    string sortColumn = (string)routeValues.GetType().GetProperty("sortColumn").GetValue(routeValues, null);
+    string sortType = (string)routeValues.GetType().GetProperty("sortType").GetValue(routeValues, null);
+    var url = urlHelper.Action(action, controller);
+    GC.Collect();
+    GC.WaitForPendingFinalizers();
+    foreach (var item in columns.GetType().GetProperties())
+    {
+        string name = item.Name;
+        var attribute = item.GetCustomAttributes(typeof(DisplayNameAttribute), true).Cast<DisplayNameAttribute>().Single();
+        string displayName = attribute.DisplayName;
+
+        if (string.IsNullOrEmpty(displayName))
+        {
+            continue;
+        }
+
+        string className = "";
+
+
+        if (sortColumn.Equals(name))
+        {
+            className = sortType.Equals("asc") ? "fa-sort-up" : "fa-sort-down";
+        }
+
+
+
+        <th class='sort' id='@name' data-type="@sortType">
+            <span class="fa @className"></span>
+            @displayName
+
+
+        </th>
+    }
+
+
+
+    <script>
+        $(function () {
+            $("tr th").click(function (e) {
+                var sortColumn = $(this).attr("id");
+                var sortType = $(this).data("type") == "desc" ? "asc" : "desc";
+
+                $('#sortForm input[name=sortColumn]').val(sortColumn);
+                $('#sortForm input[name=sortType]').val(sortType);
+                $("#sortForm").submit();
+            });
+        });
+    </script>
+}
+
+@helper AddUrl(bool canEdit, string url, string className = "")
+{
+
+    if (canEdit)
+    {
+        <a href='@url'><i class="fa fa fa-plus @className" aria-hidden="true"></i></a>
+    }
+
+}
+
+@helper EditUrl(bool canEdit, string url, string className = "")
+{
+    if (canEdit)
+    {
+        <a href='@url'><i class="fa fa fa-pencil @className" aria-hidden="true"></i></a>
+    }
+}
+
+@helper AddBtn(bool canEdit, string id)
+{
+    if (canEdit)
+    {
+        <i class="fa fa-plus btnAdd @id" aria-hidden="true" id="@id"></i>
+    }
+}
+@helper DelBtn(string classname)
+{
+
+    <i class="fa fa-trash-o @classname" aria-hidden="true"></i>
+
+}
+
+@helper DeleteDialog(bool canEdit, string buttonClass, string url, bool showPassword = true, string message = "確定要刪除此資料嗎?")
+{
+    if (canEdit)
+    {
+        string id = Guid.NewGuid().ToString();
+        <div class="modal fade" tabindex="-1" role="dialog" id="@id">
+            <div class="modal-dialog" role="document">
+
+                <div>@message</div>
+
+                <button class="btn sure" type="button">確定</button>
+                <button class="btn cancel" type="button">取消</button>
+            </div>
+        </div>
+
+        <script>
+        let getDatas;
+        $("#@id .cancel").on("click", function (e) {
+            $("#@id").modal("hide");
+        });
+
+        $("#@id .sure").unbind("click").on("click", function (e) {
+            $(".loading").css("visibility", "visible");
+            $("#@id").modal("hide");
+
+            let data = new FormData();
+
+            for (var key in getDatas) {
+                data.append(key, getDatas[key]);
+            }
+
+               ajaxFromDataByTonken('@url', data,"@GetAniForgeryToken()");
+
+        });
+
+
+        $(".@buttonClass").unbind("click").on("click", function (e) {
+
+            getDatas = $(this).data();
+            $("#@id").modal({ backdrop: "static" });
+        });
+        </script>
+    }
+}
+
+@helper messageDialog(bool canEdit, string id, string message)
+{
+    if (canEdit)
+    {
+        <div class="modal fade" tabindex="-1" role="dialog" id="@id">
+            <div class="modal-dialog" role="document">
+                <i class="fa fa-question-circle"></i>
+                <div class="message">@message</div>
+                <button class="btn sure" type="button">確定</button>
+                <button class="btn cancel" type="button">取消</button>
+            </div>
+        </div>
+
+        <script>
+
+        $("#@id .cancel").on("click", function (e) {
+            $("#@id").modal("hide");
+        });
+
+
+        </script>
+    }
+}
+
+@functions{
+    public static string GetAniForgeryToken()
+    {
+        string cookieToken, formToken;
+        AntiForgery.GetTokens(null, out cookieToken, out formToken);
+        return string.Concat(cookieToken, ":", formToken);
+    }
+
+
+}
+
+

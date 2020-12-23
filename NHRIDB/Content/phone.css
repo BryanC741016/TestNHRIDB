@@ -1,0 +1,104 @@
+﻿@media(min-width:769px) {
+    .hover-menu:hover .hover-menu-items {
+        display: block;
+    }
+    .hover-menu:hover .nav-link::after {
+        transform: rotate(180deg);
+    } 
+}
+@media (max-width: 768px) {
+    .header {
+        display: block;
+    }
+        .header #logo {
+            display: inline-block;
+        }
+ 
+    .icon-bar {
+        background-color: #003d79;
+        
+    }
+    .navbar-toggle {
+        outline:none;
+    }
+    #nav-menu-container {
+        position: absolute;
+        top: 117px;
+        background-color: rgba(255,255,255,0.7);
+        left: 0px;
+        margin-left: 0px;
+        padding-left: 10px;
+        line-height: 200%;
+        overflow-y: auto;
+    }
+    #nav-menu-container > .navbar-nav {
+      
+        float: none;
+    }
+    .navbar-nav.collapse {
+        display: none;
+    }
+    .navbar-nav.in {
+        display: initial;
+    }
+    .hover-menu.showMenu .hover-menu-items {
+        display: block;
+    }
+    .hover-menu.showMenu .nav-link::after {
+        transform: rotate(180deg);
+    } 
+    .hover-menu-items {
+        position: inherit;
+    
+        padding-left:0px;
+
+    }
+        .hover-menu-items a {
+            display:block;
+        }
+
+    footer ul {
+        display: inherit;
+    }
+        footer ul > li {
+            margin: 10px 10px;
+        }
+
+    .login-panel {
+        width: 80vw;
+    }
+
+    .formPanel {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-row-gap: 10px;
+    }
+        .formPanel label {
+            text-align: left;
+        }
+}
+@media (max-width: 411px) {
+    /*max-device-width*/
+    menu{
+        padding-left:0px;
+        height:75px;
+    }
+    .header #logo {
+        padding: 0px;
+    }
+    #logo img {
+        width: 70vw;
+    }
+    #nav-menu-container {
+        top:115px;
+    }
+        footer ul {
+        display:block;
+     
+    }
+    footer li {
+        padding-bottom: 20px;
+    }
+
+    
+}

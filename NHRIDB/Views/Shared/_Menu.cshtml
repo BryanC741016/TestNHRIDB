@@ -1,0 +1,68 @@
+﻿@using NHRIDB.Models.ViewModels
+@{ 
+    List<PurviewModel> funcList = Session["funcList"] as List<PurviewModel>;
+
+}
+<nav id="nav-menu-container">
+
+    <ul class="navbar-nav collapse">
+        @foreach (var item in funcList.Where(e => e.parentMenu == null).OrderBy(e=>e.sortIndex))
+        {
+            var child = funcList.Where(e => e.parentMenu == item.menuId);
+            if (!string.IsNullOrEmpty(item.controllName))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Index",item.controllName)">
+                        @item.menuText
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item hover-menu">
+                    <a class="nav-link" href="#">
+                        @item.menuText
+                    </a>
+                    <div class="hover-menu-items">
+                        @foreach (var childx in child.OrderBy(e=>e.sortIndex))
+                        {
+                        <a href="@Url.Action("Index",childx.controllName )">
+                            @childx.menuText
+                        </a>
+                        }
+                    </div>
+                </li>
+            }
+        }
+        @*<li class="nav-item hover-menu">
+                <a class="nav-link" href="#">
+                    權限設定
+                </a>
+                <div class="hover-menu-items">
+                    <a href="@Url.Action("List", "User")">
+                        使用者清單
+                    </a>
+                    <a href="@Url.Action("List", "Hospital")">
+                        醫院清單
+                    </a>
+                </div>
+            </li>
+
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Form")">
+                    表單填寫
+                </a>
+            </li>
+
+
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index", "Bar")">
+                總結數目
+            </a>
+        </li>*@
+
+
+    </ul>
+</nav>

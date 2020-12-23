@@ -1,0 +1,59 @@
+﻿@model NHRIDB.Models.ViewModels.LoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_LoginPartial.cshtml";
+    ViewBag.img = Url.Content("~/images/login.png");
+
+    List<string> imgs = new List<string>();
+    string[] allow = new string[] { ".jpg", ".png", ".gif" };
+    foreach (string url in System.IO.Directory.GetFiles(Server.MapPath("~/images/HospitalLog")))
+    {
+        string ex = Path.GetExtension(url);
+        if (!allow.Contains(ex))
+        {
+            continue;
+        }
+        string paurl = url.Replace((Server.MapPath("~/")), "/").Replace("\\", "/");
+        imgs.Add(paurl);
+    }
+}
+
+<div class="errorMsg"> @Model.message</div>
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <span>開放時間：</span>
+    @Model.startDate.ToString("yyyy/MM/dd")
+    <span>~</span>
+    @Model.endDate.ToString("yyyy/MM/dd")
+
+    @Html.HiddenFor(e => e.startDate)
+    @Html.HiddenFor(e => e.endDate)
+    <div class="form-group">
+        @Html.ValidationMessageFor(model => model.userName, "", new { @class = "text-danger" })
+        @Html.TextBoxFor(e => e.userName, new { @class = "form-control" })
+        <div class="fa" id="email"></div>
+    </div>
+    <div class="form-group">
+        @Html.ValidationMessageFor(model => model.passwd, "", new { @class = "text-danger" })
+        @Html.PasswordFor(e => e.passwd, new { @class = "form-control" })
+        <div class="fa" id="password"></div>
+    </div>
+
+    <button type="submit" class="btn">登入</button>
+
+    <div id="hospital-icon">
+
+
+        @foreach (var item in imgs)
+        {
+
+            <img src="@item" />
+
+        }
+
+
+    </div>
+}
+

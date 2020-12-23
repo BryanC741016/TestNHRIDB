@@ -1,0 +1,41 @@
+﻿@model  NHRIDB.Models.ViewModels.HospitalDetail
+
+@{
+    ViewBag.Title = "醫院明細";
+
+}
+
+
+@using (Html.BeginForm("Detail", "Hospital", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    
+
+    <div class="text-danger">
+        @Model.errorMsg
+        @Html.ValidationMessageFor(model => model.name_tw, "")
+        @Html.ValidationMessageFor(model => model.name_en, "")
+    </div>
+    <div class="formPanel">
+
+        @Html.HiddenFor(e => e.id)
+        <label>醫院-中文</label>
+        @Html.TextBoxFor(e => e.name_tw, new { @class = "form-control" })
+        <label>醫院-英文</label>
+        @Html.TextBoxFor(e => e.name_en, new { @class = "form-control" })
+        <label>圖片</label>
+        <input type="file" id="img" name="img" accept="image/*">
+   
+        @if (!string.IsNullOrEmpty(Model.imgUrl))
+        {
+        <img src="@Model.imgUrl" />
+      
+        }
+        </div>
+
+        <a class="btn" href="@Url.Action("List", "Hospital")">放棄</a>
+        <button class="btn" type="submit">儲存</button>
+        }
+
+
+

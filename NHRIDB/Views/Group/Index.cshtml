@@ -1,0 +1,38 @@
+﻿@model NHRIDB.Models.ViewModels.GroupViewModel
+@{
+    ViewBag.Title = "群組清單";
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Form.AddUrl(true, Url.Action("Create"))
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>群組名稱</th>
+                    <th>編輯</th>
+                </tr>
+            </thead>
+
+
+            @foreach (var item in Model.items)
+            {
+                <tr>
+                    <td>
+                        @item.gName
+                    </td>
+                  
+                    <td>
+                        <i class="btnDel fa fa-trash-o" data-id="@item.gId">
+                        </i>
+                        @Form.EditUrl(true, Url.Action("Edit", "Group", new { id = item.gId }))
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+@Form.DeleteDialog(true, "btnDel", Url.Action("Delete"))

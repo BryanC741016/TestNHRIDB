@@ -1,0 +1,66 @@
+﻿@model NHRIDB.Models.ViewModels.UserModelView
+
+@{
+    ViewBag.Title = "使用者清單";
+    string[][] Columns = {
+        new string[] { "醫院", "hosName" },
+        new string[] { "使用者", "userName" },
+        new string[] { "Email", "email" }
+         };
+}
+
+@using (Html.BeginForm("Index", "User", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="formPanel">
+        <label>醫院</label>
+        @Html.DropDownList("searchHospitalID", Model.hospitalSelect as IEnumerable<SelectListItem>, "請選擇")
+            <label>使用者帳號</label>
+            @Html.TextBoxFor(e => e.searchUserName)
+            <label>Email</label>
+            @Html.TextBoxFor(e => e.searchEmail)
+            <span></span>
+            <button class="btn" type="submit">查詢</button>
+    </div>
+}
+<br />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Form.AddUrl(true, Url.Action("Create"))
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    @Form.OrderByColumns(Columns, this)
+                    <th></th>
+                </tr>
+            </thead>
+            @{
+                foreach (var item in Model.items)
+                {
+                    <tr>
+                        <td>
+                            @item.hosName
+                        </td>
+                        <td>
+                            @item.userName
+                        </td>
+                        <td>
+                            @item.email
+                        </td>
+                        <td>
+                            <i class="btnDel fa fa-trash-o" data-id="@item.id">
+                            </i>
+                            @Form.EditUrl(true, Url.Action("Edit", "User", new { id = item.id }))
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>
+
+@Form.DeleteDialog(true, "btnDel", Url.Action("Delete"))
+
+@Form.pageDiv(Url.Action("Index"), Model.pageNumber, Model.pageEnd)

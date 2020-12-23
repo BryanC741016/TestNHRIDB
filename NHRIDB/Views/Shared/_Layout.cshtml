@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>整合平台系統</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+
+
+
+
+        function _body_onunload() {
+
+            $(".loading").css("visibility", "visible");
+        }
+
+
+    </script>
+</head>
+<body onbeforeunload="_body_onunload();">
+    <div class="loading"></div>
+
+    <header class="header">
+        @*<div id="lang">
+            @if (Session["imgPath"] !=null) {
+               <img src="@Session["imgPath"]" />
+            }
+            <span>@Session["name"]</span>
+            <a href='@Url.Action("Login", "Account",new {area=string.Empty })'>登出</a>
+        </div>*@
+        <div id="lang">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                @if (Session["imgPath"] != null)
+                {
+                    <img src="@Session["imgPath"]" />
+                }
+                <span>@Session["name"]</span>
+            </a>
+            <ul class="dropdown-menu pull-right dropdown-user">
+                <li>
+                    <a href="@Url.Action("Change", "Account")">變更資料</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="@Url.Action("Index", "Home")">登出</a>
+                </li>
+            </ul>
+            </div>
+            <menu>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-nav">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div id="logo">
+                    <a href="@Url.Action("Index", "Form")">
+                        <img src="~/Images/logo.png" />
+                    </a>
+                </div>
+
+                @Html.Partial("_Menu")
+            </menu>
+
+
+    </header>
+    <div class="top-photo">
+    </div>
+    <main>
+
+        <h3>@ViewBag.Title</h3>
+        <span class="errorMsg">@(Html.Raw(TempData["message"]))</span>
+        @RenderBody()
+
+
+
+
+    </main>
+    <footer>
+
+
+        <div class="top-icon">
+            <a href="#top" class="glyphicon glyphicon-chevron-up"></a>
+        </div>
+    </footer>
+    <div class="modal fade" tabindex="-1" role="dialog" id="showMessage">
+        <div class="modal-dialog" role="document">
+
+            <div class="message"></div>
+            <button class="btn cancel" type="button">確定</button>
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)
+    <script>
+        $(".navbar-toggle").on("click", function (e) {
+            $(".sidebar").toggleClass("show");
+        });
+
+        $("#showMessage .cancel").on("click", function (e) {
+            $("#showMessage").modal("hide");
+        });
+
+        function showMessage(text) {
+            $("#showMessage").modal({ backdrop: "static" });
+            $("#showMessage .message").html(text);
+        }
+    </script>
+
+</body>
+</html>

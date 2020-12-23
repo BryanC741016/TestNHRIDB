@@ -1,0 +1,66 @@
+﻿@model NHRIDB.Models.ViewModels.FormViewModel
+@{
+    ViewBag.Title = "資料匯入";
+}
+    <link rel="stylesheet" href="~/Content/tree.css" />
+    <script src="~/Scripts/tree.min.js"></script>
+ 
+<div id="container">
+
+</div>
+
+<script>
+     $(function () {
+
+        var json = JSON.parse('@(new HtmlString(Json.Encode(Model.json)))');
+
+        if (!json) {
+            $(".tree").addClass("hidden");
+        }
+
+         $('#container').jstree({
+             'core': {
+                 "themes": { "stripes": true },
+
+                 data: json,
+
+             },
+             plugins: ["contextmenu","types"],
+
+             contextmenu: { items: customMenu },
+             "types": {
+                 "leaf": {
+                     "icon": "../images/tree_upload.png"
+
+                 },
+             }
+
+         })
+
+             .on('loaded.jstree', function (e, date) {
+                 $('#container').jstree('open_all');
+
+             });
+
+
+        function customMenu(node) {
+            // The default set of all items
+            var type = node.original.type;
+            var items = {
+                addItem: { // The "rename" menu item
+                    label: "匯入資料",
+                    _disabled: type=="node",
+                    action: function () {
+
+                    }//action
+
+
+                },
+
+            };
+
+            return items;
+        };
+    });
+</script>
+
