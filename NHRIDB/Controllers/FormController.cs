@@ -1,4 +1,5 @@
-﻿using NHRIDB.Models.ViewModels;
+﻿using NHRIDB.Filter;
+using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
 using System;
@@ -18,6 +19,7 @@ namespace NHRIDB.Controllers
             _nodeDA = new NodeDataDa(_db);
         }
 
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Form
         public ActionResult Index()
         {
@@ -28,7 +30,7 @@ namespace NHRIDB.Controllers
             return View(model);
         }
 
-       
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         private Node Tree(Nullable<Guid> parentId,Node node)
         {
             IQueryable<NodeData> childe = _nodeDA.GetChild(parentId);

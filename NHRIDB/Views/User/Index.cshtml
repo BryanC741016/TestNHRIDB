@@ -50,9 +50,13 @@
                             @item.email
                         </td>
                         <td>
-                            <i class="btnDel fa fa-trash-o" data-id="@item.id">
-                            </i>
-                            @Form.EditUrl(true, Url.Action("Edit", "User", new { id = item.id }))
+                            @if (ViewBag.CanEdit)
+                            {
+                                <i class="btnDel fa fa-trash-o" data-id="@item.id">
+                                </i>
+                                @Form.EditUrl(true, Url.Action("Edit", "User", new { id = item.id }))
+                            }
+
                         </td>
                     </tr>
                 }
@@ -61,6 +65,6 @@
     </div>
 </div>
 
-@Form.DeleteDialog(true, "btnDel", Url.Action("Delete"))
+@Form.DeleteDialog(ViewBag.CanEdit, "btnDel", Url.Action("Delete"))
 
 @Form.pageDiv(Url.Action("Index"), Model.pageNumber, Model.pageEnd)

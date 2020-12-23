@@ -24,6 +24,10 @@
         <label>帳號</label>
         @Html.TextBoxFor(e => e.username, new { @class = "form-control" })
 
+        <label>姓名</label>
+        @Html.TextBoxFor(e => e.name, new { @class = "form-control" })
+
+
         <label>Email</label>
         @Html.TextBoxFor(e => e.email, new { @class = "form-control" })
 
@@ -38,7 +42,7 @@
         <label>確認密碼</label>
         @Html.PasswordFor(e => e.repassword, new { @class = "form-control" })
     </div>
-        <a class="btn" href="@Url.Action("List", "User")">放棄</a>
+        <a class="btn" href="@Url.Action("Index", "User")">放棄</a>
         <button class="btn" type="submit">儲存</button>
         }
 

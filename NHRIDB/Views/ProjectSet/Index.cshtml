@@ -1,43 +1,53 @@
 ﻿@model  NHRIDB.Models.ViewModels.ProjectSetViewModel
 @{
-    ViewBag.Title = "專案設定";
+    ViewBag.Title = "設定時間";
 }
- 
+
 <div class="remark">開放時間：</div>
-@using (Html.BeginForm("Index", "ProjectSet", FormMethod.Post))
+@if (!ViewBag.CanEdit)
 {
-    @Html.AntiForgeryToken()
-
-
-    <div class="text-danger">
-        @Html.ValidationSummary()
-
-    </div>
-
-    <div class="formPanel">
-        @if (Model.startDate.HasValue)
-        {
-            <input type="date" name="startDate" value="@Model.startDate.Value.ToString("yyyy-MM-dd")" />
-        }
-        else
-        {
-            <input type="date" name="startDate" />
-        }
-
-        @if (Model.endDate.HasValue)
-        {
-            <input type="date" name="endDate" value="@Model.endDate.Value.ToString("yyyy-MM-dd")" />
-        }
-        else
-        {
-            <input type="date" name="endDate" />
-        }
-
-    </div>
-
-
-    <button class="btn" type="submit">儲存</button>
+     @Model.startDate.Value.ToString("yyyy-MM-dd")
+    <span>~</span>
+     @Model.endDate.Value.ToString("yyyy-MM-dd")
 }
+else
+{
+    using (Html.BeginForm("Index", "ProjectSet", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="text-danger">
+            @Html.ValidationSummary()
+
+        </div>
+
+        <div class="formPanel">
+            @if (Model.startDate.HasValue)
+            {
+                <input type="date" name="startDate" value="@Model.startDate.Value.ToString("yyyy-MM-dd")" />
+            }
+            else
+            {
+                <input type="date" name="startDate" />
+            }
+
+            @if (Model.endDate.HasValue)
+            {
+                <input type="date" name="endDate" value="@Model.endDate.Value.ToString("yyyy-MM-dd")" />
+            }
+            else
+            {
+                <input type="date" name="endDate" />
+            }
+
+        </div>
+
+
+        <button class="btn" type="submit">儲存</button>
+    }
+}
+
 
 
 

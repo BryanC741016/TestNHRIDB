@@ -59,7 +59,8 @@ namespace NHRIDB.Models.ViewModels
 
         public string errorMsg { get; set; }
 
-
+        [Required]
+        public string name { get; set; }
 
     }
     public class UserEdit
@@ -82,6 +83,8 @@ namespace NHRIDB.Models.ViewModels
         [Required]
         [EmailAddress]
         public string email { get; set; }
+        [Required]
+        public string name { get; set; }
 
         public string errorMsg { get; set; }
 

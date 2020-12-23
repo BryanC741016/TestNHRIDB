@@ -27,6 +27,10 @@ namespace NHRIDB.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult NoRight() {
+            return View();
+        }
+
         public ActionResult Change(string msg = "") {
             AccountViewModel model = new AccountViewModel();
             User user = _userDA.GetUser(_uid);

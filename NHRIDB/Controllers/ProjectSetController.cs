@@ -1,4 +1,5 @@
-﻿using NHRIDB.Models.ViewModels;
+﻿using NHRIDB.Filter;
+using NHRIDB.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace NHRIDB.Controllers
     {
         private string _path = "~/Setting/Setting.xml";
        [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index()
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -27,6 +29,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Index(ProjectSetViewModel model) {
             if (!ModelState.IsValid) {
                 return View(model);

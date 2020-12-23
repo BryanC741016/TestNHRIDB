@@ -22,7 +22,7 @@
 <br />
 <div class="panel panel-default">
     <div class="panel-heading">
-        @Form.AddUrl(true, Url.Action("Detail"))
+        @Form.AddUrl(ViewBag.CanEdit, Url.Action("Detail"))
     </div>
     <div class="panel-body">
         <table class="table table-hover">
@@ -44,9 +44,13 @@
                                 @item.name_en
                             </td>
                             <td>
-                                <i class="btnDel fa fa-trash-o" data-id="@item.id">
-                                </i>
-                                @Form.EditUrl(true, Url.Action("Detail", "Hospital", new { id = item.id }))
+                                @if (ViewBag.CanEdit)
+                                {
+                                    <i class="btnDel fa fa-trash-o" data-id="@item.id">
+                                    </i>
+                                    @Form.EditUrl(true, Url.Action("Detail", "Hospital", new { id = item.id }))
+                                }
+
                             </td>
                         </tr>
                 }
@@ -55,6 +59,6 @@
     </div>
 </div>
 
-@Form.DeleteDialog(true, "btnDel", Url.Action("Delete"))
+@Form.DeleteDialog(ViewBag.CanEdit, "btnDel", Url.Action("Delete"))
 
 @Form.pageDiv(Url.Action("Index"),Model.pageNumber,Model.pageEnd)

@@ -12,7 +12,7 @@ namespace NHRIDB.Models.ViewModels
         None = 0,
         [Display(Name = "唯讀")]
         Read = 1,
-        [Display(Name = "可讀寫")]
+        [Display(Name = "可編輯")]
         Write = 2,
     }
     public class PurviewModel

@@ -28,6 +28,7 @@ namespace NHRIDB.Controllers
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: User
         public ActionResult Index(int pageNumber = 1, string sortColumn = "", string sortType = "")
         {
@@ -40,6 +41,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index(UserModelView model)
         {
 
@@ -59,6 +61,7 @@ namespace NHRIDB.Controllers
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Create() {
             UserCreate model = new UserCreate();
            model.hospitalSelect = new SelectList(_hospitalSelect, "id", "name_tw");
@@ -68,6 +71,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Create(UserCreate model)
         {
 
@@ -87,11 +91,12 @@ namespace NHRIDB.Controllers
                 return View(model);
             }
 
-            _userDA.Create(model.username, model.password,model.hospitalId,model.groupId, model.email);
+            _userDA.Create(model.username, model.password,model.hospitalId,model.groupId, model.email,model.name);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Edit(Guid id)
         {
             User user = _userDA.GetUser(id);
@@ -113,6 +118,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Edit(UserEdit model) {
             model.hospitalSelect = new SelectList(_hospitalSelect, "id", "name_tw", model.hospitalId);
             model.msSelect = new SelectList(_groupSelect, "groupId", "gName", model.groupId);
@@ -135,7 +141,7 @@ namespace NHRIDB.Controllers
                 return View(model);
             }
 
-            _userDA.Edit(model.uid,model.username, model.hospitalId,  model.groupId, model.email);
+            _userDA.Edit(model.uid,model.username, model.hospitalId,  model.groupId, model.email,model.name);
             return RedirectToAction("Index");
 
         }
@@ -143,6 +149,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult ChangePasswd(ChangePasswd model,Guid uid)
         {
             if (!ModelState.IsValid)
@@ -157,6 +164,7 @@ namespace NHRIDB.Controllers
         }
 
         [AjaxValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public JsonResult Delete(Guid id)
         {
             Rs rs = new Rs();

@@ -24,6 +24,9 @@ namespace NHRIDB.Controllers
             _menu= menuDa.GetQuery().ToList();
              _permissionsDA = new PermissionsDA(_db);
         }
+
+        [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Group
         public ActionResult Index()
         {
@@ -39,6 +42,7 @@ namespace NHRIDB.Controllers
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Create() {
             CreateGroup model = new CreateGroup();
             model.menu = _menu.Select(e=>new PurviewModel
@@ -55,6 +59,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Create(CreateGroup model) {
             model.menu = _menu.Select(e => new PurviewModel
             {
@@ -87,6 +92,7 @@ namespace NHRIDB.Controllers
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Edit(Guid id)
         {
             GroupUser group = _groupDA.GetGroupUser(id);
@@ -117,6 +123,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Edit(EditGroup model)
         {
             List<PurviewModel> purviewModels = _menu.Select(e => new PurviewModel
@@ -159,6 +166,7 @@ namespace NHRIDB.Controllers
         }
 
         [AjaxValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public JsonResult Delete(Guid id)
         {
             Rs rs = new Rs();

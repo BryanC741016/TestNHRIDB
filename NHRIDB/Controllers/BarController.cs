@@ -1,4 +1,5 @@
-﻿using NHRIDB.Models.ViewModels;
+﻿using NHRIDB.Filter;
+using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
 using System;
@@ -21,6 +22,7 @@ namespace NHRIDB.Controllers
             _hospitalDA = new HospitalDA(_db);
         }
 
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Bar
         public ActionResult Index(Nullable<Guid> treeId=null, Nullable<Guid> hosId=null)
         {

@@ -21,6 +21,7 @@ namespace NHRIDB.Controllers
             _hospitalDA = new HospitalDA(_db);
         }
 
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Hospital
         public ActionResult Index(int pageNumber=1,string sortColumn="",string sortType="")
         {
@@ -35,6 +36,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index(HospitalViewModel model)
         {
 
@@ -53,6 +55,7 @@ namespace NHRIDB.Controllers
         }
 
         [HttpGet]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Detail(Nullable<Guid> id) {
             HospitalDetail model = new HospitalDetail();
             if (id.HasValue) //編輯
@@ -69,6 +72,7 @@ namespace NHRIDB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Detail(HospitalDetail model)
         {
             if (!ModelState.IsValid) {
@@ -130,6 +134,7 @@ namespace NHRIDB.Controllers
         }
 
         [AjaxValidateAntiForgeryToken]
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
         public JsonResult Delete(Guid id) {
             Rs rs = new Rs();
             rs.isSuccess = false;
