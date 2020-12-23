@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using System.Xml;
 
 namespace NHRIDB.Controllers
@@ -97,9 +98,11 @@ namespace NHRIDB.Controllers
                 DateTime now = DateTime.Now;
                 if (user.GroupUser.alwaysOpen)
                 {
+                    FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
                     return RedirectToAction("Index", "Form");
                 }
                 else if (now >= model.startDate && now <= model.endDate) {
+                    FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
                     return RedirectToAction("Index", "Form");
                 }
                 model.message = "未開放或無權限";
