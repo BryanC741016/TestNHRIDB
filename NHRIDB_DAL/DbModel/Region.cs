@@ -12,12 +12,22 @@ namespace NHRIDB_DAL.DbModel
     using System;
     using System.Collections.Generic;
     
-    public partial class NodeData
+    public partial class Region
     {
-        public System.Guid nodeId { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Region()
+        {
+            this.TubeData = new HashSet<TubeData>();
+        }
+    
+        public System.Guid regionId { get; set; }
         public Nullable<System.Guid> parentId { get; set; }
         public string name_tw { get; set; }
         public string name_en { get; set; }
         public int sort { get; set; }
+        public string regionKey { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TubeData> TubeData { get; set; }
     }
 }

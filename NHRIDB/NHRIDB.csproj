@@ -143,6 +143,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HospitalController.cs" />
     <Compile Include="Controllers\ProjectSetController.cs" />
+    <Compile Include="Controllers\RegionController.cs" />
     <Compile Include="Controllers\UpdateController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AjaxValidateAntiForgeryTokenAttribute .cs" />
@@ -155,7 +156,7 @@
     <Compile Include="Models\Rs.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BarViewModel.cs" />
-    <Compile Include="Models\ViewModels\FormViewModel.cs" />
+    <Compile Include="Models\ViewModels\RegionIndexModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectSetViewModel.cs" />
     <Compile Include="Models\ViewModels\PurviewModel.cs" />
@@ -191,6 +192,7 @@
     <Content Include="images\542.jpg" />
     <Content Include="images\add.png" />
     <Content Include="images\arrow.png" />
+    <Content Include="images\bg.jpg" />
     <Content Include="images\bg.png" />
     <Content Include="images\calendar.png" />
     <Content Include="images\clock.png" />
@@ -225,6 +227,7 @@
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="App_Code\Form.cshtml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\chartjs-plugin-datalabels.js" />
     <Content Include="Scripts\chartjs.js" />
@@ -238,6 +241,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\sitjs.js" />
     <Content Include="Scripts\tree.min.js" />
     <Content Include="Scripts\_layout.js" />
     <Content Include="Setting\Setting.xml" />
@@ -273,6 +277,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\HospitalLog\" />
+    <Folder Include="Views\Region\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -46,9 +46,8 @@ namespace NHRIDB_DAL.DAL
             add.id = Guid.NewGuid();
             add.name_en = name_en;
             add.name_tw = name_tw;
-            add.FileExtension = ex;
-            add.isLock = false;
-            add.Unlock = false;
+            add.fileExtension = ex;
+           
             _db.Hospital.Add(add);
             _db.SaveChanges();
 
@@ -59,7 +58,7 @@ namespace NHRIDB_DAL.DAL
             Hospital edit = GetHospital(id);
             edit.name_en = name_en;
             edit.name_tw = name_tw;
-            edit.FileExtension = ex;
+            edit.fileExtension = ex;
             _db.SaveChanges();
         }
 

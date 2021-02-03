@@ -12,20 +12,20 @@ namespace NHRIDB_DAL.DbModel
     using System;
     using System.Collections.Generic;
     
-    public partial class Hospital
+    public partial class Patient
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Hospital()
+        public Patient()
         {
-            this.User = new HashSet<User>();
+            this.TubeData = new HashSet<TubeData>();
         }
     
-        public System.Guid id { get; set; }
-        public string name_tw { get; set; }
-        public string name_en { get; set; }
-        public string fileExtension { get; set; }
+        public System.Guid patientId { get; set; }
+        public System.Guid hospitalId { get; set; }
+        public string pKey { get; set; }
+        public bool gender { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<User> User { get; set; }
+        public virtual ICollection<TubeData> TubeData { get; set; }
     }
 }

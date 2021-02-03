@@ -4,6 +4,7 @@ using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -47,22 +48,39 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(LoginViewModel model)
         {
+            if (string.IsNullOrEmpty(model.tonken) || string.IsNullOrEmpty(model.textshowCode)) {
+                model.message = "請輸入正確的驗證碼";
+                return View(model);
+            }
+
+            string tonken = model.tonken.Substring(1, model.tonken.Length - 1).Replace(",", "");
+            if (model.tonken.IndexOf(",")< 0 || !tonken.Equals(model.textshowCode))
+            {
+                model.message = "請輸入正確的驗證碼";
+                return View(model);
+            }
             if (!ModelState.IsValid)
             {
                 model.message = "請確實填寫資料";
                 return View(model);
             }
+             
 
             NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
             UserDA uda = new UserDA(db);
-
+            LogLoginDA log = new LogLoginDA(db);
+            string ip = GetIp();
             User user = uda.HasQuery(model.userName, model.passwd);
-            if (user != null)
+            if (user == null)
             {
+                log.Create(user.userName, ip, false);
+            }
+            else{
+                log.Create(user.userName, ip, true);
                 Session["uid"] = user.userId;
                 Session["hos"] = user.id_Hospital;
                 Session["name"] = user.userName;
-                Session["ex"] = user.Hospital.FileExtension;
+                Session["ex"] = user.Hospital.fileExtension;
                 Session["leapProject"] = user.GroupUser.leapProject;
                 List<PurviewModel> list= user.GroupUser.Permissions
                       .Where(e=>e.purview>=1)
@@ -111,7 +129,17 @@ namespace NHRIDB.Controllers
             model.message = "帳號密碼錯誤請重新填寫";
             return View(model);
         }
-  
-         
+
+        private string GetIp()
+        {
+            string ip = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (string.IsNullOrEmpty(ip))
+            {
+                ip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            }
+            return ip;
+        }
+
+
     }
 }

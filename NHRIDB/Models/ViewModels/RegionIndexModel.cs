@@ -5,7 +5,7 @@ using System.Web;
 
 namespace NHRIDB.Models.ViewModels
 {
-    public class FormViewModel
+    public class RegionIndexModel
     {
         public Node json;
     }

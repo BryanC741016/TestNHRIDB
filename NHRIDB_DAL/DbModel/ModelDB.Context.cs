@@ -27,12 +27,16 @@ namespace NHRIDB_DAL.DbModel
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Hospital> Hospital { get; set; }
-        public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<NodeData> NodeData { get; set; }
         public virtual DbSet<GroupUser> GroupUser { get; set; }
         public virtual DbSet<MenuName> MenuName { get; set; }
         public virtual DbSet<Permissions> Permissions { get; set; }
+        public virtual DbSet<Diagnosis> Diagnosis { get; set; }
+        public virtual DbSet<LogLogin> LogLogin { get; set; }
+        public virtual DbSet<Patient> Patient { get; set; }
+        public virtual DbSet<Region> Region { get; set; }
+        public virtual DbSet<TubeData> TubeData { get; set; }
+        public virtual DbSet<Hospital> Hospital { get; set; }
+        public virtual DbSet<User> User { get; set; }
     
         public virtual ObjectResult<GetTotal_Result> GetTotal(string level, string hospitalId)
         {

@@ -386,3 +386,7 @@ textarea {
     background-color: #ffffff;
     border: solid 1px #cccccc;
 }
+/*------------------*/
+.numcode {
+    display: flex;
+}

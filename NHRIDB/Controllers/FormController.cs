@@ -15,45 +15,22 @@ namespace NHRIDB.Controllers
 {
     public class FormController : BasicController
     {
-        private NodeDataDa _nodeDA;
+       
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
-            _nodeDA = new NodeDataDa(_db);
+     
         }
 
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Form
         public ActionResult Index()
         {
-            FormViewModel model = new FormViewModel();
-            Node root = new Node();
-            Tree(null, root);
-            model.json = root;
-            return View(model);
+           
+            return View( );
         }
 
-        [MvcAdminRightAuthorizeFilter(param = 'r')]
-        private Node Tree(Nullable<Guid> parentId,Node node)
-        {
-            IQueryable<NodeData> childe = _nodeDA.GetChild(parentId);
-            node.children = childe.Select(e => new Node
-            {
-                id=e.nodeId,
-                parentId=e.parentId,
-                text=e.name_en,
-                type="node"
-            }).ToList();
-            if (node.children.Count() == 0) {
-                node.type = "leaf";
-            }
-            foreach (Node item in node.children)
-            {
-                Tree(item.id, item);
-            }
-
-            return node;
-        }
+       
 
         public ActionResult Upload(Guid id, HttpPostedFileBase upload) {
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");

@@ -20,5 +20,8 @@ namespace NHRIDB.Models.ViewModels
 
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
+
+        public string tonken { get; set; }
+        public string textshowCode { get; set; }
     }
 }

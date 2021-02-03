@@ -17,8 +17,8 @@ namespace NHRIDB_DAL.DbModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public GroupUser()
         {
-            this.User = new HashSet<User>();
             this.Permissions = new HashSet<Permissions>();
+            this.User = new HashSet<User>();
         }
     
         public System.Guid groupId { get; set; }
@@ -27,8 +27,8 @@ namespace NHRIDB_DAL.DbModel
         public bool alwaysOpen { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<User> User { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Permissions> Permissions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<User> User { get; set; }
     }
 }

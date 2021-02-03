@@ -9,7 +9,7 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+    @RenderSection("start", required: false)
     <script type="text/javascript">
 
 
@@ -95,7 +95,7 @@
             <button class="btn cancel" type="button">確定</button>
         </div>
     </div>
-    @RenderSection("scripts", required: false)
+    @RenderSection("last", required: false)
     <script>
         $(".navbar-toggle").on("click", function (e) {
             $(".sidebar").toggleClass("show");

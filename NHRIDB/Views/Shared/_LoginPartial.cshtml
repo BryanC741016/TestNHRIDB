@@ -12,33 +12,33 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
-
-    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/sitjs.js")
+    @*@Scripts.Render("~/bundles/bootstrap")*@
     <style>
         @@media(max-width:397px) {
             .panel-body > img {
-                width:70vw;
+                width: 70vw;
             }
         }
+
         body {
             height: 100vh;
-           background-color:#ccc;
+            background-color: #ccc;
         }
 
- 
+
 
         .logout {
-          position: absolute;
-    bottom: 100px;
-    width:200px !important;
-    right: 100px;
-    visibility:hidden;
+            position: absolute;
+            bottom: 100px;
+            width: 200px !important;
+            right: 100px;
+            visibility: hidden;
         }
 
 
 
         .panel-body {
-
             padding: 20px;
         }
 
@@ -49,7 +49,7 @@
 
 
         .btn {
-            color:#ffffff;
+            color: #ffffff;
             margin: 0px;
             width: 100%;
             margin-bottom: 10px;
@@ -109,27 +109,37 @@
             text-align: center;
         }
 
-        #btn-forget , .cancel{
-             background-color:#6a6aff;
+        #btn-forget, .cancel {
+            background-color: #6a6aff;
         }
 
         .logo-icon {
-            width:100%;
+            width: 100%;
         }
+
         #hospital-icon {
-            text-align:center;
+            text-align: center;
         }
-        #hospital-icon > img {
-            height: 30px;
-             width: auto;
-            display:inline-block;
-            /*border-right:dashed 1px #ccc;
-          
+
+            #hospital-icon > img {
+                height: 30px;
+                width: auto;
+                display: inline-block;
+                /*border-right:dashed 1px #ccc;
+
             padding-right:10px;*/
-              margin:5px;
+                margin: 5px;
+            }
+
+            .numcode{
+              display:flex;
+            }
+
+        [name="textshowCode"] {
+            padding-left:2px !important
         }
     </style>
- 
+
     <script type="text/javascript">
         function _body_onunload() {
 

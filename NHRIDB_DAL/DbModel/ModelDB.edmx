@@ -5,6 +5,14 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="NHRIDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Diagnosis">
+          <Key>
+            <PropertyRef Name="diagnosisKey" />
+          </Key>
+          <Property Name="diagnosisKey" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="dname_tw" Type="nvarchar(max)" />
+          <Property Name="dname_en" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="GroupUser">
           <Key>
             <PropertyRef Name="groupId" />
@@ -21,9 +29,17 @@
           <Property Name="id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="name_tw" Type="nvarchar" MaxLength="100" />
           <Property Name="name_en" Type="nvarchar" MaxLength="100" />
-          <Property Name="isLock" Type="bit" Nullable="false" />
-          <Property Name="Unlock" Type="bit" Nullable="false" />
-          <Property Name="FileExtension" Type="nvarchar" MaxLength="50" />
+          <Property Name="fileExtension" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LogLogin">
+          <Key>
+            <PropertyRef Name="userName" />
+            <PropertyRef Name="lognDate" />
+          </Key>
+          <Property Name="userName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ip" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="lognDate" Type="datetime" Nullable="false" />
+          <Property Name="isLogin" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="MenuName">
           <Key>
@@ -36,15 +52,14 @@
           <Property Name="parentMenu" Type="int" />
           <Property Name="sortIndex" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="NodeData">
+        <EntityType Name="Patient">
           <Key>
-            <PropertyRef Name="nodeId" />
+            <PropertyRef Name="patientId" />
           </Key>
-          <Property Name="nodeId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="parentId" Type="uniqueidentifier" />
-          <Property Name="name_tw" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="name_en" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="sort" Type="int" Nullable="false" />
+          <Property Name="patientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="hospitalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="pKey" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="gender" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Permissions">
           <Key>
@@ -55,6 +70,55 @@
           <Property Name="purview" Type="smallint" Nullable="false" />
           <Property Name="menuId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="regionId" />
+          </Key>
+          <Property Name="regionId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="parentId" Type="uniqueidentifier" />
+          <Property Name="name_tw" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="name_en" Type="varchar(max)" Nullable="false" />
+          <Property Name="sort" Type="int" Nullable="false" />
+          <Property Name="regionKey" Type="nchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="TubeData">
+          <Key>
+            <PropertyRef Name="patientId" />
+            <PropertyRef Name="regionId" />
+            <PropertyRef Name="diagnosisKey" />
+          </Key>
+          <Property Name="patientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="regionId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="diagnosisKey" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="blood" Type="int" />
+          <Property Name="sampleblood" Type="int" />
+          <Property Name="frozenTissue" Type="int" />
+          <Property Name="samplefrozenTissue" Type="int" />
+          <Property Name="waxBlock" Type="int" />
+          <Property Name="samplewaxBlock" Type="int" />
+          <Property Name="urine" Type="int" />
+          <Property Name="sampleurine" Type="int" />
+          <Property Name="dna" Type="int" />
+          <Property Name="sampledna" Type="int" />
+          <Property Name="stool" Type="int" />
+          <Property Name="samplestool" Type="int" />
+          <Property Name="sampleless" Type="int" />
+          <Property Name="pleuraleffusion" Type="int" />
+          <Property Name="samplepleuraleffusion" Type="int" />
+          <Property Name="CSF" Type="int" />
+          <Property Name="sampleCSF" Type="int" />
+          <Property Name="Ascites" Type="int" />
+          <Property Name="sampleAscites" Type="int" />
+          <Property Name="BoneMarrow" Type="int" />
+          <Property Name="sampleBoneMarrow" Type="int" />
+          <Property Name="Others_bilejuice_hair_saliva" Type="int" />
+          <Property Name="age" Type="int" Nullable="false" />
+          <Property Name="endYear" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="createDate" Type="datetime" Nullable="false" />
+          <Property Name="updateUser" Type="uniqueidentifier" />
+          <Property Name="updateDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="userId" />
@@ -64,11 +128,50 @@
           <Property Name="password" Type="varchar(max)" Nullable="false" />
           <Property Name="del" Type="bit" Nullable="false" />
           <Property Name="id_Hospital" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="level" Type="int" Nullable="false" />
           <Property Name="email" Type="nvarchar(max)" />
           <Property Name="name" Type="nvarchar" MaxLength="10" />
           <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <Association Name="FK_NewData_Diagnosis">
+          <End Role="Diagnosis" Type="Self.Diagnosis" Multiplicity="1" />
+          <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Diagnosis">
+              <PropertyRef Name="diagnosisKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="diagnosisKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewData_NodeData">
+          <End Role="Region" Type="Self.Region" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="regionId" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="regionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewData_Patient">
+          <End Role="Patient" Type="Self.Patient" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Patient">
+              <PropertyRef Name="patientId" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="patientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Permissions_GroupUser">
           <End Role="GroupUser" Type="Self.GroupUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -130,12 +233,28 @@
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
+          <EntitySet Name="Diagnosis" EntityType="Self.Diagnosis" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="NodeData" EntityType="Self.NodeData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Patient" EntityType="Self.Patient" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Region" EntityType="Self.Region" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_NewData_Diagnosis" Association="Self.FK_NewData_Diagnosis">
+            <End Role="Diagnosis" EntitySet="Diagnosis" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewData_NodeData" Association="Self.FK_NewData_NodeData">
+            <End Role="Region" EntitySet="Region" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewData_Patient" Association="Self.FK_NewData_Patient">
+            <End Role="Patient" EntitySet="Patient" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
           <AssociationSet Name="FK_Permissions_GroupUser" Association="Self.FK_Permissions_GroupUser">
             <End Role="GroupUser" EntitySet="GroupUser" />
             <End Role="Permissions" EntitySet="Permissions" />
@@ -157,65 +276,12 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="NHRIDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Hospital">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Guid" Nullable="false" />
-          <Property Name="name_tw" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="name_en" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="isLock" Type="Boolean" Nullable="false" />
-          <Property Name="Unlock" Type="Boolean" Nullable="false" />
-          <Property Name="FileExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="User" Relationship="Self.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
-        </EntityType>
-        <EntityType Name="User">
-          <Key>
-            <PropertyRef Name="userId" />
-          </Key>
-          <Property Name="userId" Type="Guid" Nullable="false" />
-          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="del" Type="Boolean" Nullable="false" />
-          <Property Name="id_Hospital" Type="Guid" Nullable="false" />
-          <Property Name="level" Type="Int32" Nullable="false" />
-          <Property Name="email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Hospital" Relationship="Self.FK_User_Hospital" FromRole="User" ToRole="Hospital" />
-          <Property Name="name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="groupId" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="User" ToRole="GroupUser" />
-        </EntityType>
-        <Association Name="FK_User_Hospital">
-          <End Role="Hospital" Type="Self.Hospital" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="User" Type="Self.User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Hospital">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="id_Hospital" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="NHRIDBEntitiesDB" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Hospital" EntityType="Self.Hospital" />
-          <EntitySet Name="User" EntityType="Self.User" />
-          <AssociationSet Name="FK_User_Hospital" Association="Self.FK_User_Hospital">
-            <End Role="Hospital" EntitySet="Hospital" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
           <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
             <Parameter Name="level" Mode="In" Type="String" />
             <Parameter Name="hospitalId" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="NodeData" EntityType="NHRIDBModel.NodeData" />
           <EntitySet Name="GroupUser" EntityType="NHRIDBModel.GroupUser" />
-          <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
-            <End Role="GroupUser" EntitySet="GroupUser" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
           <EntitySet Name="MenuName" EntityType="NHRIDBModel.MenuName" />
           <EntitySet Name="Permissions" EntityType="NHRIDBModel.Permissions" />
           <AssociationSet Name="FK_Permissions_GroupUser" Association="NHRIDBModel.FK_Permissions_GroupUser">
@@ -225,6 +291,33 @@
           <AssociationSet Name="FK_Permissions_MenuName" Association="NHRIDBModel.FK_Permissions_MenuName">
             <End Role="MenuName" EntitySet="MenuName" />
             <End Role="Permissions" EntitySet="Permissions" />
+          </AssociationSet>
+          <EntitySet Name="Diagnosis" EntityType="NHRIDBModel.Diagnosis" />
+          <EntitySet Name="LogLogin" EntityType="NHRIDBModel.LogLogin" />
+          <EntitySet Name="Patient" EntityType="NHRIDBModel.Patient" />
+          <EntitySet Name="Region" EntityType="NHRIDBModel.Region" />
+          <EntitySet Name="TubeData" EntityType="NHRIDBModel.TubeData" />
+          <AssociationSet Name="FK_NewData_Diagnosis" Association="NHRIDBModel.FK_NewData_Diagnosis">
+            <End Role="Diagnosis" EntitySet="Diagnosis" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewData_Patient" Association="NHRIDBModel.FK_NewData_Patient">
+            <End Role="Patient" EntitySet="Patient" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewData_NodeData" Association="NHRIDBModel.FK_NewData_NodeData">
+            <End Role="Region" EntitySet="Region" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <EntitySet Name="Hospital" EntityType="NHRIDBModel.Hospital" />
+          <EntitySet Name="User" EntityType="NHRIDBModel.User" />
+          <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Hospital" Association="NHRIDBModel.FK_User_Hospital">
+            <End Role="Hospital" EntitySet="Hospital" />
+            <End Role="User" EntitySet="User" />
           </AssociationSet>
         </EntityContainer>
         <ComplexType Name="GetTotal_Result">
@@ -255,16 +348,6 @@
           <Property Type="Int32" Name="sumSampleBoneMarrow" Nullable="true" />
           <Property Type="Int32" Name="sumOthers_bilejuice_hair_saliva" Nullable="true" />
         </ComplexType>
-        <EntityType Name="NodeData">
-          <Key>
-            <PropertyRef Name="nodeId" />
-          </Key>
-          <Property Name="nodeId" Type="Guid" Nullable="false" />
-          <Property Name="parentId" Type="Guid" />
-          <Property Name="name_tw" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="name_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="sort" Type="Int32" Nullable="false" />
-        </EntityType>
         <EntityType Name="GroupUser">
           <Key>
             <PropertyRef Name="groupId" />
@@ -273,23 +356,9 @@
           <Property Name="gName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="leapProject" Type="Boolean" Nullable="false" />
           <Property Name="alwaysOpen" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="GroupUser" ToRole="User" />
           <NavigationProperty Name="Permissions" Relationship="NHRIDBModel.FK_Permissions_GroupUser" FromRole="GroupUser" ToRole="Permissions" />
+          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="GroupUser" ToRole="User" />
         </EntityType>
-        <Association Name="FK_User_GroupUser">
-          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GroupUser">
-              <PropertyRef Name="groupId" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="groupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="MenuName">
           <Key>
             <PropertyRef Name="menuId" />
@@ -341,39 +410,187 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Diagnosis">
+          <Key>
+            <PropertyRef Name="diagnosisKey" />
+          </Key>
+          <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="dname_tw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="dname_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_NewData_Diagnosis" FromRole="Diagnosis" ToRole="TubeData" />
+        </EntityType>
+        <EntityType Name="LogLogin">
+          <Key>
+            <PropertyRef Name="userName" />
+            <PropertyRef Name="lognDate" />
+          </Key>
+          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ip" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="lognDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isLogin" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Patient">
+          <Key>
+            <PropertyRef Name="patientId" />
+          </Key>
+          <Property Name="patientId" Type="Guid" Nullable="false" />
+          <Property Name="hospitalId" Type="Guid" Nullable="false" />
+          <Property Name="pKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="gender" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_NewData_Patient" FromRole="Patient" ToRole="TubeData" />
+        </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="regionId" />
+          </Key>
+          <Property Name="regionId" Type="Guid" Nullable="false" />
+          <Property Name="parentId" Type="Guid" />
+          <Property Name="name_tw" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="sort" Type="Int32" Nullable="false" />
+          <Property Name="regionKey" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_NewData_NodeData" FromRole="Region" ToRole="TubeData" />
+        </EntityType>
+        <EntityType Name="TubeData">
+          <Key>
+            <PropertyRef Name="patientId" />
+            <PropertyRef Name="regionId" />
+            <PropertyRef Name="diagnosisKey" />
+          </Key>
+          <Property Name="patientId" Type="Guid" Nullable="false" />
+          <Property Name="regionId" Type="Guid" Nullable="false" />
+          <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="blood" Type="Int32" />
+          <Property Name="sampleblood" Type="Int32" />
+          <Property Name="frozenTissue" Type="Int32" />
+          <Property Name="samplefrozenTissue" Type="Int32" />
+          <Property Name="waxBlock" Type="Int32" />
+          <Property Name="samplewaxBlock" Type="Int32" />
+          <Property Name="urine" Type="Int32" />
+          <Property Name="sampleurine" Type="Int32" />
+          <Property Name="dna" Type="Int32" />
+          <Property Name="sampledna" Type="Int32" />
+          <Property Name="stool" Type="Int32" />
+          <Property Name="samplestool" Type="Int32" />
+          <Property Name="sampleless" Type="Int32" />
+          <Property Name="pleuraleffusion" Type="Int32" />
+          <Property Name="samplepleuraleffusion" Type="Int32" />
+          <Property Name="CSF" Type="Int32" />
+          <Property Name="sampleCSF" Type="Int32" />
+          <Property Name="Ascites" Type="Int32" />
+          <Property Name="sampleAscites" Type="Int32" />
+          <Property Name="BoneMarrow" Type="Int32" />
+          <Property Name="sampleBoneMarrow" Type="Int32" />
+          <Property Name="Others_bilejuice_hair_saliva" Type="Int32" />
+          <Property Name="age" Type="Int32" Nullable="false" />
+          <Property Name="endYear" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="createUser" Type="Guid" Nullable="false" />
+          <Property Name="createDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="updateUser" Type="Guid" />
+          <Property Name="updateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.FK_NewData_Diagnosis" FromRole="TubeData" ToRole="Diagnosis" />
+          <NavigationProperty Name="Patient" Relationship="NHRIDBModel.FK_NewData_Patient" FromRole="TubeData" ToRole="Patient" />
+          <NavigationProperty Name="Region" Relationship="NHRIDBModel.FK_NewData_NodeData" FromRole="TubeData" ToRole="Region" />
+        </EntityType>
+        <Association Name="FK_NewData_Diagnosis">
+          <End Type="NHRIDBModel.Diagnosis" Role="Diagnosis" Multiplicity="1" />
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Diagnosis">
+              <PropertyRef Name="diagnosisKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="diagnosisKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewData_Patient">
+          <End Type="NHRIDBModel.Patient" Role="Patient" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Patient">
+              <PropertyRef Name="patientId" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="patientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewData_NodeData">
+          <End Type="NHRIDBModel.Region" Role="Region" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="regionId" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="regionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Hospital">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Guid" Nullable="false" />
+          <Property Name="name_tw" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="name_en" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="fileExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userId" />
+          </Key>
+          <Property Name="userId" Type="Guid" Nullable="false" />
+          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="del" Type="Boolean" Nullable="false" />
+          <Property Name="id_Hospital" Type="Guid" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="groupId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="User" ToRole="GroupUser" />
+          <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="User" ToRole="Hospital" />
+        </EntityType>
+        <Association Name="FK_User_GroupUser">
+          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Hospital">
+          <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hospital">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="id_Hospital" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="NHRIDBModelStoreContainer" CdmEntityContainer="NHRIDBEntitiesDB">
-          <EntitySetMapping Name="Hospital">
-            <EntityTypeMapping TypeName="NHRIDBModel.Hospital">
-              <MappingFragment StoreEntitySet="Hospital">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
-                <ScalarProperty Name="name_en" ColumnName="name_en" />
-                <ScalarProperty Name="isLock" ColumnName="isLock" />
-                <ScalarProperty Name="Unlock" ColumnName="Unlock" />
-                <ScalarProperty Name="FileExtension" ColumnName="FileExtension" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="User">
-            <EntityTypeMapping TypeName="NHRIDBModel.User">
-              <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="groupId" ColumnName="groupId" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
-                <ScalarProperty Name="userName" ColumnName="userName" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="del" ColumnName="del" />
-                <ScalarProperty Name="id_Hospital" ColumnName="id_Hospital" />
-                <ScalarProperty Name="level" ColumnName="level" />
-                <ScalarProperty Name="email" ColumnName="email" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetTotal" FunctionName="NHRIDBModel.Store.GetTotal">
             <ResultMapping>
               <ComplexTypeMapping TypeName="NHRIDBModel.GetTotal_Result">
@@ -406,17 +623,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="NodeData">
-            <EntityTypeMapping TypeName="NHRIDBModel.NodeData">
-              <MappingFragment StoreEntitySet="NodeData">
-                <ScalarProperty Name="sort" ColumnName="sort" />
-                <ScalarProperty Name="name_en" ColumnName="name_en" />
-                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
-                <ScalarProperty Name="parentId" ColumnName="parentId" />
-                <ScalarProperty Name="nodeId" ColumnName="nodeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="GroupUser">
             <EntityTypeMapping TypeName="NHRIDBModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUser">
@@ -445,6 +651,108 @@
                 <ScalarProperty Name="menuId" ColumnName="menuId" />
                 <ScalarProperty Name="purview" ColumnName="purview" />
                 <ScalarProperty Name="groupId" ColumnName="groupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Diagnosis">
+            <EntityTypeMapping TypeName="NHRIDBModel.Diagnosis">
+              <MappingFragment StoreEntitySet="Diagnosis">
+                <ScalarProperty Name="dname_en" ColumnName="dname_en" />
+                <ScalarProperty Name="dname_tw" ColumnName="dname_tw" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogLogin">
+            <EntityTypeMapping TypeName="NHRIDBModel.LogLogin">
+              <MappingFragment StoreEntitySet="LogLogin">
+                <ScalarProperty Name="isLogin" ColumnName="isLogin" />
+                <ScalarProperty Name="lognDate" ColumnName="lognDate" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Patient">
+            <EntityTypeMapping TypeName="NHRIDBModel.Patient">
+              <MappingFragment StoreEntitySet="Patient">
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="pKey" ColumnName="pKey" />
+                <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
+                <ScalarProperty Name="patientId" ColumnName="patientId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Region">
+            <EntityTypeMapping TypeName="NHRIDBModel.Region">
+              <MappingFragment StoreEntitySet="Region">
+                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
+                <ScalarProperty Name="sort" ColumnName="sort" />
+                <ScalarProperty Name="name_en" ColumnName="name_en" />
+                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
+                <ScalarProperty Name="parentId" ColumnName="parentId" />
+                <ScalarProperty Name="regionId" ColumnName="regionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TubeData">
+            <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
+              <MappingFragment StoreEntitySet="TubeData">
+                <ScalarProperty Name="updateDate" ColumnName="updateDate" />
+                <ScalarProperty Name="updateUser" ColumnName="updateUser" />
+                <ScalarProperty Name="createDate" ColumnName="createDate" />
+                <ScalarProperty Name="createUser" ColumnName="createUser" />
+                <ScalarProperty Name="endYear" ColumnName="endYear" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="Others_bilejuice_hair_saliva" ColumnName="Others_bilejuice_hair_saliva" />
+                <ScalarProperty Name="sampleBoneMarrow" ColumnName="sampleBoneMarrow" />
+                <ScalarProperty Name="BoneMarrow" ColumnName="BoneMarrow" />
+                <ScalarProperty Name="sampleAscites" ColumnName="sampleAscites" />
+                <ScalarProperty Name="Ascites" ColumnName="Ascites" />
+                <ScalarProperty Name="sampleCSF" ColumnName="sampleCSF" />
+                <ScalarProperty Name="CSF" ColumnName="CSF" />
+                <ScalarProperty Name="samplepleuraleffusion" ColumnName="samplepleuraleffusion" />
+                <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
+                <ScalarProperty Name="sampleless" ColumnName="sampleless" />
+                <ScalarProperty Name="samplestool" ColumnName="samplestool" />
+                <ScalarProperty Name="stool" ColumnName="stool" />
+                <ScalarProperty Name="sampledna" ColumnName="sampledna" />
+                <ScalarProperty Name="dna" ColumnName="dna" />
+                <ScalarProperty Name="sampleurine" ColumnName="sampleurine" />
+                <ScalarProperty Name="urine" ColumnName="urine" />
+                <ScalarProperty Name="samplewaxBlock" ColumnName="samplewaxBlock" />
+                <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
+                <ScalarProperty Name="samplefrozenTissue" ColumnName="samplefrozenTissue" />
+                <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
+                <ScalarProperty Name="sampleblood" ColumnName="sampleblood" />
+                <ScalarProperty Name="blood" ColumnName="blood" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+                <ScalarProperty Name="regionId" ColumnName="regionId" />
+                <ScalarProperty Name="patientId" ColumnName="patientId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Hospital">
+            <EntityTypeMapping TypeName="NHRIDBModel.Hospital">
+              <MappingFragment StoreEntitySet="Hospital">
+                <ScalarProperty Name="fileExtension" ColumnName="fileExtension" />
+                <ScalarProperty Name="name_en" ColumnName="name_en" />
+                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="NHRIDBModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="id_Hospital" ColumnName="id_Hospital" />
+                <ScalarProperty Name="del" ColumnName="del" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

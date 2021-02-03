@@ -30,6 +30,7 @@
 
     @Html.HiddenFor(e => e.startDate)
     @Html.HiddenFor(e => e.endDate)
+    @Html.Hidden("tonken")
     <div class="form-group">
         @Html.ValidationMessageFor(model => model.userName, "", new { @class = "text-danger" })
         @Html.TextBoxFor(e => e.userName, new { @class = "form-control" })
@@ -41,7 +42,12 @@
         <div class="fa" id="password"></div>
     </div>
 
-    <button type="submit" class="btn">登入</button>
+    <div id="showCode">
+
+    </div>
+
+
+    <button type="button" class="btn" id="btn_login">登入</button>
 
     <div id="hospital-icon">
 
@@ -57,3 +63,19 @@
     </div>
 }
 
+<script>
+    $(function () {
+        $("#showCode").numcode({
+            hideInputId: 'tonken',
+        });
+        $("#btn_login").on("click", function () {
+            let commit = $("#showCode").numcode("CheckCode");
+            if (commit) {
+                $("form").submit();
+            } else {
+                $(".errorMsg").html("請輸入正確的驗證碼");
+            }
+        });
+    });
+
+</script>

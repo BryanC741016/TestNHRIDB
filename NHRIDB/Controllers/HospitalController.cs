@@ -64,7 +64,7 @@ namespace NHRIDB.Controllers
                    model.id = hos.id;
                 model.name_en = hos.name_en;
                 model.name_tw = hos.name_tw;
-                model.imgUrl = GetImgPath(hos.id, hos.FileExtension);
+                model.imgUrl = GetImgPath(hos.id, hos.fileExtension);
             }
 
             return View(model);
@@ -107,7 +107,7 @@ namespace NHRIDB.Controllers
                 }
 
                 if (model.img != null) {
-                    delImg(id, hospital.FileExtension);
+                    delImg(id, hospital.fileExtension);
                 }
            
                 _hospitalDA.Edit(id, model.name_en, model.name_tw, ex);
@@ -143,7 +143,7 @@ namespace NHRIDB.Controllers
                 rs.message = "查無此資料";
                 return Json(rs);
             }
-            delImg(id,hos.FileExtension);
+            delImg(id,hos.fileExtension);
             _hospitalDA.Delete(id);
             rs.isSuccess = true;
             return Json(rs);

@@ -53,12 +53,16 @@
     <Compile Include="DAL\DataAccess.cs" />
     <Compile Include="DAL\GetTotalDA.cs" />
     <Compile Include="DAL\MenuDA.cs" />
+    <Compile Include="DAL\LogLoginDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
     <Compile Include="DAL\GroupDA.cs" />
-    <Compile Include="DAL\NodeDataDa.cs" />
+    <Compile Include="DAL\RegionDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
     <Compile Include="DbModel\Cover\GetTotal_Result.cs" />
+    <Compile Include="DbModel\Diagnosis.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="DbModel\GetTotal_Result.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
@@ -66,6 +70,9 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\Hospital.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\LogLogin.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\MenuName.cs">
@@ -86,10 +93,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ModelDB.edmx</DependentUpon>
     </Compile>
-    <Compile Include="DbModel\NodeData.cs">
+    <Compile Include="DbModel\Patient.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\Permissions.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\Region.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\TubeData.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\User.cs">

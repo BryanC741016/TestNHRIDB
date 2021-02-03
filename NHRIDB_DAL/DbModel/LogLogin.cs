@@ -12,18 +12,11 @@ namespace NHRIDB_DAL.DbModel
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    public partial class LogLogin
     {
-        public System.Guid userId { get; set; }
         public string userName { get; set; }
-        public string password { get; set; }
-        public bool del { get; set; }
-        public System.Guid id_Hospital { get; set; }
-        public string email { get; set; }
-        public string name { get; set; }
-        public System.Guid groupId { get; set; }
-    
-        public virtual GroupUser GroupUser { get; set; }
-        public virtual Hospital Hospital { get; set; }
+        public string ip { get; set; }
+        public System.DateTime lognDate { get; set; }
+        public bool isLogin { get; set; }
     }
 }

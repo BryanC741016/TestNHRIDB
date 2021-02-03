@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace NHRIDB_DAL.DAL
 {
-   public class NodeDataDa : DataAccess
+   public class RegionDA : DataAccess
     {
-        public NodeDataDa(NHRIDBEntitiesDB db) : base(db)
+        public RegionDA(NHRIDBEntitiesDB db) : base(db)
         {
         }
 
-        public IQueryable<NodeData> GetChild(Nullable<Guid> parentId=null) {
-            IQueryable<NodeData> qu = _db.NodeData;
+        public IQueryable<Region> GetChild(Nullable<Guid> parentId=null) {
+            IQueryable<Region> qu = _db.Region;
   
                 qu = qu.Where(e => e.parentId== parentId);
                qu = qu.OrderBy(e => e.sort);
