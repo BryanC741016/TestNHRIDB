@@ -10,18 +10,14 @@
         <EntityTypeShape EntityType="NHRIDBModel.Permissions" Width="1.5" PointX="9.125" PointY="5" />
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_MenuName" />
-        <EntityTypeShape EntityType="NHRIDBModel.Diagnosis" Width="1.5" PointX="7.75" PointY="14.625" />
         <EntityTypeShape EntityType="NHRIDBModel.LogLogin" Width="1.5" PointX="0.75" PointY="5.75" />
-        <EntityTypeShape EntityType="NHRIDBModel.Patient" Width="1.5" PointX="7.75" PointY="17.125" />
-        <EntityTypeShape EntityType="NHRIDBModel.Region" Width="1.5" PointX="7.75" PointY="10.625" />
-        <EntityTypeShape EntityType="NHRIDBModel.TubeData" Width="1.5" PointX="10" PointY="8.25" />
-        <AssociationConnector Association="NHRIDBModel.FK_NewData_Diagnosis" />
-        <AssociationConnector Association="NHRIDBModel.FK_NewData_Patient" />
-        <AssociationConnector Association="NHRIDBModel.FK_NewData_NodeData" />
         <EntityTypeShape EntityType="NHRIDBModel.Hospital" Width="1.5" PointX="6.875" PointY="0.75" />
         <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="1.25" />
         <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
+        <EntityTypeShape EntityType="NHRIDBModel.Diagnosis" Width="1.5" PointX="0.75" PointY="0.875" />
+        <EntityTypeShape EntityType="NHRIDBModel.Region" Width="1.5" PointX="3" PointY="0.875" />
+        <AssociationConnector Association="NHRIDBModel.RLinkD" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -73,7 +73,7 @@ namespace NHRIDB.Controllers
             User user = uda.HasQuery(model.userName, model.passwd);
             if (user == null)
             {
-                log.Create(user.userName, ip, false);
+                log.Create(model.userName, ip, false);
             }
             else{
                 log.Create(user.userName, ip, true);
@@ -117,11 +117,11 @@ namespace NHRIDB.Controllers
                 if (user.GroupUser.alwaysOpen)
                 {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Form");
+                    return RedirectToAction("Index", "Region");
                 }
                 else if (now >= model.startDate && now <= model.endDate) {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Form");
+                    return RedirectToAction("Index", "Region");
                 }
                 model.message = "未開放或無權限";
                 return View(model);

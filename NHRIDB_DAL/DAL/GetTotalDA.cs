@@ -13,10 +13,6 @@ namespace NHRIDB_DAL.DAL
         {
         }
 
-        public List<GetTotal_Result> GetQuery(Nullable<Guid> id, Nullable<Guid> hosId) {
-            string level = id.HasValue ? id.Value.ToString() : "";
-            string hos = hosId.HasValue ? hosId.ToString() : "";
-            return _db.GetTotal(level, hos).ToList();
-        }
+  
     }
 }

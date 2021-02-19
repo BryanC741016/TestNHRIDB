@@ -33,7 +33,7 @@ namespace NHRIDB.Models.ViewModels
 
         public HttpPostedFileBase img { get; set; }
 
-        public string errorMsg {get;set;}
+ 
 
         public string imgUrl { get; set; }
     }

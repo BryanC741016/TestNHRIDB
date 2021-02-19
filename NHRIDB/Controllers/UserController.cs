@@ -82,12 +82,14 @@ namespace NHRIDB.Controllers
                 return View(model);
             }
             if (!model.password.Equals(model.repassword)) {
-                model.errorMsg = "密碼與確認密碼不相同";
+             
+                ModelState.AddModelError(string.Empty, "密碼與確認密碼不相同");
                 return View(model);
             }
            int count=   _userDA.GetQuery(userName: model.username).Count();
             if (count > 0) {
-                model.errorMsg = "此帳號已被使用";
+
+                ModelState.AddModelError(string.Empty, "此帳號已被使用");
                 return View(model);
             }
 
@@ -102,7 +104,8 @@ namespace NHRIDB.Controllers
             User user = _userDA.GetUser(id);
             UserEdit model = new UserEdit();
             if (user == null) {
-                model.errorMsg = "查無此資料";
+            
+                ModelState.AddModelError(string.Empty, "查無此資料");
                 return View(model);
             }
           
@@ -130,14 +133,16 @@ namespace NHRIDB.Controllers
          
             if (user == null)
             {
-                model.errorMsg = "查無此資料";
+               
+                ModelState.AddModelError(string.Empty, "查無此資料");
                 return View(model);
             }
            
             int count = _userDA.GetQuery(userName: model.username,noID:model.uid).Count();
             if (count > 0)
             {
-                model.errorMsg = "此帳號已被使用";
+                
+                ModelState.AddModelError(string.Empty, "此帳號已被使用");
                 return View(model);
             }
 

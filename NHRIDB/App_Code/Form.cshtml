@@ -243,6 +243,37 @@
     }
 }
 
+@helper CheckBoxList(string name, List<System.Web.Mvc.SelectListItem> checks, string className = "")
+{
+    string id = "checkbox" + Guid.NewGuid().ToString();
+
+    <div class="checkboxList" id="@id">
+        <input type="checkbox" class="checkboxListAll" name="checkboxListAll" data-id="@id" /><label>全選</label>
+        <div class="@className">
+            @foreach (System.Web.Mvc.SelectListItem item in checks)
+            {
+                string thisCheck = thisCheck = item.Selected ? "Checked" : "";
+
+
+                <div class="checkitem">
+                    <input type="checkbox" name="@name" value="@item.Value" @thisCheck />
+                    @item.Text
+                </div>
+
+
+
+            }
+        </div>
+    </div>
+
+    <script>
+        $(".checkboxListAll").unbind("click").on("click", function (e) {
+            var checkId = $(this).data("id");
+            var checked = this.checked;
+            $("#" + checkId + " > div input[type='checkbox']").prop("checked", checked);
+        });
+    </script>
+}
 @functions{
     public static string GetAniForgeryToken()
     {

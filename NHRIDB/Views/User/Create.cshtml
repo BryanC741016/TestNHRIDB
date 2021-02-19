@@ -8,13 +8,10 @@
 {
 
     @Html.AntiForgeryToken()
-    <div class="text-danger">
-        @Model.errorMsg
-        @Html.ValidationMessageFor(model => model.username, "", new { @class = "text-danger" })
-        @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
-        @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
-        @Html.ValidationMessageFor(model => model.repassword, "", new { @class = "text-danger" })
-    </div>
+<div class="text-danger">
+    @Model.errorMsg
+    @Html.ValidationSummary()
+</div>
       
     <div class="formPanel">
         <label>醫院</label>

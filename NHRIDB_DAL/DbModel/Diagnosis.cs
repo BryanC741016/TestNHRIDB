@@ -17,7 +17,7 @@ namespace NHRIDB_DAL.DbModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Diagnosis()
         {
-            this.TubeData = new HashSet<TubeData>();
+            this.Region = new HashSet<Region>();
         }
     
         public string diagnosisKey { get; set; }
@@ -25,6 +25,6 @@ namespace NHRIDB_DAL.DbModel
         public string dname_en { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TubeData> TubeData { get; set; }
+        public virtual ICollection<Region> Region { get; set; }
     }
 }

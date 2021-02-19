@@ -82,7 +82,8 @@ namespace NHRIDB.Controllers
             if (!string.IsNullOrEmpty(ex)) {
                 string[] allow = new string[] { "jpg", "gif", "png" };
                 if (!allow.Contains(ex)) {
-                    model.errorMsg = "上傳的附檔名不對";
+ 
+                    ModelState.AddModelError(string.Empty, "上傳的附檔名不對");
                     return View(model);
                 }
             }
@@ -92,17 +93,18 @@ namespace NHRIDB.Controllers
                  id = model.id.Value;
                 if (_hospitalDA.GetQuery(name_en: model.name_en,noID:id).Count() > 0)
                 {
-                    model.errorMsg = "英文名稱已被使用";
+                  
+                    ModelState.AddModelError(string.Empty, "英文名稱已被使用");
                     return View(model);
                 }
                 if (_hospitalDA.GetQuery(name_tw: model.name_tw, noID: id).Count() > 0)
                 {
-                    model.errorMsg = "中文名稱已被使用";
+                    ModelState.AddModelError(string.Empty, "中文名稱已被使用");
                     return View(model);
                 }
                 Hospital hospital = _hospitalDA.GetHospital(id);
                 if (hospital == null) {
-                    model.errorMsg = "查無此醫院資料";
+                    ModelState.AddModelError(string.Empty, "查無此醫院資料");
                     return View(model);
                 }
 
@@ -116,12 +118,12 @@ namespace NHRIDB.Controllers
             else { //新增
                 if (_hospitalDA.GetQuery(name_en: model.name_en).Count() > 0)
                 {
-                    model.errorMsg = "英文名稱已被使用";
+                    ModelState.AddModelError(string.Empty, "英文名稱已被使用");
                     return View(model);
                 }
                 if (_hospitalDA.GetQuery(name_tw: model.name_tw).Count() > 0)
                 {
-                    model.errorMsg = "中文名稱已被使用";
+                    ModelState.AddModelError(string.Empty, "中文名稱已被使用");
                     return View(model);
                 }
 

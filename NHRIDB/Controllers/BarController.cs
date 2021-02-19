@@ -36,7 +36,7 @@ namespace NHRIDB.Controllers
                 hosId = _hos;
             }
             
-             model.items = _totalDA.GetQuery(treeId, hosId);
+            // model.items = _totalDA.GetQuery(treeId, hosId);
             
 
            

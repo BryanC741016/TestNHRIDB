@@ -57,7 +57,7 @@ namespace NHRIDB.Models.ViewModels
 
         public Guid groupId { get; set; }
 
-        public string errorMsg { get; set; }
+      
 
         [Required]
         public string name { get; set; }
@@ -86,8 +86,7 @@ namespace NHRIDB.Models.ViewModels
         [Required]
         public string name { get; set; }
 
-        public string errorMsg { get; set; }
-
+        
         
         public string passwd { get; set; }
        

@@ -11,11 +11,9 @@
     @Html.AntiForgeryToken()
     
 
-    <div class="text-danger">
-        @Model.errorMsg
-        @Html.ValidationMessageFor(model => model.name_tw, "")
-        @Html.ValidationMessageFor(model => model.name_en, "")
-    </div>
+<div class="text-danger">
+    @Html.ValidationSummary()
+</div>
     <div class="formPanel">
 
         @Html.HiddenFor(e => e.id)

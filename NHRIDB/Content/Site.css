@@ -390,3 +390,15 @@ textarea {
 .numcode {
     display: flex;
 }
+/*--------checkboxList-----------*/
+.checkboxList {
+    background-color: #fcfcfc;
+    padding:10px;
+    margin-top:5px;
+}
+    .checkboxList .checkitem {
+        display: inline-block;
+        border: solid 1px #ccc;
+        padding: 2px 5px;
+        background-color: #ffffff;
+    }

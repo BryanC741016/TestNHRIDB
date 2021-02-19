@@ -13,5 +13,10 @@ namespace NHRIDB_DAL.DAL
         public DataAccess(NHRIDBEntitiesDB db) {
             this._db = db;
         }
+
+        public DataAccess()
+        {
+            this._db = new NHRIDBEntitiesDB();
+        }
     }
 }

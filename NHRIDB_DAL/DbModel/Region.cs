@@ -17,17 +17,14 @@ namespace NHRIDB_DAL.DbModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Region()
         {
-            this.TubeData = new HashSet<TubeData>();
+            this.Diagnosis = new HashSet<Diagnosis>();
         }
     
-        public System.Guid regionId { get; set; }
-        public Nullable<System.Guid> parentId { get; set; }
+        public string regionKey { get; set; }
         public string name_tw { get; set; }
         public string name_en { get; set; }
-        public int sort { get; set; }
-        public string regionKey { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TubeData> TubeData { get; set; }
+        public virtual ICollection<Diagnosis> Diagnosis { get; set; }
     }
 }

@@ -10,9 +10,7 @@
     @Html.AntiForgeryToken()
     @Html.HiddenFor(e => e.uid)
     <div class="text-danger">
-        @Model.errorMsg
-        @Html.ValidationMessageFor(model => model.username, "", new { @class = "text-danger" })
-        @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+       @Html.ValidationSummary()
 
     </div>
 
