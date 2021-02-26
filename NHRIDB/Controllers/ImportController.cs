@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 namespace NHRIDB.Controllers
 {
-    public class FormController : BasicController
+    public class ImportController : BasicController
     {
        
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -32,7 +32,7 @@ namespace NHRIDB.Controllers
 
        
 
-        public ActionResult Upload(Guid id, HttpPostedFileBase upload) {
+        public ActionResult Upload(HttpPostedFileBase upload) {
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
             if (string.IsNullOrEmpty(ex))
             {
@@ -48,10 +48,33 @@ namespace NHRIDB.Controllers
                 }
             }
 
+            /***
+             * 1.欄位名稱是否相符
+             * 2.性別是否統一
+             * 3.年齡是否統一
+             * 4.部位與診斷代碼(dlinkR)代碼比對
+             * **/
             EPPlusExcel epp = new EPPlusExcel();
             DataTable table= epp.GetDataTableFromExcel(upload.InputStream);
+            string[] columns = { "識別ID", "部位代碼", "診斷代碼", "收案年份", "年齡", "性別" };
+     
+            bool commit =  hasColumns(table, columns);
+            if (!commit) {
+                TempData["msg"] = "欄位名稱不符合，請參照範本";
+                return RedirectToAction("Index");
+            }
 
             return RedirectToAction("Index");
+        }
+
+        private bool hasColumns(System.Data.DataTable dataTable, string[] format)
+        {
+            string[] columnNames = dataTable.Columns.Cast<DataColumn>()
+                                    .Select(x => x.ColumnName)
+                                    .ToArray();
+            return ((from item in format
+                     where columnNames.Contains(item)
+                     select item).Count() == format.Length);
         }
     }
 }

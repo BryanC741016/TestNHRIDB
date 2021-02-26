@@ -1,22 +1,8 @@
-﻿@model NHRIDB.Models.ViewModels.RegionIndexModel
+﻿ 
 @{
     ViewBag.Title = "資料匯入";
 }
-<link rel="stylesheet" href="~/Content/tree.css" />
-<script src="~/Scripts/tree.min.js"></script>
-
-<div class="text-danger">
-    @TempData["msg"]
-</div>
-
-<div id="container">
-
-</div>
-@if (ViewBag.CanEdit)
-{
-    <div class="modal fade" tabindex="-1" role="dialog" id="uploadDialog">
-        <div class="modal-dialog" role="document">
-
+ 
             <form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
@@ -24,8 +10,6 @@
                 <button class="btn sure" type="submit">確認上傳</button>
                 <button class="btn cancel" type="button" data-dismiss="modal">取消</button>
             </form>
-        </div>
-    </div>
-}
+        
  
 

@@ -31,8 +31,9 @@ namespace ClassLibrary
                 {
                     var wsRow = ws.Cells[rowNum, 1, rowNum, ws.Dimension.End.Column];
                     DataRow row = tbl.NewRow();
+                    int index = 0;
                     foreach (var cell in wsRow)
-                        row[cell.Start.Column - 1] = cell.Text;
+                        row[index++] = cell.Text;
                     tbl.Rows.Add(row);
                 }
                 return tbl;

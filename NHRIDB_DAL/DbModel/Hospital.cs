@@ -18,6 +18,7 @@ namespace NHRIDB_DAL.DbModel
         public Hospital()
         {
             this.User = new HashSet<User>();
+            this.TubeData = new HashSet<TubeData>();
         }
     
         public System.Guid id { get; set; }
@@ -27,5 +28,7 @@ namespace NHRIDB_DAL.DbModel
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User> User { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TubeData> TubeData { get; set; }
     }
 }

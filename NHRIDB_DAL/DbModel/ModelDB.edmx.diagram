@@ -18,6 +18,8 @@
         <EntityTypeShape EntityType="NHRIDBModel.Diagnosis" Width="1.5" PointX="0.75" PointY="0.875" />
         <EntityTypeShape EntityType="NHRIDBModel.Region" Width="1.5" PointX="3" PointY="0.875" />
         <AssociationConnector Association="NHRIDBModel.RLinkD" />
+        <EntityTypeShape EntityType="NHRIDBModel.TubeData" Width="1.5" PointX="9.125" PointY="8.375" />
+        <AssociationConnector Association="NHRIDBModel.FK_TubeData_Hospital" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

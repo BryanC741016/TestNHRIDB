@@ -33,5 +33,6 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Diagnosis> Diagnosis { get; set; }
         public virtual DbSet<Region> Region { get; set; }
+        public virtual DbSet<TubeData> TubeData { get; set; }
     }
 }
