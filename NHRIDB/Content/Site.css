@@ -402,3 +402,7 @@ textarea {
         padding: 2px 5px;
         background-color: #ffffff;
     }
+    /*-----------msg-------------*/
+.msg {
+    color: #EA0000;
+}

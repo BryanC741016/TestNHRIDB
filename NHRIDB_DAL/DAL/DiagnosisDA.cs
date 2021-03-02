@@ -1,6 +1,7 @@
 ﻿using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,27 @@ namespace NHRIDB_DAL.DAL
             return qu.ToList();
         }
 
+        public DataTable GetDataTable() {
+            DataTable table = new DataTable();
+            string[] columns = new string[] { "診斷編號", "診斷名稱" };
+            foreach (var item in columns)
+            {
+                DataColumn column = new DataColumn();
+                column.ColumnName = item;
+                column.Caption = item;
+                column.AllowDBNull = true;
+                table.Columns.Add(column);
+            }
+            IQueryable<Diagnosis> qu = _db.Diagnosis;
+            foreach (var item in qu.ToList()) {
+                DataRow row = table.NewRow();
+                row["診斷編號"] = item.diagnosisKey;
+                row["診斷名稱"] = item.dname_en;
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
         public bool HasAny(string dkey,string newkey,string name_en,string name_tw,out string msg) {
             IQueryable<Diagnosis> qu = _db.Diagnosis;
             msg = "";
@@ -105,6 +127,23 @@ namespace NHRIDB_DAL.DAL
             }
             _db.Diagnosis.Remove(data);
             _db.SaveChanges();
+            return true;
+        }
+
+        public bool CheckDLinkR(DataTable table, out string msg) {
+            msg = "";
+           var datas=  table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("部位編號"), diagnosisKey = e.Field<string>("診斷編號") })
+                .Distinct().ToList();
+            List<Diagnosis> qu = GetQuery();
+            foreach (var data in datas) {
+               bool commit= qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.Region.Any(x => x.regionKey.Equals(data.regionKey)))
+                     .Any();
+                if (!commit) {
+                    msg = data.diagnosisKey + "(部位編號)與" + data.regionKey + "(診斷編號)關連不正確";
+                    return false;
+                }
+            }
+
             return true;
         }
 

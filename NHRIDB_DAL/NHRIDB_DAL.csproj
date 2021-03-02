@@ -37,6 +37,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -51,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\DataAccess.cs" />
-    <Compile Include="DAL\GetTotalDA.cs" />
+    <Compile Include="DAL\DataTubeDA.cs" />
     <Compile Include="DAL\MenuDA.cs" />
     <Compile Include="DAL\LogLoginDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
@@ -60,7 +63,7 @@
     <Compile Include="DAL\RegionDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
-    <Compile Include="DbModel\Cover\GetTotal_Result.cs" />
+    <Compile Include="DbModel\Cover\Diagnosis.cs" />
     <Compile Include="DbModel\Cover\TubeData.cs" />
     <Compile Include="DbModel\Diagnosis.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>

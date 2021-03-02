@@ -93,27 +93,28 @@
           <Property Name="age" Type="numeric" Precision="18" Scale="0" Nullable="false" />
           <Property Name="gender" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="blood" Type="bit" Nullable="false" />
-          <Property Name="sampleblood" Type="bit" Nullable="false" />
           <Property Name="frozenTissue" Type="bit" Nullable="false" />
-          <Property Name="samplefrozenTissue" Type="bit" Nullable="false" />
           <Property Name="waxBlock" Type="bit" Nullable="false" />
-          <Property Name="samplewaxBlock" Type="bit" Nullable="false" />
           <Property Name="urine" Type="bit" Nullable="false" />
-          <Property Name="sampleurine" Type="bit" Nullable="false" />
-          <Property Name="dna" Type="bit" Nullable="false" />
-          <Property Name="sampledna" Type="bit" Nullable="false" />
+          <Property Name="urineClearLiquid" Type="bit" Nullable="false" />
+          <Property Name="urinePellet" Type="bit" Nullable="false" />
+          <Property Name="tissueDNA" Type="bit" Nullable="false" />
+          <Property Name="tissueRNA" Type="bit" Nullable="false" />
           <Property Name="stool" Type="bit" Nullable="false" />
-          <Property Name="samplestool" Type="bit" Nullable="false" />
+          <Property Name="stoolDNA" Type="bit" Nullable="false" />
           <Property Name="sampleless" Type="bit" Nullable="false" />
           <Property Name="pleuraleffusion" Type="bit" Nullable="false" />
-          <Property Name="samplepleuraleffusion" Type="bit" Nullable="false" />
           <Property Name="CSF" Type="bit" Nullable="false" />
-          <Property Name="sampleCSF" Type="bit" Nullable="false" />
           <Property Name="ascites" Type="bit" Nullable="false" />
-          <Property Name="sampleAscites" Type="bit" Nullable="false" />
           <Property Name="boneMarrow" Type="bit" Nullable="false" />
-          <Property Name="sampleBoneMarrow" Type="bit" Nullable="false" />
-          <Property Name="others_bilejuice_hair_saliva" Type="bit" Nullable="false" />
+          <Property Name="serum" Type="bit" Nullable="false" />
+          <Property Name="plasma" Type="bit" Nullable="false" />
+          <Property Name="buffyCoat" Type="bit" Nullable="false" />
+          <Property Name="wholeBlood" Type="bit" Nullable="false" />
+          <Property Name="paraffinSection" Type="bit" Nullable="false" />
+          <Property Name="bile" Type="bit" Nullable="false" />
+          <Property Name="hair" Type="bit" Nullable="false" />
+          <Property Name="saliva" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
           <Property Name="createDate" Type="datetime" Nullable="false" />
         </EntityType>
@@ -186,6 +187,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TubeData_Diagnosis">
+          <End Role="Diagnosis" Type="Self.Diagnosis" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Diagnosis">
+              <PropertyRef Name="diagnosisKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="diagnosisKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TubeData_Hospital">
           <End Role="Hospital" Type="Self.Hospital" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -200,19 +215,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TubeData_RLinkD">
-          <End Role="RLinkD" Type="Self.RLinkD" Multiplicity="1">
+        <Association Name="FK_TubeData_Region">
+          <End Role="Region" Type="Self.Region" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="RLinkD">
+            <Principal Role="Region">
               <PropertyRef Name="regionKey" />
-              <PropertyRef Name="diagnosisKey" />
             </Principal>
             <Dependent Role="TubeData">
               <PropertyRef Name="regionKey" />
-              <PropertyRef Name="diagnosisKey" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -275,12 +288,16 @@
             <End Role="Region" EntitySet="Region" />
             <End Role="RLinkD" EntitySet="RLinkD" />
           </AssociationSet>
+          <AssociationSet Name="FK_TubeData_Diagnosis" Association="Self.FK_TubeData_Diagnosis">
+            <End Role="Diagnosis" EntitySet="Diagnosis" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
           <AssociationSet Name="FK_TubeData_Hospital" Association="Self.FK_TubeData_Hospital">
             <End Role="Hospital" EntitySet="Hospital" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
-          <AssociationSet Name="FK_TubeData_RLinkD" Association="Self.FK_TubeData_RLinkD">
-            <End Role="RLinkD" EntitySet="RLinkD" />
+          <AssociationSet Name="FK_TubeData_Region" Association="Self.FK_TubeData_Region">
+            <End Role="Region" EntitySet="Region" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <AssociationSet Name="FK_User_GroupUser" Association="Self.FK_User_GroupUser">
@@ -326,8 +343,16 @@
             <End Role="Region" EntitySet="Region" />
           </AssociationSet>
           <EntitySet Name="TubeData" EntityType="NHRIDBModel.TubeData" />
+          <AssociationSet Name="FK_TubeData_Diagnosis" Association="NHRIDBModel.FK_TubeData_Diagnosis">
+            <End Role="Diagnosis" EntitySet="Diagnosis" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
           <AssociationSet Name="FK_TubeData_Hospital" Association="NHRIDBModel.FK_TubeData_Hospital">
             <End Role="Hospital" EntitySet="Hospital" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TubeData_Region" Association="NHRIDBModel.FK_TubeData_Region">
+            <End Role="Region" EntitySet="Region" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
         </EntityContainer>
@@ -465,6 +490,7 @@
           <Property Name="dname_tw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="dname_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Region" Relationship="NHRIDBModel.RLinkD" FromRole="Diagnosis" ToRole="Region" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Diagnosis" FromRole="Diagnosis" ToRole="TubeData" />
         </EntityType>
         <EntityType Name="Region">
           <Key>
@@ -474,6 +500,7 @@
           <Property Name="name_tw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="name_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.RLinkD" FromRole="Region" ToRole="Diagnosis" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Region" FromRole="Region" ToRole="TubeData" />
         </EntityType>
         <Association Name="RLinkD">
           <End Type="NHRIDBModel.Diagnosis" Role="Diagnosis" Multiplicity="*" />
@@ -495,31 +522,48 @@
           <Property Name="age" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="gender" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="blood" Type="Boolean" Nullable="false" />
-          <Property Name="sampleblood" Type="Boolean" Nullable="false" />
           <Property Name="frozenTissue" Type="Boolean" Nullable="false" />
-          <Property Name="samplefrozenTissue" Type="Boolean" Nullable="false" />
           <Property Name="waxBlock" Type="Boolean" Nullable="false" />
-          <Property Name="samplewaxBlock" Type="Boolean" Nullable="false" />
           <Property Name="urine" Type="Boolean" Nullable="false" />
-          <Property Name="sampleurine" Type="Boolean" Nullable="false" />
-          <Property Name="dna" Type="Boolean" Nullable="false" />
-          <Property Name="sampledna" Type="Boolean" Nullable="false" />
+          <Property Name="urineClearLiquid" Type="Boolean" Nullable="false" />
+          <Property Name="urinePellet" Type="Boolean" Nullable="false" />
+          <Property Name="tissueDNA" Type="Boolean" Nullable="false" />
+          <Property Name="tissueRNA" Type="Boolean" Nullable="false" />
           <Property Name="stool" Type="Boolean" Nullable="false" />
-          <Property Name="samplestool" Type="Boolean" Nullable="false" />
+          <Property Name="stoolDNA" Type="Boolean" Nullable="false" />
           <Property Name="sampleless" Type="Boolean" Nullable="false" />
           <Property Name="pleuraleffusion" Type="Boolean" Nullable="false" />
-          <Property Name="samplepleuraleffusion" Type="Boolean" Nullable="false" />
           <Property Name="CSF" Type="Boolean" Nullable="false" />
-          <Property Name="sampleCSF" Type="Boolean" Nullable="false" />
           <Property Name="ascites" Type="Boolean" Nullable="false" />
-          <Property Name="sampleAscites" Type="Boolean" Nullable="false" />
           <Property Name="boneMarrow" Type="Boolean" Nullable="false" />
-          <Property Name="sampleBoneMarrow" Type="Boolean" Nullable="false" />
-          <Property Name="others_bilejuice_hair_saliva" Type="Boolean" Nullable="false" />
+          <Property Name="serum" Type="Boolean" Nullable="false" />
+          <Property Name="plasma" Type="Boolean" Nullable="false" />
+          <Property Name="buffyCoat" Type="Boolean" Nullable="false" />
+          <Property Name="wholeBlood" Type="Boolean" Nullable="false" />
+          <Property Name="paraffinSection" Type="Boolean" Nullable="false" />
+          <Property Name="bile" Type="Boolean" Nullable="false" />
+          <Property Name="hair" Type="Boolean" Nullable="false" />
+          <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
           <Property Name="createDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.FK_TubeData_Diagnosis" FromRole="TubeData" ToRole="Diagnosis" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
+          <NavigationProperty Name="Region" Relationship="NHRIDBModel.FK_TubeData_Region" FromRole="TubeData" ToRole="Region" />
         </EntityType>
+        <Association Name="FK_TubeData_Diagnosis">
+          <End Type="NHRIDBModel.Diagnosis" Role="Diagnosis" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Diagnosis">
+              <PropertyRef Name="diagnosisKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="diagnosisKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TubeData_Hospital">
           <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -531,6 +575,20 @@
             </Principal>
             <Dependent Role="TubeData">
               <PropertyRef Name="hospitalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TubeData_Region">
+          <End Type="NHRIDBModel.Region" Role="Region" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="regionKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="regionKey" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -636,27 +694,28 @@
               <MappingFragment StoreEntitySet="TubeData">
                 <ScalarProperty Name="createDate" ColumnName="createDate" />
                 <ScalarProperty Name="createUser" ColumnName="createUser" />
-                <ScalarProperty Name="others_bilejuice_hair_saliva" ColumnName="others_bilejuice_hair_saliva" />
-                <ScalarProperty Name="sampleBoneMarrow" ColumnName="sampleBoneMarrow" />
+                <ScalarProperty Name="saliva" ColumnName="saliva" />
+                <ScalarProperty Name="hair" ColumnName="hair" />
+                <ScalarProperty Name="bile" ColumnName="bile" />
+                <ScalarProperty Name="paraffinSection" ColumnName="paraffinSection" />
+                <ScalarProperty Name="wholeBlood" ColumnName="wholeBlood" />
+                <ScalarProperty Name="buffyCoat" ColumnName="buffyCoat" />
+                <ScalarProperty Name="plasma" ColumnName="plasma" />
+                <ScalarProperty Name="serum" ColumnName="serum" />
                 <ScalarProperty Name="boneMarrow" ColumnName="boneMarrow" />
-                <ScalarProperty Name="sampleAscites" ColumnName="sampleAscites" />
                 <ScalarProperty Name="ascites" ColumnName="ascites" />
-                <ScalarProperty Name="sampleCSF" ColumnName="sampleCSF" />
                 <ScalarProperty Name="CSF" ColumnName="CSF" />
-                <ScalarProperty Name="samplepleuraleffusion" ColumnName="samplepleuraleffusion" />
                 <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
                 <ScalarProperty Name="sampleless" ColumnName="sampleless" />
-                <ScalarProperty Name="samplestool" ColumnName="samplestool" />
+                <ScalarProperty Name="stoolDNA" ColumnName="stoolDNA" />
                 <ScalarProperty Name="stool" ColumnName="stool" />
-                <ScalarProperty Name="sampledna" ColumnName="sampledna" />
-                <ScalarProperty Name="dna" ColumnName="dna" />
-                <ScalarProperty Name="sampleurine" ColumnName="sampleurine" />
+                <ScalarProperty Name="tissueRNA" ColumnName="tissueRNA" />
+                <ScalarProperty Name="tissueDNA" ColumnName="tissueDNA" />
+                <ScalarProperty Name="urinePellet" ColumnName="urinePellet" />
+                <ScalarProperty Name="urineClearLiquid" ColumnName="urineClearLiquid" />
                 <ScalarProperty Name="urine" ColumnName="urine" />
-                <ScalarProperty Name="samplewaxBlock" ColumnName="samplewaxBlock" />
                 <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
-                <ScalarProperty Name="samplefrozenTissue" ColumnName="samplefrozenTissue" />
                 <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
-                <ScalarProperty Name="sampleblood" ColumnName="sampleblood" />
                 <ScalarProperty Name="blood" ColumnName="blood" />
                 <ScalarProperty Name="gender" ColumnName="gender" />
                 <ScalarProperty Name="age" ColumnName="age" />

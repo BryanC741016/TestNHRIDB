@@ -18,6 +18,7 @@ namespace NHRIDB_DAL.DbModel
         public Region()
         {
             this.Diagnosis = new HashSet<Diagnosis>();
+            this.TubeData = new HashSet<TubeData>();
         }
     
         public string regionKey { get; set; }
@@ -26,5 +27,7 @@ namespace NHRIDB_DAL.DbModel
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Diagnosis> Diagnosis { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TubeData> TubeData { get; set; }
     }
 }

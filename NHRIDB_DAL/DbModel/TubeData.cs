@@ -22,30 +22,33 @@ namespace NHRIDB_DAL.DbModel
         public decimal age { get; set; }
         public string gender { get; set; }
         public bool blood { get; set; }
-        public bool sampleblood { get; set; }
         public bool frozenTissue { get; set; }
-        public bool samplefrozenTissue { get; set; }
         public bool waxBlock { get; set; }
-        public bool samplewaxBlock { get; set; }
         public bool urine { get; set; }
-        public bool sampleurine { get; set; }
-        public bool dna { get; set; }
-        public bool sampledna { get; set; }
+        public bool urineClearLiquid { get; set; }
+        public bool urinePellet { get; set; }
+        public bool tissueDNA { get; set; }
+        public bool tissueRNA { get; set; }
         public bool stool { get; set; }
-        public bool samplestool { get; set; }
+        public bool stoolDNA { get; set; }
         public bool sampleless { get; set; }
         public bool pleuraleffusion { get; set; }
-        public bool samplepleuraleffusion { get; set; }
         public bool CSF { get; set; }
-        public bool sampleCSF { get; set; }
         public bool ascites { get; set; }
-        public bool sampleAscites { get; set; }
         public bool boneMarrow { get; set; }
-        public bool sampleBoneMarrow { get; set; }
-        public bool others_bilejuice_hair_saliva { get; set; }
+        public bool serum { get; set; }
+        public bool plasma { get; set; }
+        public bool buffyCoat { get; set; }
+        public bool wholeBlood { get; set; }
+        public bool paraffinSection { get; set; }
+        public bool bile { get; set; }
+        public bool hair { get; set; }
+        public bool saliva { get; set; }
         public System.Guid createUser { get; set; }
         public System.DateTime createDate { get; set; }
     
+        public virtual Diagnosis Diagnosis { get; set; }
         public virtual Hospital Hospital { get; set; }
+        public virtual Region Region { get; set; }
     }
 }

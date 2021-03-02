@@ -1,6 +1,7 @@
 ﻿using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,30 @@ namespace NHRIDB_DAL.DAL
                 qu= qu.Where(e => e.name_tw.Contains(name_tw));
              
             return qu.ToList();
+        }
+
+        public DataTable GetDataTable()
+        {
+            DataTable table = new DataTable();
+            string[] columns = new string[] { "部位編號", "部位名稱" };
+            foreach (var item in columns)
+            {
+                DataColumn column = new DataColumn();
+                column.ColumnName = item;
+                column.Caption = item;
+                column.AllowDBNull = true;
+                table.Columns.Add(column);
+            }
+            IQueryable<Region> qu = _db.Region;
+            foreach (var item in qu.ToList())
+            {
+                DataRow row = table.NewRow();
+                row["部位編號"] = item.regionKey;
+                row["部位名稱"] = item.name_en;
+                table.Rows.Add(row);
+            }
+
+            return table;
         }
 
         public bool HasAny(string rkey,string newkey,string name_en,string name_tw,out string msg) {

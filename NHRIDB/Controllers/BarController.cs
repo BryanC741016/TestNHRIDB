@@ -13,12 +13,12 @@ namespace NHRIDB.Controllers
 {
     public class BarController : BasicController
     {
-        private GetTotalDA _totalDA;
+       
         private HospitalDA _hospitalDA;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
-            _totalDA = new GetTotalDA(_db);
+          
             _hospitalDA = new HospitalDA(_db);
         }
 

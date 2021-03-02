@@ -2,6 +2,11 @@
 @{
     ViewBag.Title = "資料匯入";
 }
+
+<div class="msg">
+    @TempData["msg"]
+</div>
+<a href="@Url.Action("ExportData")" target="_blank" >下載範本</a>
  
             <form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
