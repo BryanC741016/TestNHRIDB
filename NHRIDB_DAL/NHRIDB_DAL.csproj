@@ -64,7 +64,6 @@
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
     <Compile Include="DbModel\Cover\Diagnosis.cs" />
-    <Compile Include="DbModel\Cover\TubeData.cs" />
     <Compile Include="DbModel\Diagnosis.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
@@ -108,6 +107,7 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\DataTubeDAViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />

@@ -38,11 +38,12 @@ namespace ClassLibrary
                 int startRow = hasHeader ? 2 : 1;
                 for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
                 {
-                    var wsRow = ws.Cells[rowNum, 1, rowNum, ws.Dimension.End.Column];
+                    
                     DataRow row = tbl.NewRow();
                     int index = 0;
                   
-                    foreach (var cell in wsRow) {
+                    for(int i= ws.Dimension.Start.Column; i <= ws.Dimension.End.Column; i++){
+                        var cell = ws.Cells[rowNum, i];
                         string column = tbl.Columns[index].ColumnName;
                         row[column] = cell.Text;
                         index++;

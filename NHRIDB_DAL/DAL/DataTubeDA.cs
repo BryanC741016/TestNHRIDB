@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NHRIDB_DAL.DbModel;
+using NHRIDB_DAL.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,32 +12,128 @@ using System.Threading.Tasks;
 
 namespace NHRIDB_DAL.DAL
 {
-   public class DataTubeDA : DataAccess
+    public class DataTubeDA : DataAccess
     {
-       
-        public List<string> GetColumns() {
-       
-            List<string> info = TypeDescriptor.GetProperties(typeof(TubeDataType))
+        
+            List<DataTubeColummns> _columns = TypeDescriptor.GetProperties(typeof(TubeDataType))
                      .Cast<PropertyDescriptor>()
-                      .Where(e => e.DisplayName != null)
-                     .Select(e => e.DisplayName)
+                     .Select(e=> new DataTubeColummns { 
+                       Name = e.Name,
+                       DisplayName=e.DisplayName,
+                       Required= e.Attributes.Cast<Attribute>().Any(a => a.GetType() == typeof(RequiredAttribute)),
+                         PropertyType=e.PropertyType
+                     })
                      .ToList();
+        public List<DataTubeColummns> GetColummns() {
+            return _columns;
+        }
+        /***
+           * 1.欄位名稱是否相符
+           * 必填欄位沒有填
+           * 2.性別是否統一
+           * 3.年齡是否統一
+           * 主key重複
+           * 資料型別(f:m , 數字 , 0:1)
+           * **/
+        public bool ImportCheck(DataTable table, out string msg) {
+            msg = "";
+            //1.欄位名稱是否相符
+            if (!HasColumns(table))
+            {
+                msg= "欄位名稱不符合，請參照範本";
+                return false;
+            }
 
-            return info;
+           
+            //必填欄位沒有填
+            if (!CheckRequired(table, out msg))
+            {
+                return false;
+            }
+
+            //性別是否統一、年齡是否統一
+            if (!RepleData(table, out msg))
+            {
+                return false;
+            }
+            //主key重複
+            if (!MatchKey(table, out msg))
+            {
+                return false;
+            }
+            //各欄位的資料型別 f:m , 數字 , 0:1)
+            if (!CheckType(table, out msg)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckType(DataTable table, out string msg)
+        {
+            msg = "";
+          
+            foreach (var column in _columns)
+            {
+                var datas = table.AsEnumerable().Where(e => !e.Field<string>(column.DisplayName).Equals(""));
+                int res;
+                bool commit = true;
+                switch (column.Name) {
+                    case "patientKey":
+                    case "regionKey":
+                    case "diagnosisKey":
+                        break;
+                    case "endYear":
+                        commit =!datas.Where(e => e.Field<string>(column.DisplayName).Length != 4 || !int.TryParse(e.Field<string>(column.DisplayName), out res)).Any();
+                        break;
+                    case "age": 
+                        commit = !datas.Where(e => !int.TryParse(e.Field<string>(column.DisplayName), out res) || res < 0).Any();
+                        break;
+                    case "gender":     
+                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("F") && !e.Field<string>(column.DisplayName).Equals("M")).Any();
+                        break;
+
+                    default:
+                    
+                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).Any();
+                        break;
+
+                }
+
+                if (!commit) {
+                    msg = column.DisplayName + "型別不正確";
+                    return commit;
+                }
+
+            }
+
+            
+            return true;
+
+        }
+
+        public bool HasColumns(DataTable dataTable)
+        {
+            string[] columnNames = dataTable.Columns.Cast<DataColumn>()
+                                    .Select(x => x.ColumnName)
+                                    .ToArray();
+            string[] format = _columns.Select(e => e.DisplayName).ToArray();
+            return ((from item in format
+                     where columnNames.Contains(item)
+                     select item).Count() == format.Length);
         }
 
         public bool CheckRequired(DataTable table,out string columnName) {
-            var info = TypeDescriptor.GetProperties(typeof(TubeDataType))
-                      .Cast<PropertyDescriptor>()
-                      .Where(p => p.Attributes.Cast<Attribute>().Any(a => a.GetType() == typeof(RequiredAttribute)))
+            var info = _columns
+                        .Where(e=>e.Required==true)
                       .ToList();
-            TubeDataType basic = new TubeDataType();
+         
             foreach (var column in info) { 
            
-                  int nullCount=  table.AsEnumerable().Where(e =>  e.Field<string>(column.DisplayName)==null).Count();
+                  int nullCount=  table.AsEnumerable().Where(e =>  e.Field<string>(column.DisplayName).Equals("")).Count();
 
                     if (nullCount > 0) {
-                        columnName = column.DisplayName;
+                        columnName = "必要欄位「" + column.DisplayName + "」未填寫" ;
                         return false;
                     }
                 
@@ -89,37 +186,60 @@ namespace NHRIDB_DAL.DAL
             return true;
         }
 
-        public List<TubeData> GetDatasByDataTable(DataTable table,Guid _hkey, Guid _user) {
+        public List<TubeDataType> GetDatasByDataTable(DataTable table) {
             List<DataRow> tt = table.AsEnumerable().ToList();
-            var infos = TypeDescriptor.GetProperties(typeof(TubeDataType))
-                  .Cast<PropertyDescriptor>()
-                  .ToList();
-            List<TubeData> datas = new List<TubeData>();
+            
+            List<TubeDataType> datas = new List<TubeDataType>();
             foreach (DataRow dr in tt) {
-                TubeData data = new TubeData();
-                foreach (var info in infos) {
-                    if(!string.IsNullOrEmpty(dr[info.DisplayName].ToString()))
-                    data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(dr[info.DisplayName], info.PropertyType), null);
+                TubeDataType data = new TubeDataType();
+                foreach (var info in _columns) {
+                   
+                        if (info.PropertyType.Name.Equals("Boolean"))
+                        {
+                            bool bo = dr[info.DisplayName].Equals("1") ? true : false;
+                            data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(bo, info.PropertyType), null);
+                        }
+                        else {
+                            data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(dr[info.DisplayName], info.PropertyType), null);
+                        }
+                   
+                   
                 }
-                data.hospitalId = _hkey;
-                data.createUser = _user;
-                data.createDate = DateTime.Now;
+               
                 datas.Add(data);
             }
 
             return datas;
         }
 
+        public void Create(List<TubeDataType> datas,Guid hkey,Guid uid) {
+            List<TubeData> adds = new List<TubeData>();
+            DateTime now = DateTime.Now;
+            foreach (TubeDataType data in datas) {
+                TubeData tube = new TubeData();
+                foreach (var info in _columns)
+                {
+                    var value = data.GetType().GetProperty(info.Name).GetValue(data);
+                    tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
+                }
+                tube.hospitalId = hkey;
+                tube.createUser = uid;
+                    tube.createDate = now;
+
+                adds.Add(tube);
+            }
+        }
+
             public DataTable GetEmptyDataTable()
         {
             DataTable table = new DataTable();
-            List<string> columns = GetColumns();
-            foreach (var item in columns)
+             
+            foreach (var item in _columns)
             {
                 DataColumn column = new DataColumn();
-                column.ColumnName = item;
-                column.Caption = item;
-                column.AllowDBNull = true;
+                column.ColumnName = item.DisplayName;
+                column.Caption = item.DisplayName;
+                column.AllowDBNull = item.Required;
                 table.Columns.Add(column);
             }
             

@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NHRIDB_DAL.DbModel
+namespace NHRIDB_DAL.ViewModel
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.ComponentModel.DataAnnotations;
+    public class DataTubeColummns { 
+       public string Name { get; set; }
+       public string DisplayName { get; set; }
+       public bool Required { get; set; }
 
-    [MetadataType(typeof(TubeDataType))]
-    public partial class TubeData
-    {
+       public Type PropertyType { get; set; }
     }
     public class TubeDataType
     {
-     
+
 
         [DisplayName("識別編號")]
         [Required]
@@ -43,6 +43,9 @@ namespace NHRIDB_DAL.DbModel
         [Required]
         public string gender { get; set; }
 
+        [DisplayName("沒有檢體")]
+        public bool sampleless { get; set; }
+
         [DisplayName("血液")]
         public bool blood { get; set; }
 
@@ -64,8 +67,7 @@ namespace NHRIDB_DAL.DbModel
         public bool stool { get; set; }
         [DisplayName("糞便DNA")]
         public bool stoolDNA { get; set; }
-        [DisplayName("沒有檢體")]
-        public bool sampleless { get; set; }
+       
         [DisplayName("胸水")]
         public bool pleuraleffusion { get; set; }
         [DisplayName("腦脊髓液")]
@@ -90,7 +92,6 @@ namespace NHRIDB_DAL.DbModel
         public bool hair { get; set; }
         [DisplayName("口水")]
         public bool saliva { get; set; }
-       
+
     }
 }
-

@@ -3,6 +3,7 @@ using NHRIDB.Filter;
 using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
+using NHRIDB_DAL.ViewModel;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace NHRIDB.Controllers
             _dataTubeDA= new DataTubeDA();
         }
 
+        [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Form
         public ActionResult Index()
@@ -35,21 +37,21 @@ namespace NHRIDB.Controllers
             return View( );
         }
 
-
+        [HttpPost]
         [MvcAdminRightAuthorizeFilter(param = 'w')]
-        public ActionResult Upload(HttpPostedFileBase upload) {
+        public ActionResult Index(HttpPostedFileBase upload) {
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
             if (string.IsNullOrEmpty(ex))
             {
                 TempData["msg"] = "請選擇檔案";
-                return RedirectToAction("Index");
+                return View();
             }
             else{
                 string[] allow = new string[] { "xlsx", "csv" };
                 if (!allow.Contains(ex))
                 {
                     TempData["msg"] = "不支援此格式上傳";
-                    return RedirectToAction("Index");
+                    return View();
                 }
             }
 
@@ -64,48 +66,32 @@ namespace NHRIDB.Controllers
              * **/
             EPPlusExcel epp = new EPPlusExcel();
             DataTable table= epp.GetDataTable(upload.InputStream);
-            string[] columns = _dataTubeDA.GetColumns().ToArray();
-
-            //1.欄位名稱是否相符
-            bool commit =  hasColumns(table, columns);
-            if (!commit) {
-                TempData["msg"] = "欄位名稱不符合，請參照範本";
-                return RedirectToAction("Index");
-            }
 
             string msg = "";
-            //必填欄位沒有填
-            if (!_dataTubeDA.CheckRequired(table,out msg)) {
-                TempData["msg"] = "必要欄位「"+msg+"」未填寫";
-                return RedirectToAction("Index");
-            }
-
-            //性別是否統一、年齡是否統一
-            if (!_dataTubeDA.RepleData(table, out msg))
-            {
-                TempData["msg"] =  msg;
-                return RedirectToAction("Index");
-            }
-            //主key重複
-            if ( !_dataTubeDA.MatchKey(table, out msg))
-            {
+            if (!_dataTubeDA.ImportCheck(table, out msg)) {
                 TempData["msg"] = msg;
-                return RedirectToAction("Index");
+                return View();
             }
 
             //部位與診斷代碼(dlinkR)代碼比對
             if (!_diagnosisDA.CheckDLinkR(table,out msg)) {
                 TempData["msg"] = msg;
-                return RedirectToAction("Index");
+                return View();
             }
 
-            return ViewDatas(table);
+            ViewDatasViewModel model = new ViewDatasViewModel();
+            model.datas = _dataTubeDA.GetDatasByDataTable(table);
+            model.columns = _dataTubeDA.GetColummns();
+            return View("ViewDatas",model);
         }
+
         [MvcAdminRightAuthorizeFilter(param = 'w')]
-        public ActionResult ViewDatas(DataTable table) {
-            List<TubeData> datas= _dataTubeDA.GetDatasByDataTable(table,_hos,_uid);
-            return View();
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveData(ViewDatasViewModel model) {
+            _dataTubeDA.Create(model.datas,_hos,_uid);
+            return RedirectToAction("Index");
         }
+
 
         /// <summary>
         /// 匯出範本
@@ -135,14 +121,6 @@ namespace NHRIDB.Controllers
              
         }
 
-        private bool hasColumns(System.Data.DataTable dataTable, string[] format)
-        {
-            string[] columnNames = dataTable.Columns.Cast<DataColumn>()
-                                    .Select(x => x.ColumnName)
-                                    .ToArray();
-            return ((from item in format
-                     where columnNames.Contains(item)
-                     select item).Count() == format.Length);
-        }
+      
     }
 }

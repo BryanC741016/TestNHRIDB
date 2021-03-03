@@ -8,7 +8,7 @@
 </div>
 <a href="@Url.Action("ExportData")" target="_blank" >下載範本</a>
  
-            <form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
+            <form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
                 <input type="hidden" id="id" name="id" />
