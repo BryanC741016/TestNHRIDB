@@ -117,11 +117,11 @@ namespace NHRIDB.Controllers
                 if (user.GroupUser.alwaysOpen)
                 {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Region");
+                    return RedirectToAction("Index", "Import");
                 }
                 else if (now >= model.startDate && now <= model.endDate) {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Region");
+                    return RedirectToAction("Index", "Import");
                 }
                 model.message = "未開放或無權限";
                 return View(model);

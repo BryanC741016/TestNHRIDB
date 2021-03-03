@@ -15,16 +15,16 @@ namespace NHRIDB_DAL.DAL
     public class DataTubeDA : DataAccess
     {
         
-            List<DataTubeColummns> _columns = TypeDescriptor.GetProperties(typeof(TubeDataType))
+            List<InfoColummns> _columns = TypeDescriptor.GetProperties(typeof(TubeDataType))
                      .Cast<PropertyDescriptor>()
-                     .Select(e=> new DataTubeColummns { 
+                     .Select(e=> new InfoColummns { 
                        Name = e.Name,
                        DisplayName=e.DisplayName,
                        Required= e.Attributes.Cast<Attribute>().Any(a => a.GetType() == typeof(RequiredAttribute)),
                          PropertyType=e.PropertyType
                      })
                      .ToList();
-        public List<DataTubeColummns> GetColummns() {
+        public List<InfoColummns> GetColummns() {
             return _columns;
         }
         /***
@@ -228,9 +228,36 @@ namespace NHRIDB_DAL.DAL
 
                 adds.Add(tube);
             }
+
+            List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+            TubeDataToLog(old);
+            _db.TubeData.RemoveRange(old);
+            _db.TubeData.AddRange(adds);
+            _db.SaveChanges();
         }
 
-            public DataTable GetEmptyDataTable()
+        private void TubeDataToLog(List<TubeData> datas)
+        {
+            List<TubeDataLog> adds = new List<TubeDataLog>();
+         
+            foreach (TubeData data in datas)
+            {
+                TubeDataLog tube = new TubeDataLog();
+                foreach (var info in _columns)
+                {
+                    var value = data.GetType().GetProperty(info.Name).GetValue(data);
+                    tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
+                }
+                 
+
+                adds.Add(tube);
+            }
+
+            _db.TubeDataLog.AddRange(adds);
+            
+        }
+
+        public DataTable GetEmptyDataTable()
         {
             DataTable table = new DataTable();
              

@@ -116,7 +116,49 @@
           <Property Name="hair" Type="bit" Nullable="false" />
           <Property Name="saliva" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="createDate" Type="datetime" Nullable="false" />
+          <Property Name="createDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TubeDataLog">
+          <Key>
+            <PropertyRef Name="hospitalId" />
+            <PropertyRef Name="patientKey" />
+            <PropertyRef Name="regionKey" />
+            <PropertyRef Name="diagnosisKey" />
+            <PropertyRef Name="endYear" />
+            <PropertyRef Name="createDate" />
+          </Key>
+          <Property Name="hospitalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="patientKey" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="regionKey" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="diagnosisKey" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="endYear" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="createDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="age" Type="numeric" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="gender" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="blood" Type="bit" Nullable="false" />
+          <Property Name="frozenTissue" Type="bit" Nullable="false" />
+          <Property Name="waxBlock" Type="bit" Nullable="false" />
+          <Property Name="urine" Type="bit" Nullable="false" />
+          <Property Name="urineClearLiquid" Type="bit" Nullable="false" />
+          <Property Name="urinePellet" Type="bit" Nullable="false" />
+          <Property Name="tissueDNA" Type="bit" Nullable="false" />
+          <Property Name="tissueRNA" Type="bit" Nullable="false" />
+          <Property Name="stool" Type="bit" Nullable="false" />
+          <Property Name="stoolDNA" Type="bit" Nullable="false" />
+          <Property Name="sampleless" Type="bit" Nullable="false" />
+          <Property Name="pleuraleffusion" Type="bit" Nullable="false" />
+          <Property Name="CSF" Type="bit" Nullable="false" />
+          <Property Name="ascites" Type="bit" Nullable="false" />
+          <Property Name="boneMarrow" Type="bit" Nullable="false" />
+          <Property Name="serum" Type="bit" Nullable="false" />
+          <Property Name="plasma" Type="bit" Nullable="false" />
+          <Property Name="buffyCoat" Type="bit" Nullable="false" />
+          <Property Name="wholeBlood" Type="bit" Nullable="false" />
+          <Property Name="paraffinSection" Type="bit" Nullable="false" />
+          <Property Name="bile" Type="bit" Nullable="false" />
+          <Property Name="hair" Type="bit" Nullable="false" />
+          <Property Name="saliva" Type="bit" Nullable="false" />
+          <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -261,6 +303,9 @@
           <Parameter Name="level" Type="varchar(max)" Mode="In" />
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
         </Function>
+        <Function Name="TubeDataTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
+        </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
           <EntitySet Name="Diagnosis" EntityType="Self.Diagnosis" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
@@ -271,6 +316,7 @@
           <EntitySet Name="Region" EntityType="Self.Region" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Permissions_GroupUser" Association="Self.FK_Permissions_GroupUser">
             <End Role="GroupUser" EntitySet="GroupUser" />
@@ -355,6 +401,10 @@
             <End Role="Region" EntitySet="Region" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
+          <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
+          <FunctionImport Name="TubeDataTotal" ReturnType="Collection(NHRIDBModel.TubeDataTotal_Result)">
+            <Parameter Name="hospitalId" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -545,7 +595,7 @@
           <Property Name="hair" Type="Boolean" Nullable="false" />
           <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
-          <Property Name="createDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="createDate" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.FK_TubeData_Diagnosis" FromRole="TubeData" ToRole="Diagnosis" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
           <NavigationProperty Name="Region" Relationship="NHRIDBModel.FK_TubeData_Region" FromRole="TubeData" ToRole="Region" />
@@ -592,6 +642,73 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="TubeDataLog">
+          <Key>
+            <PropertyRef Name="hospitalId" />
+            <PropertyRef Name="patientKey" />
+            <PropertyRef Name="regionKey" />
+            <PropertyRef Name="diagnosisKey" />
+            <PropertyRef Name="endYear" />
+            <PropertyRef Name="createDate" />
+          </Key>
+          <Property Name="hospitalId" Type="Guid" Nullable="false" />
+          <Property Name="patientKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="regionKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="endYear" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="createDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="age" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="gender" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="blood" Type="Boolean" Nullable="false" />
+          <Property Name="frozenTissue" Type="Boolean" Nullable="false" />
+          <Property Name="waxBlock" Type="Boolean" Nullable="false" />
+          <Property Name="urine" Type="Boolean" Nullable="false" />
+          <Property Name="urineClearLiquid" Type="Boolean" Nullable="false" />
+          <Property Name="urinePellet" Type="Boolean" Nullable="false" />
+          <Property Name="tissueDNA" Type="Boolean" Nullable="false" />
+          <Property Name="tissueRNA" Type="Boolean" Nullable="false" />
+          <Property Name="stool" Type="Boolean" Nullable="false" />
+          <Property Name="stoolDNA" Type="Boolean" Nullable="false" />
+          <Property Name="sampleless" Type="Boolean" Nullable="false" />
+          <Property Name="pleuraleffusion" Type="Boolean" Nullable="false" />
+          <Property Name="CSF" Type="Boolean" Nullable="false" />
+          <Property Name="ascites" Type="Boolean" Nullable="false" />
+          <Property Name="boneMarrow" Type="Boolean" Nullable="false" />
+          <Property Name="serum" Type="Boolean" Nullable="false" />
+          <Property Name="plasma" Type="Boolean" Nullable="false" />
+          <Property Name="buffyCoat" Type="Boolean" Nullable="false" />
+          <Property Name="wholeBlood" Type="Boolean" Nullable="false" />
+          <Property Name="paraffinSection" Type="Boolean" Nullable="false" />
+          <Property Name="bile" Type="Boolean" Nullable="false" />
+          <Property Name="hair" Type="Boolean" Nullable="false" />
+          <Property Name="saliva" Type="Boolean" Nullable="false" />
+          <Property Name="createUser" Type="Guid" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="TubeDataTotal_Result">
+          <Property Type="Int32" Name="sum_blood" Nullable="true" />
+          <Property Type="Int32" Name="sum_frozenTissue" Nullable="true" />
+          <Property Type="Int32" Name="sum_waxBlock" Nullable="true" />
+          <Property Type="Int32" Name="sum_urine" Nullable="true" />
+          <Property Type="Int32" Name="sum_urineClearLiquid" Nullable="true" />
+          <Property Type="Int32" Name="sum_urinePellet" Nullable="true" />
+          <Property Type="Int32" Name="sum_tissueDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_tissueRNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_stool" Nullable="true" />
+          <Property Type="Int32" Name="sum_stoolDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_sampleless" Nullable="true" />
+          <Property Type="Int32" Name="sum_pleuraleffusion" Nullable="true" />
+          <Property Type="Int32" Name="sum_CSF" Nullable="true" />
+          <Property Type="Int32" Name="sum_ascites" Nullable="true" />
+          <Property Type="Int32" Name="sum_boneMarrow" Nullable="true" />
+          <Property Type="Int32" Name="sum_serum" Nullable="true" />
+          <Property Type="Int32" Name="sum_plasma" Nullable="true" />
+          <Property Type="Int32" Name="sum_buffyCoat" Nullable="true" />
+          <Property Type="Int32" Name="sum_wholeBlood" Nullable="true" />
+          <Property Type="Int32" Name="sum_paraffinSection" Nullable="true" />
+          <Property Type="Int32" Name="sum_bile" Nullable="true" />
+          <Property Type="Int32" Name="sum_hair" Nullable="true" />
+          <Property Type="Int32" Name="sum_saliva" Nullable="true" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -727,6 +844,73 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="TubeDataLog">
+            <EntityTypeMapping TypeName="NHRIDBModel.TubeDataLog">
+              <MappingFragment StoreEntitySet="TubeDataLog">
+                <ScalarProperty Name="createUser" ColumnName="createUser" />
+                <ScalarProperty Name="saliva" ColumnName="saliva" />
+                <ScalarProperty Name="hair" ColumnName="hair" />
+                <ScalarProperty Name="bile" ColumnName="bile" />
+                <ScalarProperty Name="paraffinSection" ColumnName="paraffinSection" />
+                <ScalarProperty Name="wholeBlood" ColumnName="wholeBlood" />
+                <ScalarProperty Name="buffyCoat" ColumnName="buffyCoat" />
+                <ScalarProperty Name="plasma" ColumnName="plasma" />
+                <ScalarProperty Name="serum" ColumnName="serum" />
+                <ScalarProperty Name="boneMarrow" ColumnName="boneMarrow" />
+                <ScalarProperty Name="ascites" ColumnName="ascites" />
+                <ScalarProperty Name="CSF" ColumnName="CSF" />
+                <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
+                <ScalarProperty Name="sampleless" ColumnName="sampleless" />
+                <ScalarProperty Name="stoolDNA" ColumnName="stoolDNA" />
+                <ScalarProperty Name="stool" ColumnName="stool" />
+                <ScalarProperty Name="tissueRNA" ColumnName="tissueRNA" />
+                <ScalarProperty Name="tissueDNA" ColumnName="tissueDNA" />
+                <ScalarProperty Name="urinePellet" ColumnName="urinePellet" />
+                <ScalarProperty Name="urineClearLiquid" ColumnName="urineClearLiquid" />
+                <ScalarProperty Name="urine" ColumnName="urine" />
+                <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
+                <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
+                <ScalarProperty Name="blood" ColumnName="blood" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="createDate" ColumnName="createDate" />
+                <ScalarProperty Name="endYear" ColumnName="endYear" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
+                <ScalarProperty Name="patientKey" ColumnName="patientKey" />
+                <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="TubeDataTotal" FunctionName="NHRIDBModel.Store.TubeDataTotal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.TubeDataTotal_Result">
+                <ScalarProperty Name="sum_blood" ColumnName="sum_blood" />
+                <ScalarProperty Name="sum_frozenTissue" ColumnName="sum_frozenTissue" />
+                <ScalarProperty Name="sum_waxBlock" ColumnName="sum_waxBlock" />
+                <ScalarProperty Name="sum_urine" ColumnName="sum_urine" />
+                <ScalarProperty Name="sum_urineClearLiquid" ColumnName="sum_urineClearLiquid" />
+                <ScalarProperty Name="sum_urinePellet" ColumnName="sum_urinePellet" />
+                <ScalarProperty Name="sum_tissueDNA" ColumnName="sum_tissueDNA" />
+                <ScalarProperty Name="sum_tissueRNA" ColumnName="sum_tissueRNA" />
+                <ScalarProperty Name="sum_stool" ColumnName="sum_stool" />
+                <ScalarProperty Name="sum_stoolDNA" ColumnName="sum_stoolDNA" />
+                <ScalarProperty Name="sum_sampleless" ColumnName="sum_sampleless" />
+                <ScalarProperty Name="sum_pleuraleffusion" ColumnName="sum_pleuraleffusion" />
+                <ScalarProperty Name="sum_CSF" ColumnName="sum_CSF" />
+                <ScalarProperty Name="sum_ascites" ColumnName="sum_ascites" />
+                <ScalarProperty Name="sum_boneMarrow" ColumnName="sum_boneMarrow" />
+                <ScalarProperty Name="sum_serum" ColumnName="sum_serum" />
+                <ScalarProperty Name="sum_plasma" ColumnName="sum_plasma" />
+                <ScalarProperty Name="sum_buffyCoat" ColumnName="sum_buffyCoat" />
+                <ScalarProperty Name="sum_wholeBlood" ColumnName="sum_wholeBlood" />
+                <ScalarProperty Name="sum_paraffinSection" ColumnName="sum_paraffinSection" />
+                <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
+                <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
+                <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

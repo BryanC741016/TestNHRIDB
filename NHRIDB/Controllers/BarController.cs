@@ -15,19 +15,21 @@ namespace NHRIDB.Controllers
     {
        
         private HospitalDA _hospitalDA;
+        private TubeDataTotalDA _tubeTotal;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
           
             _hospitalDA = new HospitalDA(_db);
+          _tubeTotal= new TubeDataTotalDA();
         }
 
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Bar
-        public ActionResult Index(Nullable<Guid> treeId=null, Nullable<Guid> hosId=null)
+        public ActionResult Index(Nullable<Guid> hosId=null)
         {
             BarViewModel model = new BarViewModel();
-            model.treeId = treeId;
+     
             model.leapProject = _leapProject;
             model.selfHos = _hospitalDA.GetHospital(_hos);
             model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
@@ -35,11 +37,11 @@ namespace NHRIDB.Controllers
             {
                 hosId = _hos;
             }
-            
-            // model.items = _totalDA.GetQuery(treeId, hosId);
-            
 
-           
+            model.datas = _tubeTotal.GetQuery(hosId);
+            model.columns = _tubeTotal.GetColummns();
+
+
 
             return View(model);
         }

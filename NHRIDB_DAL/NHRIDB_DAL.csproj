@@ -61,6 +61,7 @@
     <Compile Include="DAL\GroupDA.cs" />
     <Compile Include="DAL\DiagnosisDA.cs" />
     <Compile Include="DAL\RegionDA.cs" />
+    <Compile Include="DAL\TubeDataTotalDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
     <Compile Include="DbModel\Cover\Diagnosis.cs" />
@@ -101,6 +102,12 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\TubeData.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\TubeDataLog.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\TubeDataTotal_Result.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\User.cs">

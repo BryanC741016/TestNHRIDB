@@ -12,6 +12,8 @@ namespace NHRIDB_DAL.DbModel
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class NHRIDBEntitiesDB : DbContext
     {
@@ -34,5 +36,15 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<Diagnosis> Diagnosis { get; set; }
         public virtual DbSet<Region> Region { get; set; }
         public virtual DbSet<TubeData> TubeData { get; set; }
+        public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
+    
+        public virtual ObjectResult<TubeDataTotal_Result> TubeDataTotal(string hospitalId)
+        {
+            var hospitalIdParameter = hospitalId != null ?
+                new ObjectParameter("hospitalId", hospitalId) :
+                new ObjectParameter("hospitalId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<TubeDataTotal_Result>("TubeDataTotal", hospitalIdParameter);
+        }
     }
 }

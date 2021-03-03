@@ -139,7 +139,7 @@ namespace NHRIDB_DAL.DAL
                bool commit= qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.Region.Any(x => x.regionKey.Equals(data.regionKey)))
                      .Any();
                 if (!commit) {
-                    msg = data.diagnosisKey + "(部位編號)與" + data.regionKey + "(診斷編號)關連不正確";
+                    msg = data.diagnosisKey + "(診斷編號)與" + data.regionKey + "(部位編號)關連不正確";
                     return false;
                 }
             }

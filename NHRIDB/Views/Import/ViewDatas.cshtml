@@ -26,22 +26,32 @@
         @for (int i = 0; i < Model.datas.Count; i++)
         {
             var item = Model.datas[i];
-            <tr>
-                @foreach (var column in Model.columns)
-                {
-                    var value = item.GetType().GetProperty(column.Name).GetValue(item);
-                    if (column.PropertyType.Name.Equals("Boolean"))
-                    {
-                        value = bool.Parse(value.ToString()) ? "1" : "0";
+    <tr>
+        @foreach (var column in Model.columns)
+        {
 
-                    }
-                    <td>
+            var value = item.GetType().GetProperty(column.Name).GetValue(item);
+            string showText = "";
+            if (column.PropertyType.Name.Equals("Boolean"))
+            {
 
-                        @value
-                        @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
-                    </td>
-                }
-            </tr>
+                showText = bool.Parse(value.ToString()) ? "1" : "0";
+        <td>
+            @showText
+            @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+        </td>
+            }
+            else {
+    <td>
+        @value
+        @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+    </td>
+            }
+
+ 
+
+        }
+    </tr>
         }
 
     </table>
