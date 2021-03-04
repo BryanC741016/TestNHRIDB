@@ -19,23 +19,23 @@ namespace NHRIDB_DAL.ViewModel
     {
 
 
-        [DisplayName("識別編號")]
+        [DisplayName("識別ID")]
         [Required]
         public string patientKey { get; set; }
 
-        [DisplayName("部位編號")]
+        [DisplayName("Organ/Region(代碼)")]
         [Required]
         public string regionKey { get; set; }
 
-        [DisplayName("診斷編號")]
+        [DisplayName("Diagnosis(代碼)")]
         [Required]
         public string diagnosisKey { get; set; }
 
-        [DisplayName("收案年份")]
+        [DisplayName("收案年份(西元年)")]
         [Required]
         public string endYear { get; set; }
 
-        [DisplayName("年齡")]
+        [DisplayName("年齡(歲)")]
         [Required]
         public decimal age { get; set; }
 
@@ -55,9 +55,9 @@ namespace NHRIDB_DAL.ViewModel
         public bool waxBlock { get; set; }
         [DisplayName("尿液")]
         public bool urine { get; set; }
-        [DisplayName("尿液清液")]
+        [DisplayName("尿液 上清液")]
         public bool urineClearLiquid { get; set; }
-        [DisplayName("尿液顆粒")]
+        [DisplayName("尿液 離心 pellet")]
         public bool urinePellet { get; set; }
         [DisplayName("tissue DNA")]
         public bool tissueDNA { get; set; }

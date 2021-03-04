@@ -146,26 +146,26 @@ namespace NHRIDB_DAL.DAL
 
         public bool RepleData(DataTable table,out string msg) {
             msg = "";
-         List<string> keys=  table.AsEnumerable().GroupBy(e => e.Field<string>("識別編號")).Where(e => e.Count() > 1)
+         List<string> keys=  table.AsEnumerable().GroupBy(e => e.Field<string>("識別ID")).Where(e => e.Count() > 1)
                 .Select(e => e.Key).ToList();
             foreach (string key in keys) {
-                var datas = table.AsEnumerable().Where(e => e.Field<string>("識別編號").Trim().Equals(key.Trim()));
+                var datas = table.AsEnumerable().Where(e => e.Field<string>("識別ID").Trim().Equals(key.Trim()));
                int sexCount= datas.GroupBy(e => e.Field<string>("性別")).Count();
 
                 if (sexCount > 1) {
-                    msg = "識別編號:"+key + "性別欄位輸入錯誤";
+                    msg = "識別ID:"+key + "性別欄位輸入錯誤";
                     return false;
                 }
 
                 double sings =0;
                 foreach (var item in datas) {
-                    double sing = double.Parse(item.Field<string>("收案年份")) - double.Parse(item.Field<string>("年齡"));
+                    double sing = double.Parse(item.Field<string>("收案年份(西元年)")) - double.Parse(item.Field<string>("年齡(歲)"));
                     if (sings == 0) {
                         sings = sing;
                     }
 
                     if (sings != sing) {
-                        msg = "識別編號:" + key + "年齡欄位輸入錯誤";
+                        msg = "識別ID:" + key + "年齡欄位輸入錯誤";
                         return false;
                     }
 
@@ -177,10 +177,10 @@ namespace NHRIDB_DAL.DAL
         public bool MatchKey(DataTable table,out string msg)
         {
             msg = "";
-           var data= table.AsEnumerable().GroupBy(e => new { key1= e.Field<string>("識別編號"), key2=e.Field<string>("部位編號"), key3 = e.Field<string>("診斷編號"), key4 = e.Field<string>("收案年份") })
+           var data= table.AsEnumerable().GroupBy(e => new { key1= e.Field<string>("識別ID"), key2=e.Field<string>("Organ/Region(代碼)"), key3 = e.Field<string>("Diagnosis(代碼)"), key4 = e.Field<string>("收案年份(西元年)") })
                 .Where(e=>e.Count() > 1);
             if (data.Count() > 0) {
-                msg = data.First().Key.key1 + "(識別編號)," + data.First().Key.key2 + "(部位編號)," + data.First().Key.key3 + "(診斷編號)," + data.First().Key.key4 + "(收案年份) 資料重複";
+                msg = data.First().Key.key1 + "(識別ID)," + data.First().Key.key2 + "(Organ/Region代碼)," + data.First().Key.key3 + "(Diagnosis代碼)," + data.First().Key.key4 + "(收案年份(西元年)) 資料重複";
                 return false;
             }
             return true;

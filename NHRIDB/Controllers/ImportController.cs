@@ -89,6 +89,7 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveData(ViewDatasViewModel model) {
             _dataTubeDA.Create(model.datas,_hos,_uid);
+            TempData["msg"] = "儲存完畢";
             return RedirectToAction("Index");
         }
 

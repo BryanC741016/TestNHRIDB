@@ -132,7 +132,7 @@ namespace NHRIDB_DAL.DAL
 
         public bool CheckDLinkR(DataTable table, out string msg) {
             msg = "";
-           var datas=  table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("部位編號"), diagnosisKey = e.Field<string>("診斷編號") })
+           var datas=  table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("Organ/Region(代碼)"), diagnosisKey = e.Field<string>("Diagnosis(代碼)") })
                 .Distinct().ToList();
             List<Diagnosis> qu = GetQuery();
             foreach (var data in datas) {
