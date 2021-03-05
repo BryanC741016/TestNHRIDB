@@ -148,7 +148,6 @@
     <Compile Include="Controllers\ProjectSetController.cs" />
     <Compile Include="Controllers\DiagnosisController.cs" />
     <Compile Include="Controllers\RegionController.cs" />
-    <Compile Include="Controllers\UpdateController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AjaxValidateAntiForgeryTokenAttribute .cs" />
     <Compile Include="Filter\LogonAuthorizeFilter.cs" />

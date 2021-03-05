@@ -68,6 +68,12 @@
     <Compile Include="DbModel\Diagnosis.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="DbModel\GetDifferentTotal_Result.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\GetTotal_Result.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="DbModel\GroupUser.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
@@ -105,9 +111,6 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\TubeDataLog.cs">
-      <DependentUpon>ModelDB.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DbModel\TubeDataTotal_Result.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\User.cs">

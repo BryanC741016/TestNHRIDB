@@ -25,6 +25,10 @@ else
 <table class="table table-hover">
     <thead>
         <tr>
+            <th>
+                部位名稱
+            </th>
+
             @foreach (var column in Model.columns)
             {
                 <th>@column.DisplayName</th>
@@ -37,6 +41,9 @@ else
         {
             var item = Model.datas[i];
             <tr>
+                <td>
+                    @item.name_en
+                </td>
                 @foreach (var column in Model.columns)
                 {
 

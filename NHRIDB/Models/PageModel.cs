@@ -17,7 +17,7 @@ namespace NHRIDB.Models
         public string sortType { get; set; }
 
         public PageModel() {
-            pageSize = 2;
+            pageSize = 10;
             pageNumber = 1;
             pageEnd = 1;
             sortType = "asc";

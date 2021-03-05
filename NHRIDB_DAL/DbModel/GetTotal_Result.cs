@@ -11,8 +11,10 @@ namespace NHRIDB_DAL.DbModel
 {
     using System;
     
-    public partial class TubeDataTotal_Result
+    public partial class GetTotal_Result
     {
+        public string rId { get; set; }
+        public string name_en { get; set; }
         public Nullable<int> sum_blood { get; set; }
         public Nullable<int> sum_frozenTissue { get; set; }
         public Nullable<int> sum_waxBlock { get; set; }

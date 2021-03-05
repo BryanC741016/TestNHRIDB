@@ -18,7 +18,7 @@ namespace NHRIDB.Models.ViewModels
         public Hospital selfHos { get; set; }
         public SelectList hospitalSelect { get; set; }
 
-        public List<TubeDataTotal_Result> datas { get; set; }
+        public List<GetTotal_Result> datas { get; set; }
 
         public List<InfoColummns> columns { get; set; }
     }

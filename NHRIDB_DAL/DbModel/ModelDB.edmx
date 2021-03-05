@@ -299,11 +299,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="GetTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="level" Type="varchar(max)" Mode="In" />
-          <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
+        <Function Name="GetDifferentTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="hospitalId" Type="uniqueidentifier" Mode="In" />
         </Function>
-        <Function Name="TubeDataTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+        <Function Name="GetTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
@@ -402,8 +401,11 @@
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
-          <FunctionImport Name="TubeDataTotal" ReturnType="Collection(NHRIDBModel.TubeDataTotal_Result)">
-            <Parameter Name="hospitalId" Mode="In" Type="String" />
+          <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
+          <Parameter Name="hospitalId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetDifferentTotal" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
+            <Parameter Name="hospitalId" Mode="In" Type="Guid" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="GroupUser">
@@ -684,7 +686,9 @@
           <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
         </EntityType>
-        <ComplexType Name="TubeDataTotal_Result">
+        <ComplexType Name="GetTotal_Result">
+          <Property Type="String" Name="rId" Nullable="true" />
+          <Property Type="String" Name="name_en" Nullable="false" />
           <Property Type="Int32" Name="sum_blood" Nullable="true" />
           <Property Type="Int32" Name="sum_frozenTissue" Nullable="true" />
           <Property Type="Int32" Name="sum_waxBlock" Nullable="true" />
@@ -708,6 +712,32 @@
           <Property Type="Int32" Name="sum_bile" Nullable="true" />
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetDifferentTotal_Result">
+          <Property Type="String" Name="type" Nullable="true" MaxLength="3" />
+          <Property Type="Int32" Name="blood" Nullable="true" />
+          <Property Type="Int32" Name="frozenTissue" Nullable="true" />
+          <Property Type="Int32" Name="waxBlock" Nullable="true" />
+          <Property Type="Int32" Name="urine" Nullable="true" />
+          <Property Type="Int32" Name="urineClearLiquid" Nullable="true" />
+          <Property Type="Int32" Name="urinePellet" Nullable="true" />
+          <Property Type="Int32" Name="tissueDNA" Nullable="true" />
+          <Property Type="Int32" Name="tissueRNA" Nullable="true" />
+          <Property Type="Int32" Name="stool" Nullable="true" />
+          <Property Type="Int32" Name="stoolDNA" Nullable="true" />
+          <Property Type="Int32" Name="sampleless" Nullable="true" />
+          <Property Type="Int32" Name="pleuraleffusion" Nullable="true" />
+          <Property Type="Int32" Name="CSF" Nullable="true" />
+          <Property Type="Int32" Name="ascites" Nullable="true" />
+          <Property Type="Int32" Name="boneMarrow" Nullable="true" />
+          <Property Type="Int32" Name="serum" Nullable="true" />
+          <Property Type="Int32" Name="plasma" Nullable="true" />
+          <Property Type="Int32" Name="buffyCoat" Nullable="true" />
+          <Property Type="Int32" Name="wholeBlood" Nullable="true" />
+          <Property Type="Int32" Name="paraffinSection" Nullable="true" />
+          <Property Type="Int32" Name="bile" Nullable="true" />
+          <Property Type="Int32" Name="hair" Nullable="true" />
+          <Property Type="Int32" Name="saliva" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -882,9 +912,11 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="TubeDataTotal" FunctionName="NHRIDBModel.Store.TubeDataTotal">
+          <FunctionImportMapping FunctionImportName="GetTotal" FunctionName="NHRIDBModel.Store.GetTotal">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="NHRIDBModel.TubeDataTotal_Result">
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetTotal_Result">
+                <ScalarProperty Name="rId" ColumnName="rId" />
+                <ScalarProperty Name="name_en" ColumnName="name_en" />
                 <ScalarProperty Name="sum_blood" ColumnName="sum_blood" />
                 <ScalarProperty Name="sum_frozenTissue" ColumnName="sum_frozenTissue" />
                 <ScalarProperty Name="sum_waxBlock" ColumnName="sum_waxBlock" />
@@ -908,6 +940,36 @@
                 <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
                 <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
                 <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetDifferentTotal" FunctionName="NHRIDBModel.Store.GetDifferentTotal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetDifferentTotal_Result">
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="blood" ColumnName="blood" />
+                <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
+                <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
+                <ScalarProperty Name="urine" ColumnName="urine" />
+                <ScalarProperty Name="urineClearLiquid" ColumnName="urineClearLiquid" />
+                <ScalarProperty Name="urinePellet" ColumnName="urinePellet" />
+                <ScalarProperty Name="tissueDNA" ColumnName="tissueDNA" />
+                <ScalarProperty Name="tissueRNA" ColumnName="tissueRNA" />
+                <ScalarProperty Name="stool" ColumnName="stool" />
+                <ScalarProperty Name="stoolDNA" ColumnName="stoolDNA" />
+                <ScalarProperty Name="sampleless" ColumnName="sampleless" />
+                <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
+                <ScalarProperty Name="CSF" ColumnName="CSF" />
+                <ScalarProperty Name="ascites" ColumnName="ascites" />
+                <ScalarProperty Name="boneMarrow" ColumnName="boneMarrow" />
+                <ScalarProperty Name="serum" ColumnName="serum" />
+                <ScalarProperty Name="plasma" ColumnName="plasma" />
+                <ScalarProperty Name="buffyCoat" ColumnName="buffyCoat" />
+                <ScalarProperty Name="wholeBlood" ColumnName="wholeBlood" />
+                <ScalarProperty Name="paraffinSection" ColumnName="paraffinSection" />
+                <ScalarProperty Name="bile" ColumnName="bile" />
+                <ScalarProperty Name="hair" ColumnName="hair" />
+                <ScalarProperty Name="saliva" ColumnName="saliva" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

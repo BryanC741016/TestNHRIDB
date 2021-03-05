@@ -38,7 +38,7 @@ namespace NHRIDB.Controllers
                 hosId = _hos;
             }
 
-            model.datas = _tubeTotal.GetQuery(hosId);
+            model.datas = _tubeTotal.GetTotal(hosId);
             model.columns = _tubeTotal.GetColummns();
 
 

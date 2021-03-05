@@ -27,15 +27,18 @@ namespace NHRIDB_DAL.DAL
               .ToList();
         }
 
-        public List<TubeDataTotal_Result> GetQuery(Nullable<Guid> hospitalId) {
+        public List<GetTotal_Result> GetTotal(Nullable<Guid> hospitalId) {
             if (hospitalId.HasValue)
             {
-                return _db.TubeDataTotal(hospitalId.Value.ToString()).ToList();
+                return _db.GetTotal(hospitalId.Value.ToString()).ToList();
             }
             else {
-                return _db.TubeDataTotal("").ToList();
+                return _db.GetTotal("").ToList();
             }
           
         }
+
+       
+         
     }
 }
