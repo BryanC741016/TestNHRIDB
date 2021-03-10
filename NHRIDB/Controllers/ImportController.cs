@@ -18,14 +18,16 @@ namespace NHRIDB.Controllers
     public class ImportController : BasicController
     {
         private DiagnosisDA _diagnosisDA;
-        private RegionDA _regionDA;
+         private RegionDA _regionDA;
         private DataTubeDA _dataTubeDA;
+        private TubeDataTotalDA _TubeDataTotalDA;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
             _diagnosisDA = new DiagnosisDA();
             _regionDA= new RegionDA();
             _dataTubeDA= new DataTubeDA();
+            _TubeDataTotalDA = new TubeDataTotalDA();
         }
 
         [HttpGet]
@@ -82,17 +84,32 @@ namespace NHRIDB.Controllers
             ViewDatasViewModel model = new ViewDatasViewModel();
             model.datas = _dataTubeDA.GetDatasByDataTable(table);
             model.columns = _dataTubeDA.GetColummns();
-            return View("ViewDatas",model);
+
+            //==========上傳excel檔
+            //紀錄檔名，若沒有點選儲存則刪除該檔；若有即移到至正式目錄
+            return View("ViewDatas",model); //顯示匯入的資
         }
 
+        /// <summary>
+        /// ViewDatas介面傳送資料
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [MvcAdminRightAuthorizeFilter(param = 'w')]
         [ValidateAntiForgeryToken]
         public ActionResult SaveData(ViewDatasViewModel model) {
             _dataTubeDA.Create(model.datas,_hos,_uid);
             TempData["msg"] = "儲存完畢";
-            return RedirectToAction("Index");
+            return RedirectToAction("Different");
         }
 
+        public ActionResult Different() {
+            List<GetDifferentTotal_Result> diff= _TubeDataTotalDA.GetDifferent(_hos);
+            DiffViewModel model = new DiffViewModel();
+            model.columns = _TubeDataTotalDA.GetColummns();
+            model.datas = diff;
+            return View(model);
+        }
 
         /// <summary>
         /// 匯出範本

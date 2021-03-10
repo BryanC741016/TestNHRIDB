@@ -283,6 +283,7 @@
     <Content Include="Views\Diagnosis\Create.cshtml" />
     <Content Include="Views\Diagnosis\Index.cshtml" />
     <Content Include="Views\Import\ViewDatas.cshtml" />
+    <Content Include="Views\Import\Different.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

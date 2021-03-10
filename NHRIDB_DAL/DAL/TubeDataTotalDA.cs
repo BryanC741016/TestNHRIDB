@@ -38,7 +38,10 @@ namespace NHRIDB_DAL.DAL
           
         }
 
-       
-         
+        public List<GetDifferentTotal_Result> GetDifferent(Guid hospitalId)
+        {       
+                return _db.GetDifferentTotal(hospitalId).ToList();
+        }
+
     }
 }

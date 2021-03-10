@@ -14,28 +14,28 @@ namespace NHRIDB_DAL.DbModel
     public partial class GetDifferentTotal_Result
     {
         public string type { get; set; }
-        public Nullable<int> blood { get; set; }
-        public Nullable<int> frozenTissue { get; set; }
-        public Nullable<int> waxBlock { get; set; }
-        public Nullable<int> urine { get; set; }
-        public Nullable<int> urineClearLiquid { get; set; }
-        public Nullable<int> urinePellet { get; set; }
-        public Nullable<int> tissueDNA { get; set; }
-        public Nullable<int> tissueRNA { get; set; }
-        public Nullable<int> stool { get; set; }
-        public Nullable<int> stoolDNA { get; set; }
-        public Nullable<int> sampleless { get; set; }
-        public Nullable<int> pleuraleffusion { get; set; }
-        public Nullable<int> CSF { get; set; }
-        public Nullable<int> ascites { get; set; }
-        public Nullable<int> boneMarrow { get; set; }
-        public Nullable<int> serum { get; set; }
-        public Nullable<int> plasma { get; set; }
-        public Nullable<int> buffyCoat { get; set; }
-        public Nullable<int> wholeBlood { get; set; }
-        public Nullable<int> paraffinSection { get; set; }
-        public Nullable<int> bile { get; set; }
-        public Nullable<int> hair { get; set; }
-        public Nullable<int> saliva { get; set; }
+        public Nullable<int> sum_blood { get; set; }
+        public Nullable<int> sum_frozenTissue { get; set; }
+        public Nullable<int> sum_waxBlock { get; set; }
+        public Nullable<int> sum_urine { get; set; }
+        public Nullable<int> sum_urineClearLiquid { get; set; }
+        public Nullable<int> sum_urinePellet { get; set; }
+        public Nullable<int> sum_tissueDNA { get; set; }
+        public Nullable<int> sum_tissueRNA { get; set; }
+        public Nullable<int> sum_stool { get; set; }
+        public Nullable<int> sum_stoolDNA { get; set; }
+        public Nullable<int> sum_sampleless { get; set; }
+        public Nullable<int> sum_pleuraleffusion { get; set; }
+        public Nullable<int> sum_CSF { get; set; }
+        public Nullable<int> sum_ascites { get; set; }
+        public Nullable<int> sum_boneMarrow { get; set; }
+        public Nullable<int> sum_serum { get; set; }
+        public Nullable<int> sum_plasma { get; set; }
+        public Nullable<int> sum_buffyCoat { get; set; }
+        public Nullable<int> sum_wholeBlood { get; set; }
+        public Nullable<int> sum_paraffinSection { get; set; }
+        public Nullable<int> sum_bile { get; set; }
+        public Nullable<int> sum_hair { get; set; }
+        public Nullable<int> sum_saliva { get; set; }
     }
 }

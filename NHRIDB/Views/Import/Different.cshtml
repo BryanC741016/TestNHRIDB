@@ -1,0 +1,46 @@
+﻿@model  NHRIDB.Models.ViewModels.DiffViewModel
+@{
+    ViewBag.Title = "匯入資料的總數差異表";
+}
+
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            @foreach (var column in Model.columns)
+            {
+                <th>@column.DisplayName</th>
+            }
+
+        </tr>
+    </thead>
+
+
+    @for (int i = 0; i < Model.datas.Count; i++)
+    {
+        var item = Model.datas[i];
+        <tr>
+            <td>
+                @item.type
+            </td>
+            @foreach (var column in Model.columns)
+            {
+
+                var value = item.GetType().GetProperty(column.Name).GetValue(item);
+
+
+                <td>
+                    @value
+
+                </td>
+
+
+
+            }
+        </tr>
+    }
+
+</table>
+<a class="btn" href="@Url.Action("Index")">離開</a>
