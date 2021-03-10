@@ -230,13 +230,13 @@ namespace NHRIDB_DAL.DAL
             }
 
             List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
-            TubeDataToLog(old);
+            TubeDataToLog(old,hkey,uid);
             _db.TubeData.RemoveRange(old);
             _db.TubeData.AddRange(adds);
             _db.SaveChanges();
         }
 
-        private void TubeDataToLog(List<TubeData> datas)
+        private void TubeDataToLog(List<TubeData> datas,Guid hoid,Guid uId)
         {
             List<TubeDataLog> adds = new List<TubeDataLog>();
          
@@ -248,8 +248,10 @@ namespace NHRIDB_DAL.DAL
                     var value = data.GetType().GetProperty(info.Name).GetValue(data);
                     tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
                 }
-                 
 
+                tube.hospitalId = hoid;
+                tube.createUser = data.createUser;
+                tube.createDate = data.createDate;
                 adds.Add(tube);
             }
 
