@@ -21,6 +21,7 @@ namespace NHRIDB.Controllers
          private RegionDA _regionDA;
         private DataTubeDA _dataTubeDA;
         private TubeDataTotalDA _TubeDataTotalDA;
+        string _dPath;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
@@ -28,6 +29,7 @@ namespace NHRIDB.Controllers
             _regionDA= new RegionDA();
             _dataTubeDA= new DataTubeDA();
             _TubeDataTotalDA = new TubeDataTotalDA();
+            _dPath = Server.MapPath("~/Upload/" + _hos.ToString());
         }
 
         [HttpGet]
@@ -36,6 +38,14 @@ namespace NHRIDB.Controllers
         public ActionResult Index()
         {
            
+            if (!Directory.Exists(_dPath))
+            {
+                Directory.CreateDirectory(_dPath);
+            }
+            //add cache, add datas
+            //delete cache files
+            //var files = Directory.GetFiles("C:\\temp", "*.*", SearchOption.AllDirectories)
+            // .Where(s => s.EndsWith("*.csv") || s.EndsWith("*.jpg"));
             return View( );
         }
 
@@ -86,6 +96,11 @@ namespace NHRIDB.Controllers
             model.columns = _dataTubeDA.GetColummns();
 
             //==========上傳excel檔
+            string now = DateTime.Now.ToString("yyyyMMddhhmmss");
+            string fileName = _hos.ToString()+"_"+ now + "." + ex;
+            string path = Path.Combine(_dPath,"Cache", fileName);
+            upload.SaveAs(path);
+            model.fileName = fileName;
             //紀錄檔名，若沒有點選儲存則刪除該檔；若有即移到至正式目錄
             return View("ViewDatas",model); //顯示匯入的資
         }
@@ -99,6 +114,12 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveData(ViewDatasViewModel model) {
             _dataTubeDA.Create(model.datas,_hos,_uid);
+            string path = Path.Combine(_dPath,"Cache", model.fileName);
+          
+         
+            string now = DateTime.Now.ToString("yyyyMMddhhmmss");
+            System.IO.File.Move(path, Path.Combine(_dPath,"Datas", now));
+          
             TempData["msg"] = "儲存完畢";
             return RedirectToAction("Different");
         }

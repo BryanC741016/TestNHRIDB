@@ -284,10 +284,13 @@
     <Content Include="Views\Diagnosis\Index.cshtml" />
     <Content Include="Views\Import\ViewDatas.cshtml" />
     <Content Include="Views\Import\Different.cshtml" />
+    <Content Include="Template\v4_2021-01-22.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\HospitalLog\" />
+    <Folder Include="Upload\Cache\" />
+    <Folder Include="Upload\Datas\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

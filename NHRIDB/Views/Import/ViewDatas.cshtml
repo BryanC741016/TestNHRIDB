@@ -9,7 +9,7 @@
     <div class="text-danger">
         @Html.ValidationSummary()
         @*@Html.ValidationMessageFor(model => model.gName, "", new { @class = "text-danger" })*@
-
+        @Html.HiddenFor(e=>e.fileName)
     </div>
     <table class="table table-hover table-bordered">
         <thead>
