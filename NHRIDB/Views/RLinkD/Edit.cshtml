@@ -1,0 +1,37 @@
+﻿@model  NHRIDB.Models.ViewModels.RLinkDEdit
+
+@{
+    ViewBag.Title = "編輯編號";
+
+}
+
+
+@using (Html.BeginForm("Edit", "RLinkD", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+
+    <div class="text-danger">
+        @Html.ValidationSummary()
+    </div>
+    <div class="formPanel">
+        @Html.HiddenFor(e => e.regionKey)
+        @Html.HiddenFor(e => e.diagnosisKey)
+
+        @Html.LabelFor(e => e.new_regionKey)
+        @Html.TextBoxFor(e => e.new_regionKey, new { @class = "form-control" })
+        @Html.LabelFor(e => e.new_diagnosisKey)
+        @Html.TextBoxFor(e => e.new_diagnosisKey, new { @class = "form-control" })
+        @Html.LabelFor(e => e.rName)
+        @Html.TextBoxFor(e => e.rName, new { @class = "form-control" })
+        @Html.LabelFor(e => e.dName)
+        @Html.TextBoxFor(e => e.dName, new { @class = "form-control" })
+
+    </div>
+
+    <a class="btn" href="@Url.Action("Index")">放棄</a>
+    <button class="btn" type="submit">儲存</button>
+}
+
+
+

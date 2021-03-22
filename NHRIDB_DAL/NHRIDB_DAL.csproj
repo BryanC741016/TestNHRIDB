@@ -55,19 +55,14 @@
   <ItemGroup>
     <Compile Include="DAL\DataAccess.cs" />
     <Compile Include="DAL\DataTubeDA.cs" />
+    <Compile Include="DAL\RLinkDDA.cs" />
     <Compile Include="DAL\MenuDA.cs" />
     <Compile Include="DAL\LogLoginDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
     <Compile Include="DAL\GroupDA.cs" />
-    <Compile Include="DAL\DiagnosisDA.cs" />
-    <Compile Include="DAL\RegionDA.cs" />
     <Compile Include="DAL\TubeDataTotalDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
-    <Compile Include="DbModel\Cover\Diagnosis.cs" />
-    <Compile Include="DbModel\Diagnosis.cs">
-      <DependentUpon>ModelDB.tt</DependentUpon>
-    </Compile>
     <Compile Include="DbModel\GetDifferentTotal_Result.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
@@ -104,7 +99,7 @@
     <Compile Include="DbModel\Permissions.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
-    <Compile Include="DbModel\Region.cs">
+    <Compile Include="DbModel\RLinkD.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\TubeData.cs">

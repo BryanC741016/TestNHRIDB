@@ -146,8 +146,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HospitalController.cs" />
     <Compile Include="Controllers\ProjectSetController.cs" />
-    <Compile Include="Controllers\DiagnosisController.cs" />
-    <Compile Include="Controllers\RegionController.cs" />
+    <Compile Include="Controllers\RLinkDController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AjaxValidateAntiForgeryTokenAttribute .cs" />
     <Compile Include="Filter\LogonAuthorizeFilter.cs" />
@@ -159,12 +158,11 @@
     <Compile Include="Models\Rs.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BarViewModel.cs" />
-    <Compile Include="Models\ViewModels\DiagnosisModel.cs" />
     <Compile Include="Models\ViewModels\ImportViewModel.cs" />
-    <Compile Include="Models\ViewModels\RegionIndexModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectSetViewModel.cs" />
     <Compile Include="Models\ViewModels\PurviewModel.cs" />
+    <Compile Include="Models\ViewModels\RLinkDViewModel.cs" />
     <Compile Include="Models\ViewModels\UserModelView.cs" />
     <Compile Include="Models\ViewModels\HospitalViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
@@ -278,18 +276,16 @@
     <Content Include="Views\Group\Edit.cshtml" />
     <Content Include="Views\ProjectSet\Index.cshtml" />
     <Content Include="Views\Account\NoRight.cshtml" />
-    <Content Include="Views\Region\Index.cshtml" />
-    <Content Include="Views\Region\Create.cshtml" />
-    <Content Include="Views\Diagnosis\Create.cshtml" />
-    <Content Include="Views\Diagnosis\Index.cshtml" />
     <Content Include="Views\Import\ViewDatas.cshtml" />
     <Content Include="Views\Import\Different.cshtml" />
     <Content Include="Template\v4_2021-01-22.xlsx" />
+    <Content Include="Views\RLinkD\Create.cshtml" />
+    <Content Include="Views\RLinkD\Index.cshtml" />
+    <Content Include="Views\RLinkD\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\HospitalLog\" />
-    <Folder Include="Upload\Cache\" />
     <Folder Include="Upload\Datas\" />
   </ItemGroup>
   <ItemGroup>

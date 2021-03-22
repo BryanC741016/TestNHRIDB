@@ -5,14 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="NHRIDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Diagnosis">
-          <Key>
-            <PropertyRef Name="diagnosisKey" />
-          </Key>
-          <Property Name="diagnosisKey" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="dname_tw" Type="nvarchar(max)" />
-          <Property Name="dname_en" Type="varchar(max)" Nullable="false" />
-        </EntityType>
         <EntityType Name="GroupUser">
           <Key>
             <PropertyRef Name="groupId" />
@@ -61,14 +53,6 @@
           <Property Name="purview" Type="smallint" Nullable="false" />
           <Property Name="menuId" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="Region">
-          <Key>
-            <PropertyRef Name="regionKey" />
-          </Key>
-          <Property Name="regionKey" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="name_tw" Type="nvarchar(max)" />
-          <Property Name="name_en" Type="varchar(max)" Nullable="false" />
-        </EntityType>
         <EntityType Name="RLinkD">
           <Key>
             <PropertyRef Name="regionKey" />
@@ -76,6 +60,8 @@
           </Key>
           <Property Name="regionKey" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="diagnosisKey" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="rName" Type="varchar(max)" Nullable="false" />
+          <Property Name="dName" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="TubeData">
           <Key>
@@ -201,48 +187,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RLinkD_Diagnosis">
-          <End Role="Diagnosis" Type="Self.Diagnosis" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RLinkD" Type="Self.RLinkD" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Diagnosis">
-              <PropertyRef Name="diagnosisKey" />
-            </Principal>
-            <Dependent Role="RLinkD">
-              <PropertyRef Name="diagnosisKey" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RLinkD_Region">
-          <End Role="Region" Type="Self.Region" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RLinkD" Type="Self.RLinkD" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Region">
-              <PropertyRef Name="regionKey" />
-            </Principal>
-            <Dependent Role="RLinkD">
-              <PropertyRef Name="regionKey" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TubeData_Diagnosis">
-          <End Role="Diagnosis" Type="Self.Diagnosis" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Diagnosis">
-              <PropertyRef Name="diagnosisKey" />
-            </Principal>
-            <Dependent Role="TubeData">
-              <PropertyRef Name="diagnosisKey" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TubeData_Hospital">
           <End Role="Hospital" Type="Self.Hospital" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -257,17 +201,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TubeData_Region">
-          <End Role="Region" Type="Self.Region" Multiplicity="1">
+        <Association Name="FK_TubeData_RLinkD">
+          <End Role="RLinkD" Type="Self.RLinkD" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="TubeData" Type="Self.TubeData" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Region">
+            <Principal Role="RLinkD">
               <PropertyRef Name="regionKey" />
+              <PropertyRef Name="diagnosisKey" />
             </Principal>
             <Dependent Role="TubeData">
               <PropertyRef Name="regionKey" />
+              <PropertyRef Name="diagnosisKey" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -306,13 +252,11 @@
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
-          <EntitySet Name="Diagnosis" EntityType="Self.Diagnosis" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Region" EntityType="Self.Region" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
@@ -325,24 +269,12 @@
             <End Role="MenuName" EntitySet="MenuName" />
             <End Role="Permissions" EntitySet="Permissions" />
           </AssociationSet>
-          <AssociationSet Name="FK_RLinkD_Diagnosis" Association="Self.FK_RLinkD_Diagnosis">
-            <End Role="Diagnosis" EntitySet="Diagnosis" />
-            <End Role="RLinkD" EntitySet="RLinkD" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RLinkD_Region" Association="Self.FK_RLinkD_Region">
-            <End Role="Region" EntitySet="Region" />
-            <End Role="RLinkD" EntitySet="RLinkD" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TubeData_Diagnosis" Association="Self.FK_TubeData_Diagnosis">
-            <End Role="Diagnosis" EntitySet="Diagnosis" />
-            <End Role="TubeData" EntitySet="TubeData" />
-          </AssociationSet>
           <AssociationSet Name="FK_TubeData_Hospital" Association="Self.FK_TubeData_Hospital">
             <End Role="Hospital" EntitySet="Hospital" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
-          <AssociationSet Name="FK_TubeData_Region" Association="Self.FK_TubeData_Region">
-            <End Role="Region" EntitySet="Region" />
+          <AssociationSet Name="FK_TubeData_RLinkD" Association="Self.FK_TubeData_RLinkD">
+            <End Role="RLinkD" EntitySet="RLinkD" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <AssociationSet Name="FK_User_GroupUser" Association="Self.FK_User_GroupUser">
@@ -381,23 +313,9 @@
             <End Role="Hospital" EntitySet="Hospital" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
-          <EntitySet Name="Diagnosis" EntityType="NHRIDBModel.Diagnosis" />
-          <EntitySet Name="Region" EntityType="NHRIDBModel.Region" />
-          <AssociationSet Name="RLinkD" Association="NHRIDBModel.RLinkD">
-            <End Role="Diagnosis" EntitySet="Diagnosis" />
-            <End Role="Region" EntitySet="Region" />
-          </AssociationSet>
           <EntitySet Name="TubeData" EntityType="NHRIDBModel.TubeData" />
-          <AssociationSet Name="FK_TubeData_Diagnosis" Association="NHRIDBModel.FK_TubeData_Diagnosis">
-            <End Role="Diagnosis" EntitySet="Diagnosis" />
-            <End Role="TubeData" EntitySet="TubeData" />
-          </AssociationSet>
           <AssociationSet Name="FK_TubeData_Hospital" Association="NHRIDBModel.FK_TubeData_Hospital">
             <End Role="Hospital" EntitySet="Hospital" />
-            <End Role="TubeData" EntitySet="TubeData" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TubeData_Region" Association="NHRIDBModel.FK_TubeData_Region">
-            <End Role="Region" EntitySet="Region" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
@@ -405,8 +323,13 @@
           <Parameter Name="hospitalId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetDifferentTotal" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
-            <Parameter Name="hospitalId" Mode="In" Type="Guid" />
+          <Parameter Name="hospitalId" Mode="In" Type="Guid" />
           </FunctionImport>
+          <EntitySet Name="RLinkD" EntityType="NHRIDBModel.RLinkD" />
+          <AssociationSet Name="FK_TubeData_RLinkD" Association="NHRIDBModel.FK_TubeData_RLinkD">
+            <End Role="RLinkD" EntitySet="RLinkD" />
+            <End Role="TubeData" EntitySet="TubeData" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -534,30 +457,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Diagnosis">
-          <Key>
-            <PropertyRef Name="diagnosisKey" />
-          </Key>
-          <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="dname_tw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="dname_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Region" Relationship="NHRIDBModel.RLinkD" FromRole="Diagnosis" ToRole="Region" />
-          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Diagnosis" FromRole="Diagnosis" ToRole="TubeData" />
-        </EntityType>
-        <EntityType Name="Region">
-          <Key>
-            <PropertyRef Name="regionKey" />
-          </Key>
-          <Property Name="regionKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="name_tw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="name_en" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.RLinkD" FromRole="Region" ToRole="Diagnosis" />
-          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Region" FromRole="Region" ToRole="TubeData" />
-        </EntityType>
-        <Association Name="RLinkD">
-          <End Type="NHRIDBModel.Diagnosis" Role="Diagnosis" Multiplicity="*" />
-          <End Type="NHRIDBModel.Region" Role="Region" Multiplicity="*" />
-        </Association>
         <EntityType Name="TubeData">
           <Key>
             <PropertyRef Name="hospitalId" />
@@ -598,24 +497,9 @@
           <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
           <Property Name="createDate" Type="DateTime" Nullable="false" Precision="7" />
-          <NavigationProperty Name="Diagnosis" Relationship="NHRIDBModel.FK_TubeData_Diagnosis" FromRole="TubeData" ToRole="Diagnosis" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
-          <NavigationProperty Name="Region" Relationship="NHRIDBModel.FK_TubeData_Region" FromRole="TubeData" ToRole="Region" />
+          <NavigationProperty Name="RLinkD" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="TubeData" ToRole="RLinkD" />
         </EntityType>
-        <Association Name="FK_TubeData_Diagnosis">
-          <End Type="NHRIDBModel.Diagnosis" Role="Diagnosis" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Diagnosis">
-              <PropertyRef Name="diagnosisKey" />
-            </Principal>
-            <Dependent Role="TubeData">
-              <PropertyRef Name="diagnosisKey" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TubeData_Hospital">
           <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -627,20 +511,6 @@
             </Principal>
             <Dependent Role="TubeData">
               <PropertyRef Name="hospitalId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TubeData_Region">
-          <End Type="NHRIDBModel.Region" Role="Region" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Region">
-              <PropertyRef Name="regionKey" />
-            </Principal>
-            <Dependent Role="TubeData">
-              <PropertyRef Name="regionKey" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -739,6 +609,33 @@
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
         </ComplexType>
+        <EntityType Name="RLinkD">
+          <Key>
+            <PropertyRef Name="regionKey" />
+            <PropertyRef Name="diagnosisKey" />
+          </Key>
+          <Property Name="regionKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="rName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="dName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="RLinkD" ToRole="TubeData" />
+        </EntityType>
+        <Association Name="FK_TubeData_RLinkD">
+          <End Type="NHRIDBModel.RLinkD" Role="RLinkD" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.TubeData" Role="TubeData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RLinkD">
+              <PropertyRef Name="regionKey" />
+              <PropertyRef Name="diagnosisKey" />
+            </Principal>
+            <Dependent Role="TubeData">
+              <PropertyRef Name="regionKey" />
+              <PropertyRef Name="diagnosisKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -810,32 +707,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Diagnosis">
-            <EntityTypeMapping TypeName="NHRIDBModel.Diagnosis">
-              <MappingFragment StoreEntitySet="Diagnosis">
-                <ScalarProperty Name="dname_en" ColumnName="dname_en" />
-                <ScalarProperty Name="dname_tw" ColumnName="dname_tw" />
-                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Region">
-            <EntityTypeMapping TypeName="NHRIDBModel.Region">
-              <MappingFragment StoreEntitySet="Region">
-                <ScalarProperty Name="name_en" ColumnName="name_en" />
-                <ScalarProperty Name="name_tw" ColumnName="name_tw" />
-                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <AssociationSetMapping Name="RLinkD" TypeName="NHRIDBModel.RLinkD" StoreEntitySet="RLinkD">
-            <EndProperty Name="Region">
-              <ScalarProperty Name="regionKey" ColumnName="regionKey" />
-            </EndProperty>
-            <EndProperty Name="Diagnosis">
-              <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
-            </EndProperty>
-          </AssociationSetMapping>
           <EntitySetMapping Name="TubeData">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
               <MappingFragment StoreEntitySet="TubeData">
@@ -973,6 +844,16 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="RLinkD">
+            <EntityTypeMapping TypeName="NHRIDBModel.RLinkD">
+              <MappingFragment StoreEntitySet="RLinkD">
+                <ScalarProperty Name="dName" ColumnName="dName" />
+                <ScalarProperty Name="rName" ColumnName="rName" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

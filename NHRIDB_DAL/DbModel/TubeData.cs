@@ -47,8 +47,7 @@ namespace NHRIDB_DAL.DbModel
         public System.Guid createUser { get; set; }
         public System.DateTime createDate { get; set; }
     
-        public virtual Diagnosis Diagnosis { get; set; }
         public virtual Hospital Hospital { get; set; }
-        public virtual Region Region { get; set; }
+        public virtual RLinkD RLinkD { get; set; }
     }
 }

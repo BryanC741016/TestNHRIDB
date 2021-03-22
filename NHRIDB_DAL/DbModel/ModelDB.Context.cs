@@ -33,10 +33,9 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<LogLogin> LogLogin { get; set; }
         public virtual DbSet<Hospital> Hospital { get; set; }
         public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<Diagnosis> Diagnosis { get; set; }
-        public virtual DbSet<Region> Region { get; set; }
         public virtual DbSet<TubeData> TubeData { get; set; }
         public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
+        public virtual DbSet<RLinkD> RLinkD { get; set; }
     
         public virtual ObjectResult<GetTotal_Result> GetTotal(string hospitalId)
         {

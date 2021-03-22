@@ -43,7 +43,7 @@ namespace NHRIDB_DAL.ViewModel
         [Required]
         public string gender { get; set; }
 
-        [DisplayName("沒有檢體")]
+        [DisplayName("沒有收到檢體")]
         public bool sampleless { get; set; }
 
         [DisplayName("血液")]

@@ -12,21 +12,19 @@ namespace NHRIDB_DAL.DbModel
     using System;
     using System.Collections.Generic;
     
-    public partial class Diagnosis
+    public partial class RLinkD
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Diagnosis()
+        public RLinkD()
         {
-            this.Region = new HashSet<Region>();
             this.TubeData = new HashSet<TubeData>();
         }
     
+        public string regionKey { get; set; }
         public string diagnosisKey { get; set; }
-        public string dname_tw { get; set; }
-        public string dname_en { get; set; }
+        public string rName { get; set; }
+        public string dName { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Region> Region { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TubeData> TubeData { get; set; }
     }

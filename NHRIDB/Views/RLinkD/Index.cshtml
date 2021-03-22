@@ -1,0 +1,82 @@
+﻿@model NHRIDB.Models.ViewModels.RLinkDViewModel
+
+@{
+    ViewBag.Title = "編號清單";
+
+    string[][] Columns = { new string[] { "部位編號", "regionKey" }
+                         , new string[] { "診斷編號", "diagnosisKey" }
+                          , new string[] { "部位英文名稱", "rName" }
+                           , new string[] { "診斷英文名稱", "dName" }
+                         };
+}
+
+
+@using (Html.BeginForm("Index", "RLinkD", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="formPanel">
+        @Html.LabelFor(e => e.searchDkey)
+        @Html.TextBoxFor(e => e.searchDkey)
+
+        @Html.LabelFor(e => e.searchRkey)
+        @Html.TextBoxFor(e => e.searchRkey)
+
+        @Html.LabelFor(e => e.searchRname)
+        @Html.TextBoxFor(e => e.searchRname)
+
+        @Html.LabelFor(e => e.searchDname)
+        @Html.TextBoxFor(e => e.searchDname)
+
+
+    </div>
+    <button class="btn" type="submit">查詢</button>
+}
+<br />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Form.AddUrl(ViewBag.CanEdit, Url.Action("Create"))
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    @Form.OrderByColumns(Columns, this)
+                    <th>編輯</th>
+                </tr>
+            </thead>
+
+
+            @foreach (var item in Model.items)
+            {
+                <tr>
+                    <td>
+                        @item.regionKey
+                    </td>
+                    <td>
+                        @item.diagnosisKey
+                    </td>
+                    <td>
+                        @item.rName
+                    </td>
+                    <td>
+                        @item.dName
+                    </td>
+                    <td>
+                        @if (ViewBag.CanEdit)
+                        {
+                            <i class="btnDel fa fa-trash-o" data-dkey="@item.diagnosisKey" data-rkey="@item.regionKey">
+                            </i>
+                            @Form.EditUrl(true, Url.Action("Edit", new { dKey = item.diagnosisKey, rKey=item.regionKey }))
+                        }
+
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+@Form.DeleteDialog(ViewBag.CanEdit, "btnDel", Url.Action("Delete"))
+
+@Form.pageDiv(Url.Action("Index"), Model.pageNumber, Model.pageEnd)

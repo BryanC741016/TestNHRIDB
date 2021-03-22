@@ -1,0 +1,175 @@
+﻿using NHRIDB_DAL.DbModel;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NHRIDB_DAL.DAL
+{
+   public class RLinkDDA : DataAccess
+    {
+       
+
+        public IQueryable<RLinkD> GetQuery(string dkey="",string rKey="",string dName="",string rName="") {
+            IQueryable<RLinkD> qu = _db.RLinkD;
+
+            if (!string.IsNullOrEmpty(dName)) {
+                qu = qu.Where(e => e.dName.Contains(dName) );
+            }
+
+            if (!string.IsNullOrEmpty(rName))
+            {
+                qu = qu.Where(e => e.rName.Contains(rName));
+            }
+
+            if (!string.IsNullOrEmpty(dkey))
+            {
+                qu = qu.Where(e => e.diagnosisKey.Equals(dkey));
+            }
+
+            if (!string.IsNullOrEmpty(rKey))
+            {
+                qu = qu.Where(e => e.regionKey.Equals(rKey));
+            }
+
+            
+            return qu;
+        }
+        public bool HasAny(string dkey = "", string rkey = "", string dName = "", string rName = "", string noRkey = "", string noDkey = "")
+        {
+            IQueryable<RLinkD> qu = _db.RLinkD;
+
+            if (!string.IsNullOrEmpty(dName))
+            {
+                qu = qu.Where(e => e.dName.Equals(dName));
+            }
+
+            if (!string.IsNullOrEmpty(rName))
+            {
+                qu = qu.Where(e => e.rName.Equals(rName));
+            }
+
+            if (!string.IsNullOrEmpty(dkey))
+            {
+                qu = qu.Where(e => e.diagnosisKey.Equals(dkey));
+            }
+
+            if (!string.IsNullOrEmpty(rkey))
+            {
+                qu = qu.Where(e => e.regionKey.Equals(rkey));
+            }
+
+            if (!string.IsNullOrEmpty(noRkey))
+            {
+                qu = qu.Where(e => !e.regionKey.Equals(noRkey));
+            }
+
+            if (!string.IsNullOrEmpty(noDkey))
+            {
+                qu = qu.Where(e => !e.diagnosisKey.Equals(noDkey));
+            }
+            return qu.Count() > 1;
+        }
+
+        public RLinkD GetRD(string rkey,string dkey) {
+            return _db.RLinkD.Where(e => e.regionKey.Equals(rkey) && e.diagnosisKey.Equals(dkey)).SingleOrDefault();
+        }
+
+        public void Create(string regionKey, string diagnosisKey, string rName, string dName) {
+
+            RLinkD add = new RLinkD();
+           
+            add.regionKey = regionKey;
+            add.diagnosisKey = diagnosisKey;
+            add.rName = rName;
+            add.dName = dName;
+
+            _db.RLinkD.Add(add);
+            _db.SaveChanges();
+
+      
+        }
+
+        public bool Edit(string regionKey, string diagnosisKey, string new_regionKey, string new_diagnosisKey, string rName, string dName,out string msg) {
+            RLinkD edit = GetRD(regionKey, diagnosisKey);
+            msg = "";
+            //查詢新的編號是否已被使用
+            if (!regionKey.Equals(new_regionKey) || !diagnosisKey.Equals(new_diagnosisKey)) {
+             
+                if (HasAny(rkey: new_regionKey, dkey: new_diagnosisKey)) {
+                    msg = "編號重覆";
+                    return false;
+                }
+            }
+
+            
+            if (HasAny(rName: rName, dName: dName, noDkey: diagnosisKey, noRkey: regionKey))
+            {
+                msg = "部位與診斷名稱已被使用";
+                return false;
+            }
+            edit.regionKey = new_regionKey;
+            edit.diagnosisKey = new_diagnosisKey;
+            edit.rName = rName;
+            edit.dName = dName;
+            _db.SaveChanges();
+            return true;
+        }
+
+        public void Delete(string regionKey, string diagnosisKey)
+        {
+            RLinkD edit = GetRD(regionKey, diagnosisKey);
+            _db.RLinkD.Remove(edit);
+            _db.SaveChanges();
+        }
+
+        public DataTable GetDataTable()
+        {
+            DataTable table = new DataTable();
+            string[] columns = new string[] { "部位編號", "部位名稱" ,"診斷編號", "診斷名稱" };
+            foreach (var item in columns)
+            {
+                DataColumn column = new DataColumn();
+                column.ColumnName = item;
+                column.Caption = item;
+                column.AllowDBNull = true;
+                table.Columns.Add(column);
+            }
+            IQueryable<RLinkD> qu = _db.RLinkD;
+            foreach (var item in qu.ToList())
+            {
+                DataRow row = table.NewRow();
+                row[columns[0]] = item.regionKey;
+                row[columns[1]] = item.rName;
+                row[columns[2]] = item.diagnosisKey;
+                row[columns[3]] = item.dName;
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
+      
+
+        public bool CheckDLinkR(DataTable table, out string msg)
+        {
+            msg = "";
+            var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("Organ/ Region   (代碼)"), diagnosisKey = e.Field<string>("Diagnosis  (代碼)") })
+                 .Distinct().ToList();
+            IQueryable<RLinkD> qu = GetQuery();
+            foreach (var data in datas)
+            {
+                bool commit = qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.regionKey.Equals(data.regionKey))
+                      .Any();
+                if (!commit)
+                {
+                    msg = data.diagnosisKey + "(診斷編號)與" + data.regionKey + "(部位編號)查無相關資料";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+}

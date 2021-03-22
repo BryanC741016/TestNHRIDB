@@ -1,0 +1,35 @@
+﻿@model  NHRIDB.Models.ViewModels.RLinkDCreate
+
+@{
+    ViewBag.Title = "新增編號";
+
+}
+
+
+@using (Html.BeginForm("Create", "RLinkD", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+
+    <div class="text-danger">
+        @Html.ValidationSummary()
+    </div>
+    <div class="formPanel">
+
+        @Html.LabelFor(e => e.regionKey)
+        @Html.TextBoxFor(e => e.regionKey, new { @class = "form-control" })
+        @Html.LabelFor(e => e.diagnosisKey)
+        @Html.TextBoxFor(e => e.diagnosisKey, new { @class = "form-control" })
+        @Html.LabelFor(e => e.rName)
+        @Html.TextBoxFor(e => e.rName, new { @class = "form-control" })
+        @Html.LabelFor(e => e.dName)
+        @Html.TextBoxFor(e => e.dName, new { @class = "form-control" })
+
+    </div>
+
+    <a class="btn" href="@Url.Action("Index")">放棄</a>
+    <button class="btn" type="submit">儲存</button>
+}
+
+
+

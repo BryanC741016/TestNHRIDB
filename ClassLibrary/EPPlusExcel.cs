@@ -20,39 +20,57 @@ namespace ClassLibrary
     {
       
 
-        public DataTable GetDataTable(Stream stream, bool hasHeader = true)
+        public DataTable GetDataTable(string path,Stream stream, bool hasHeader = true)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.Commercial;
-           // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            using (var pck = new OfficeOpenXml.ExcelPackage(stream))
+            ExcelWorksheet ws;
+            if (path.EndsWith(".csv"))
             {
-                 
-                var ws = pck.Workbook.Worksheets.First();
-                DataTable tbl = new DataTable();
-                foreach (var firstRowCell in ws.Cells[1, 1, 1, ws.Dimension.End.Column])
-                    tbl.Columns.Add(hasHeader ? firstRowCell.Text
-                        : string.Format("Column {0}", firstRowCell.Start.Column));
-
-              
-                int startRow = hasHeader ? 2 : 1;
-                for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
+                var pck = new OfficeOpenXml.ExcelPackage();
+                 ws = pck.Workbook.Worksheets.Add("Sheet1");
+                ExcelTextFormat format = new ExcelTextFormat()
                 {
-                    
-                    DataRow row = tbl.NewRow();
-                    int index = 0;
-                  
-                    for(int i= ws.Dimension.Start.Column; i <= ws.Dimension.End.Column; i++){
-                        var cell = ws.Cells[rowNum, i];
-                        string column = tbl.Columns[index].ColumnName;
-                        row[column] = cell.Text;
-                        index++;
-                    }
-                      
+                    Delimiter = ','
+                };
+                ws.Cells[1, 1].LoadFromText(File.ReadAllText(path, Encoding.Default), format);
+            }
+            else {
+                var pck = new OfficeOpenXml.ExcelPackage(stream);
+                 ws = pck.Workbook.Worksheets.First();
+
+            }
+            //using (var pck = new OfficeOpenXml.ExcelPackage(stream))
+            //{
+
+            //    var ws = pck.Workbook.Worksheets.First();
+            DataTable tbl = new DataTable();
+            foreach (var firstRowCell in ws.Cells[1, 1, 1, ws.Dimension.End.Column])
+                tbl.Columns.Add(hasHeader ?  firstRowCell.Text.Trim()
+                    : string.Format("Column {0}", firstRowCell.Start.Column));
+
+
+            int startRow = hasHeader ? 2 : 1;
+            for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
+            {
+
+                DataRow row = tbl.NewRow();
+                int index = 0;
+
+                for (int i = ws.Dimension.Start.Column; i <= ws.Dimension.End.Column; i++)
+                {
+                    var cell = ws.Cells[rowNum, i];
+                    string column = tbl.Columns[index].ColumnName;
+                    row[column] = cell.Text;
+                    index++;
+                }
+
+                if (!string.IsNullOrEmpty(string.Join("", row.ItemArray))) {
                     tbl.Rows.Add(row);
                 }
-                return tbl;
+              
             }
+            return tbl;
+            //}
         }
 
         
