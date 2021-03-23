@@ -62,6 +62,7 @@ namespace NHRIDB_DAL.DAL
             create.groupId = groupId;
             create.email = email;
             create.name = name;
+            create.userId = Guid.NewGuid();
             _db.User.Add(create);
             _db.SaveChanges();
         }

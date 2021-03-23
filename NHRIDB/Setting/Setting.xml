@@ -1,4 +1,7 @@
 <set>
   <startDate>2020/01/31</startDate>
   <endDate>2020/02/28</endDate>
+  <regex>[A-Z]+[0-9]+</regex>
+  <regexMsg>只容許英文數字</regexMsg>
+  <errorOutCount>3</errorOutCount>
 </set>

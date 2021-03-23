@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -54,6 +55,14 @@ namespace NHRIDB.Controllers
             if (!model.newpasswd.Equals(model.repasswd)) {
                 return RedirectToAction("Change", new { msg = "確認密碼必須與新密碼相同" });
             }
+            
+            ProjectSetViewModel set = GetProjSet();
+            Regex reg = new Regex(set.regex);
+            if (!reg.IsMatch(model.newpasswd))
+            {
+               string msg = string.IsNullOrEmpty(set.regexMsg) ? "密碼強度不夠，請重新輸入" : set.regexMsg;
+               return RedirectToAction("Change", new { msg = msg });
+            } 
 
             User user = _userDA.HasQuery(_name,model.passwd);
             if (user == null) {

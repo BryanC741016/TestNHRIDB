@@ -1,4 +1,5 @@
-﻿using NHRIDB.Models.ViewModels;
+﻿using ClassLibrary;
+using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
 using System;
@@ -14,7 +15,19 @@ namespace NHRIDB.Controllers
 {
     public class HomeController : Controller
     {
-       
+        private string _ip;
+        private string _path;
+        private XmlNode _root;
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+            _ip = GetIp();
+            _path = Server.MapPath("~/Logs/LoginLog");
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(Server.MapPath("~/Setting/Setting.xml"));
+            _root = xmlDoc.SelectSingleNode("set");
+
+        }
         protected override void OnResultExecuting(ResultExecutingContext filterContext)
         {
 
@@ -32,11 +45,9 @@ namespace NHRIDB.Controllers
             LoginViewModel model = new LoginViewModel();
             model.imgUrl = new List<string>();
 
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(Server.MapPath("~/Setting/Setting.xml"));
-            XmlNode root = xmlDoc.SelectSingleNode("set");
-            string startDateXML = root.SelectSingleNode("startDate").InnerText;
-            string endDateXML = root.SelectSingleNode("endDate").InnerText;
+           
+            string startDateXML = _root.SelectSingleNode("startDate").InnerText;
+            string endDateXML = _root.SelectSingleNode("endDate").InnerText;
             
 
             model.endDate = DateTime.Parse(endDateXML);
@@ -48,6 +59,12 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(LoginViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                model.message = "請確實填寫資料";
+                return View(model);
+            }
+           
             if (string.IsNullOrEmpty(model.tonken) || string.IsNullOrEmpty(model.textshowCode)) {
                 model.message = "請輸入正確的驗證碼";
                 return View(model);
@@ -59,24 +76,29 @@ namespace NHRIDB.Controllers
                 model.message = "請輸入正確的驗證碼";
                 return View(model);
             }
-            if (!ModelState.IsValid)
-            {
-                model.message = "請確實填寫資料";
+
+            string errorOutCount = _root.SelectSingleNode("errorOutCount").InnerText;
+            int count = string.IsNullOrEmpty(errorOutCount) ? 0 : int.Parse(errorOutCount);
+            if (Logs.GetFind(_path, _ip + "|" + model.userName + "|false", count)) {
+                model.message = "錯誤次數過多，已被鎖住";
                 return View(model);
             }
-             
+           
+         
+           
 
             NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
             UserDA uda = new UserDA(db);
-            LogLoginDA log = new LogLoginDA(db);
-            string ip = GetIp();
+           
             User user = uda.HasQuery(model.userName, model.passwd);
             if (user == null)
             {
-                log.Create(model.userName, ip, false);
+         
+                Logs.WriteLog(_path, _ip + "|" + model.userName + "|false");
             }
             else{
-                log.Create(user.userName, ip, true);
+    
+                Logs.WriteLog(_path, _ip + "|" + model.userName + "|true");
                 Session["uid"] = user.userId;
                 Session["hos"] = user.id_Hospital;
                 Session["name"] = user.userName;
@@ -97,7 +119,7 @@ namespace NHRIDB.Controllers
                 MenuDA menu = new MenuDA(db);
                 List<PurviewModel> parentMenu =  menu.GetQuery(isNullParent: true)
                     .ToList()
-                   .Where(e => list.Any(x => x.parentMenu == e.menuId && ((int)x.purview) >= 1))
+                   .Where(e =>  list.Any(x => x.parentMenu == e.menuId && ((int)x.purview) >= 1))
                    .Select(e => new PurviewModel
                    {
                        controllName = e.controllerName,
@@ -114,14 +136,11 @@ namespace NHRIDB.Controllers
                 Session["funcList"] = fun;
 
                 DateTime now = DateTime.Now;
-                if (user.GroupUser.alwaysOpen)
+                if (user.GroupUser.alwaysOpen || (now >= model.startDate && now <= model.endDate))
                 {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
                     return RedirectToAction("Index", "Import");
-                }
-                else if (now >= model.startDate && now <= model.endDate) {
-                    FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Import");
+                
                 }
                 model.message = "未開放或無權限";
                 return View(model);

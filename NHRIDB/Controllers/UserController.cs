@@ -6,6 +6,7 @@ using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -81,6 +82,13 @@ namespace NHRIDB.Controllers
             {
                 return View(model);
             }
+
+            string msg = "";
+            if (!RegexPasswd(model.password,out msg)) {
+                ModelState.AddModelError(string.Empty, msg);
+                return View(model);
+            }
+           
             if (!model.password.Equals(model.repassword)) {
              
                 ModelState.AddModelError(string.Empty, "密碼與確認密碼不相同");
@@ -116,6 +124,7 @@ namespace NHRIDB.Controllers
             model.msSelect = new SelectList(_groupSelect, "groupId", "gName");
             model.username = user.userName;
             model.email = user.email;
+            model.name = user.name;
             return View(model);
         }
 
@@ -145,7 +154,8 @@ namespace NHRIDB.Controllers
                 ModelState.AddModelError(string.Empty, "此帳號已被使用");
                 return View(model);
             }
-
+            
+             
             _userDA.Edit(model.uid,model.username, model.hospitalId,  model.groupId, model.email,model.name);
             return RedirectToAction("Index");
 
@@ -162,8 +172,23 @@ namespace NHRIDB.Controllers
                 TempData["msg"] = "請填寫資料";
                 return RedirectToAction("Edit", new { id = uid });
             }
-            _userDA.ChagePasswd(uid, model.passwd);
 
+            string msg = "";
+            if (!RegexPasswd(model.newpasswd, out msg))
+            {
+                TempData["msg"] = msg;
+                return RedirectToAction("Edit", new { id = uid });
+            }
+
+            if (!model.newpasswd.Equals(model.repasswd))
+            {
+                TempData["msg"] = "密碼與確認密碼不相同";
+             
+                return RedirectToAction("Edit", new { id = uid });
+            }
+
+            _userDA.ChagePasswd(uid, model.newpasswd);
+            TempData["msg"] = "修改完畢";
             return RedirectToAction("Edit",new { id= uid });
 
         }
@@ -184,6 +209,19 @@ namespace NHRIDB.Controllers
             _userDA.Delete(id);
             rs.isSuccess = true;
             return Json(rs);
+        }
+
+        private bool RegexPasswd(string passwd, out string msg) {
+            msg = "";
+            ProjectSetViewModel set = GetProjSet();
+            Regex reg = new Regex(@set.regex);
+            if (!reg.IsMatch(passwd))
+            {
+                 msg = string.IsNullOrEmpty(set.regexMsg) ? "密碼強度不夠，請重新輸入" : set.regexMsg;
+                return false;
+            }
+
+            return true;
         }
 
     }

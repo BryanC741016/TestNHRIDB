@@ -3,7 +3,7 @@
     ViewBag.Title = "設定時間";
 }
 
-<div class="remark">開放時間：</div>
+ 
 @if (!ViewBag.CanEdit)
 {
      @Model.startDate.Value.ToString("yyyy-MM-dd")
@@ -23,6 +23,7 @@ else
         </div>
 
         <div class="formPanel">
+            @Html.LabelFor(e => e.startDate)
             @if (Model.startDate.HasValue)
             {
                 <input type="date" name="startDate" value="@Model.startDate.Value.ToString("yyyy-MM-dd")" />
@@ -32,6 +33,7 @@ else
                 <input type="date" name="startDate" />
             }
 
+            @Html.LabelFor(e => e.endDate)
             @if (Model.endDate.HasValue)
             {
                 <input type="date" name="endDate" value="@Model.endDate.Value.ToString("yyyy-MM-dd")" />
@@ -41,6 +43,13 @@ else
                 <input type="date" name="endDate" />
             }
 
+            @Html.LabelFor(e => e.regex)
+            @Html.TextBoxFor(e => e.regex, new { @class = "form-control" })
+            @Html.LabelFor(e => e.regexMsg)
+            @Html.TextBoxFor(e => e.regexMsg, new { @class = "form-control" })
+
+            @Html.LabelFor(e => e.errorOutCount)
+            @Html.TextBoxFor(e => e.errorOutCount, new { @class = "form-control", @type = "num" })
         </div>
 
 

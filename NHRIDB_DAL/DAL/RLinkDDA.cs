@@ -92,26 +92,20 @@ namespace NHRIDB_DAL.DAL
       
         }
 
-        public bool Edit(string regionKey, string diagnosisKey, string new_regionKey, string new_diagnosisKey, string rName, string dName,out string msg) {
+        public bool Edit(string regionKey, string diagnosisKey, string rName, string dName,out string msg) {
             RLinkD edit = GetRD(regionKey, diagnosisKey);
             msg = "";
-            //查詢新的編號是否已被使用
-            if (!regionKey.Equals(new_regionKey) || !diagnosisKey.Equals(new_diagnosisKey)) {
-             
-                if (HasAny(rkey: new_regionKey, dkey: new_diagnosisKey)) {
-                    msg = "編號重覆";
-                    return false;
-                }
+            if (edit == null) {
+                msg = "查無此資料";
+                return false;
             }
-
             
             if (HasAny(rName: rName, dName: dName, noDkey: diagnosisKey, noRkey: regionKey))
             {
                 msg = "部位與診斷名稱已被使用";
                 return false;
             }
-            edit.regionKey = new_regionKey;
-            edit.diagnosisKey = new_diagnosisKey;
+          
             edit.rName = rName;
             edit.dName = dName;
             _db.SaveChanges();

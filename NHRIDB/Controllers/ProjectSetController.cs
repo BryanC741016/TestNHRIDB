@@ -11,19 +11,12 @@ namespace NHRIDB.Controllers
 {
     public class ProjectSetController : BasicController
     {
-        private string _path = "~/Setting/Setting.xml";
+       
        [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index()
         {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(Server.MapPath(_path));
-            XmlNode root = xmlDoc.SelectSingleNode("set");
-            string startDateXML = root.SelectSingleNode("startDate").InnerText;
-            string endDateXML = root.SelectSingleNode("endDate").InnerText;
-            ProjectSetViewModel model = new ProjectSetViewModel();
-            model.endDate = DateTime.Parse(endDateXML);
-            model.startDate = DateTime.Parse(startDateXML);
+            ProjectSetViewModel model = GetProjSet();
             return View(model);
         }
 
@@ -38,15 +31,31 @@ namespace NHRIDB.Controllers
                 ModelState.AddModelError(string.Empty, "開始時間不得大於結束時間");
                 return View(model);
             }
+            if (model.errorOutCount < 0) {
+                ModelState.AddModelError(string.Empty, "次數必須大於0");
+                return View(model);
+            }
             XmlDocument xmlDoc = new XmlDocument();
-            string xml = "<set><startDate>"+
+            string xml = "<set>" +
+                "<startDate>" +
                  model.startDate.Value.ToString("yyyy/MM/dd")
                 +"</startDate>"
                 +"<endDate>" +
-                      model.endDate.Value.ToString("yyyy/MM/dd")
-               + "</endDate></set>";
+                      model.endDate.Value.ToString("yyyy/MM/dd") +
+               "</endDate>"+
+                "<regex>" +
+                      model.regex +
+               "</regex>" +
+                 "<regexMsg>" +
+                      model.regexMsg +
+               "</regexMsg>" +
+                 "<errorOutCount>" +
+                      model.errorOutCount.ToString() +
+               "</errorOutCount>" +
+               "</set>";
             xmlDoc.LoadXml(xml);
             xmlDoc.Save(Server.MapPath(_path));
+            ModelState.AddModelError(string.Empty, "修改完成");
             return View(model);
         }
     }

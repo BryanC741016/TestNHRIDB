@@ -11,16 +11,16 @@ namespace NHRIDB.Models.ViewModels
 {
     public class RLinkDViewModel : PageModel
     {
-        [Display(Name = "查詢部位名稱")]
+        [Display(Name = "部位英文名稱")]
         public string searchRname { get; set; }
 
-        [Display(Name = "查詢診斷名稱")]
+        [Display(Name = "診斷英文名稱")]
         public string searchDname { get; set; }
 
-        [Display(Name = "查詢部位編號")]
+        [Display(Name = "部位編號")]
         public string searchRkey { get; set; }
 
-        [Display(Name = "查詢診斷編號")]
+        [Display(Name = "診斷編號")]
         public string searchDkey { get; set; }
 
         public List<RLinkDItem> items { get; set; }
@@ -57,13 +57,7 @@ namespace NHRIDB.Models.ViewModels
         [Display(Name = "診斷編號")]
         public string diagnosisKey { get; set; }
 
-        [Required]
-        [Display(Name = "部位編號")]
-        public string  new_regionKey { get; set; }
-
-        [Required]
-        [Display(Name = "診斷編號")]
-        public string new_diagnosisKey { get; set; }
+        
 
         [Required]
         [Display(Name = "部位英文名稱")]

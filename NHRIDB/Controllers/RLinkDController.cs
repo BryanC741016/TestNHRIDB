@@ -107,8 +107,7 @@ namespace NHRIDB.Controllers
 
             model.rName = rLinkD.rName;
             model.dName = rLinkD.dName;
-            model.new_diagnosisKey = rLinkD.diagnosisKey;
-            model.new_regionKey = rLinkD.regionKey;
+           
 
             return View(model);
         }
@@ -131,7 +130,7 @@ namespace NHRIDB.Controllers
                 return View(model);
             }
             string msg = "";
-           bool commit= _rLinkDDA.Edit(model.regionKey, model.diagnosisKey, model.new_regionKey, model.new_diagnosisKey, model.rName, model.dName,out msg);
+           bool commit= _rLinkDDA.Edit(model.regionKey, model.diagnosisKey, model.rName, model.dName,out msg);
             if (!commit) {
                 ModelState.AddModelError(string.Empty, msg);
                 return View(model);
