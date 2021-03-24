@@ -23,16 +23,6 @@
           <Property Name="name_en" Type="nvarchar" MaxLength="100" />
           <Property Name="fileExtension" Type="nvarchar" MaxLength="50" />
         </EntityType>
-        <EntityType Name="LogLogin">
-          <Key>
-            <PropertyRef Name="userName" />
-            <PropertyRef Name="lognDate" />
-          </Key>
-          <Property Name="userName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="ip" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="lognDate" Type="datetime" Nullable="false" />
-          <Property Name="isLogin" Type="bit" Nullable="false" />
-        </EntityType>
         <EntityType Name="MenuName">
           <Key>
             <PropertyRef Name="menuId" />
@@ -254,7 +244,6 @@
         <EntityContainer Name="NHRIDBModelStoreContainer">
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
@@ -302,7 +291,6 @@
             <End Role="MenuName" EntitySet="MenuName" />
             <End Role="Permissions" EntitySet="Permissions" />
           </AssociationSet>
-          <EntitySet Name="LogLogin" EntityType="NHRIDBModel.LogLogin" />
           <EntitySet Name="Hospital" EntityType="NHRIDBModel.Hospital" />
           <EntitySet Name="User" EntityType="NHRIDBModel.User" />
           <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
@@ -393,16 +381,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="LogLogin">
-          <Key>
-            <PropertyRef Name="userName" />
-            <PropertyRef Name="lognDate" />
-          </Key>
-          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ip" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="lognDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="isLogin" Type="Boolean" Nullable="false" />
-        </EntityType>
         <EntityType Name="Hospital">
           <Key>
             <PropertyRef Name="id" />
@@ -670,16 +648,6 @@
                 <ScalarProperty Name="menuId" ColumnName="menuId" />
                 <ScalarProperty Name="purview" ColumnName="purview" />
                 <ScalarProperty Name="groupId" ColumnName="groupId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="LogLogin">
-            <EntityTypeMapping TypeName="NHRIDBModel.LogLogin">
-              <MappingFragment StoreEntitySet="LogLogin">
-                <ScalarProperty Name="isLogin" ColumnName="isLogin" />
-                <ScalarProperty Name="lognDate" ColumnName="lognDate" />
-                <ScalarProperty Name="ip" ColumnName="ip" />
-                <ScalarProperty Name="userName" ColumnName="userName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

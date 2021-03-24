@@ -57,7 +57,6 @@
     <Compile Include="DAL\DataTubeDA.cs" />
     <Compile Include="DAL\RLinkDDA.cs" />
     <Compile Include="DAL\MenuDA.cs" />
-    <Compile Include="DAL\LogLoginDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
     <Compile Include="DAL\GroupDA.cs" />
     <Compile Include="DAL\TubeDataTotalDA.cs" />
@@ -73,9 +72,6 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\Hospital.cs">
-      <DependentUpon>ModelDB.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DbModel\LogLogin.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\MenuName.cs">

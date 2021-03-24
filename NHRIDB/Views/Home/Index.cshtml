@@ -18,7 +18,8 @@
     }
 }
 
-<div class="errorMsg"> @Model.message</div>
+<h2>系統更新中，請稍後再登入</h2>
+@*<div class="errorMsg"> @Model.message</div>
 @if (!Model.isLock)
 {
 using (Html.BeginForm("Index", "Home", FormMethod.Post))
@@ -67,7 +68,7 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post))
 
         </div>
     }
-}
+}*@
 
 
 <script>

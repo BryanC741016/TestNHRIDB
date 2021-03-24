@@ -10,7 +10,6 @@
         <EntityTypeShape EntityType="NHRIDBModel.Permissions" Width="1.5" PointX="9.125" PointY="5" />
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_MenuName" />
-        <EntityTypeShape EntityType="NHRIDBModel.LogLogin" Width="1.5" PointX="0.75" PointY="5.75" />
         <EntityTypeShape EntityType="NHRIDBModel.Hospital" Width="1.5" PointX="6.875" PointY="0.75" />
         <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="1.25" />
         <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />

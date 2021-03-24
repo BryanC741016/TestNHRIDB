@@ -30,7 +30,6 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<GroupUser> GroupUser { get; set; }
         public virtual DbSet<MenuName> MenuName { get; set; }
         public virtual DbSet<Permissions> Permissions { get; set; }
-        public virtual DbSet<LogLogin> LogLogin { get; set; }
         public virtual DbSet<Hospital> Hospital { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<TubeData> TubeData { get; set; }
