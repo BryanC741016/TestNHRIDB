@@ -16,7 +16,9 @@ namespace NHRIDB.Controllers
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index()
         {
-            ProjectSetViewModel model = GetProjSet();
+            ProjectSetViewModel model = new ProjectSetViewModel(_path);
+
+
             return View(model);
         }
 
@@ -27,6 +29,7 @@ namespace NHRIDB.Controllers
             if (!ModelState.IsValid) {
                 return View(model);
             }
+         
             if (model.startDate.Value > model.endDate.Value) {
                 ModelState.AddModelError(string.Empty, "開始時間不得大於結束時間");
                 return View(model);
@@ -38,10 +41,10 @@ namespace NHRIDB.Controllers
             XmlDocument xmlDoc = new XmlDocument();
             string xml = "<set>" +
                 "<startDate>" +
-                 model.startDate.Value.ToString("yyyy/MM/dd")
+                 model.startDate
                 +"</startDate>"
                 +"<endDate>" +
-                      model.endDate.Value.ToString("yyyy/MM/dd") +
+                      model.endDate +
                "</endDate>"+
                 "<regex>" +
                       model.regex +
@@ -54,7 +57,7 @@ namespace NHRIDB.Controllers
                "</errorOutCount>" +
                "</set>";
             xmlDoc.LoadXml(xml);
-            xmlDoc.Save(Server.MapPath(_path));
+            xmlDoc.Save(_path);
             ModelState.AddModelError(string.Empty, "修改完成");
             return View(model);
         }

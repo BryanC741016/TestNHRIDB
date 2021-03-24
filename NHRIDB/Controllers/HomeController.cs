@@ -4,6 +4,7 @@ using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -17,16 +18,15 @@ namespace NHRIDB.Controllers
     {
         private string _ip;
         private string _path;
-        private XmlNode _root;
+        private string _logErrMsg;
+        private ProjectSet _set { get; set; }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
             _ip = GetIp();
             _path = Server.MapPath("~/Logs/LoginLog");
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(Server.MapPath("~/Setting/Setting.xml"));
-            _root = xmlDoc.SelectSingleNode("set");
-
+            _set = new ProjectSet(Server.MapPath("~/Setting/Setting.xml"));
+            _logErrMsg = "@" + _ip + "@false";
         }
         protected override void OnResultExecuting(ResultExecutingContext filterContext)
         {
@@ -44,14 +44,27 @@ namespace NHRIDB.Controllers
         {
             LoginViewModel model = new LoginViewModel();
             model.imgUrl = new List<string>();
+             
+            model.endDate = _set.endDate;
+            model.startDate = _set.startDate;
 
-           
-            string startDateXML = _root.SelectSingleNode("startDate").InnerText;
-            string endDateXML = _root.SelectSingleNode("endDate").InnerText;
-            
+            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs"))){
+                System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs"));
+            }
+            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs/LoginLog")))
+            {
+                System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs/LoginLog"));
+            }
+            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs/ActionLog")))
+            {
+                System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs/ActionLog"));
+            }
 
-            model.endDate = DateTime.Parse(endDateXML);
-            model.startDate = DateTime.Parse(startDateXML);
+            if (Logs.GetFind(Path.Combine(_path, DateTime.Now.ToString("yyyy-MM-dd") + ".txt"), _logErrMsg, _set.errorOutCount))
+            {
+                model.isLock = true;
+                model.message = "錯誤次數過多，已被鎖住";
+            }
             return View(model);
         }
 
@@ -64,9 +77,16 @@ namespace NHRIDB.Controllers
                 model.message = "請確實填寫資料";
                 return View(model);
             }
-           
+            if (Logs.GetFind(Path.Combine(_path, DateTime.Now.ToString("yyyy-MM-dd") + ".txt"), _logErrMsg, _set.errorOutCount))
+            {
+                model.message = "錯誤次數過多，已被鎖住";
+                model.isLock = true;
+                return View(model);
+            }
+
             if (string.IsNullOrEmpty(model.tonken) || string.IsNullOrEmpty(model.textshowCode)) {
                 model.message = "請輸入正確的驗證碼";
+                Logs.WriteLog(_path, model.userName + _logErrMsg);
                 return View(model);
             }
 
@@ -74,15 +94,13 @@ namespace NHRIDB.Controllers
             if (model.tonken.IndexOf(",")< 0 || !tonken.Equals(model.textshowCode))
             {
                 model.message = "請輸入正確的驗證碼";
+                Logs.WriteLog(_path, model.userName + _logErrMsg);
                 return View(model);
             }
 
-            string errorOutCount = _root.SelectSingleNode("errorOutCount").InnerText;
-            int count = string.IsNullOrEmpty(errorOutCount) ? 0 : int.Parse(errorOutCount);
-            if (Logs.GetFind(_path, _ip + "|" + model.userName + "|false", count)) {
-                model.message = "錯誤次數過多，已被鎖住";
-                return View(model);
-            }
+          
+            
+           
            
          
            
@@ -94,11 +112,11 @@ namespace NHRIDB.Controllers
             if (user == null)
             {
          
-                Logs.WriteLog(_path, _ip + "|" + model.userName + "|false");
+                Logs.WriteLog(_path, model.userName+ _logErrMsg);
             }
             else{
     
-                Logs.WriteLog(_path, _ip + "|" + model.userName + "|true");
+                Logs.WriteLog(_path, model.userName + "@" + _ip + "@true");
                 Session["uid"] = user.userId;
                 Session["hos"] = user.id_Hospital;
                 Session["name"] = user.userName;

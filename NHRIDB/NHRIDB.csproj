@@ -286,8 +286,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\HospitalLog\" />
-    <Folder Include="Logs\ActionLog\" />
-    <Folder Include="Logs\LoginLog\" />
     <Folder Include="Upload\Datas\" />
   </ItemGroup>
   <ItemGroup>

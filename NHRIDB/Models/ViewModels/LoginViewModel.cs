@@ -23,5 +23,7 @@ namespace NHRIDB.Models.ViewModels
 
         public string tonken { get; set; }
         public string textshowCode { get; set; }
+
+        public bool isLock { get; set; }
     }
 }

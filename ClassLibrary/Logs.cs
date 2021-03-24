@@ -28,6 +28,9 @@ namespace ClassLibrary
         }
 
         public static bool GetFind(string path,string str,int num) {
+            if (!System.IO.File.Exists(path)) {
+                return false;
+            }
             string all = ReadAll(path);
             if (Regex.Matches(all, str).Count >= num) {
                 return true;

@@ -213,11 +213,11 @@ namespace NHRIDB.Controllers
 
         private bool RegexPasswd(string passwd, out string msg) {
             msg = "";
-            ProjectSetViewModel set = GetProjSet();
-            Regex reg = new Regex(@set.regex);
+            
+            Regex reg = new Regex(@_set.regex);
             if (!reg.IsMatch(passwd))
             {
-                 msg = string.IsNullOrEmpty(set.regexMsg) ? "密碼強度不夠，請重新輸入" : set.regexMsg;
+                 msg = string.IsNullOrEmpty(_set.regexMsg) ? "密碼強度不夠，請重新輸入" : _set.regexMsg;
                 return false;
             }
 

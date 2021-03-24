@@ -56,11 +56,11 @@ namespace NHRIDB.Controllers
                 return RedirectToAction("Change", new { msg = "確認密碼必須與新密碼相同" });
             }
             
-            ProjectSetViewModel set = GetProjSet();
-            Regex reg = new Regex(set.regex);
+            
+            Regex reg = new Regex(@_set.regex);
             if (!reg.IsMatch(model.newpasswd))
             {
-               string msg = string.IsNullOrEmpty(set.regexMsg) ? "密碼強度不夠，請重新輸入" : set.regexMsg;
+               string msg = string.IsNullOrEmpty(_set.regexMsg) ? "密碼強度不夠，請重新輸入" : _set.regexMsg;
                return RedirectToAction("Change", new { msg = msg });
             } 
 

@@ -28,14 +28,16 @@ namespace NHRIDB.Controllers
 
         protected string _imgDirPath { get; set; }
 
-        protected string _path = "~/Setting/Setting.xml";
+        protected ProjectSet _set { get; set; }
+
+        protected string _path { get; set; }
         protected override void Initialize(RequestContext requestContext)
         {
             base.Initialize(requestContext);
-            string action = requestContext.RouteData.Values["Action"].ToString();
-            string controller = requestContext.RouteData.Values["Controller"].ToString();
-            Logs.WriteLog(Server.MapPath("~/Logs/ActionLog"),  Session["uid"].ToString()+"|"+ controller+"/"+ action);
+            
             SetInitialData();
+            _path = Server.MapPath("~/Setting/Setting.xml");
+            _set = new ProjectSet(_path);
         }
 
         private void SetInitialData() {
@@ -61,6 +63,10 @@ namespace NHRIDB.Controllers
         {
             base.OnActionExecuting(filterContext);
             _db = new NHRIDBEntitiesDB();
+
+            string action = filterContext.RouteData.Values["Action"].ToString();
+            string controller = filterContext.RouteData.Values["Controller"].ToString();
+            Logs.WriteLog(Server.MapPath("~/Logs/ActionLog"), Session["uid"].ToString() + "|" + controller + "/" + action);
         }
 
         protected string GetImgPath(Guid hosId,string exName) {
@@ -72,22 +78,6 @@ namespace NHRIDB.Controllers
             return "";
         }
 
-        protected ProjectSetViewModel GetProjSet() {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(Server.MapPath(_path));
-            XmlNode root = xmlDoc.SelectSingleNode("set");
-            string startDateXML = root.SelectSingleNode("startDate").InnerText;
-            string endDateXML = root.SelectSingleNode("endDate").InnerText;
-            string regex = root.SelectSingleNode("regex").InnerText;
-            string regexMsg = root.SelectSingleNode("regexMsg").InnerText;
-            string errorOutCount = root.SelectSingleNode("errorOutCount").InnerText;
-            ProjectSetViewModel model = new ProjectSetViewModel();
-            model.endDate = DateTime.Parse(endDateXML);
-            model.startDate = DateTime.Parse(startDateXML);
-            model.regex = regex;
-            model.errorOutCount = string.IsNullOrEmpty(errorOutCount) ? 0 : int.Parse(errorOutCount);
-            model.regexMsg = regexMsg;
-            return model;
-        }
+       
     }
 }
