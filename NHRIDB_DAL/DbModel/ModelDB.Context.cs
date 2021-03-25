@@ -32,18 +32,9 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<Permissions> Permissions { get; set; }
         public virtual DbSet<Hospital> Hospital { get; set; }
         public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<TubeData> TubeData { get; set; }
         public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
         public virtual DbSet<RLinkD> RLinkD { get; set; }
-    
-        public virtual ObjectResult<GetTotal_Result> GetTotal(string hospitalId)
-        {
-            var hospitalIdParameter = hospitalId != null ?
-                new ObjectParameter("hospitalId", hospitalId) :
-                new ObjectParameter("hospitalId", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal", hospitalIdParameter);
-        }
+        public virtual DbSet<TubeData> TubeData { get; set; }
     
         public virtual ObjectResult<GetDifferentTotal_Result> GetDifferentTotal(Nullable<System.Guid> hospitalId)
         {
@@ -52,6 +43,15 @@ namespace NHRIDB_DAL.DbModel
                 new ObjectParameter("hospitalId", typeof(System.Guid));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDifferentTotal_Result>("GetDifferentTotal", hospitalIdParameter);
+        }
+    
+        public virtual ObjectResult<GetTotal_Result> GetTotal(string hospitalId)
+        {
+            var hospitalIdParameter = hospitalId != null ?
+                new ObjectParameter("hospitalId", hospitalId) :
+                new ObjectParameter("hospitalId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal", hospitalIdParameter);
         }
     }
 }

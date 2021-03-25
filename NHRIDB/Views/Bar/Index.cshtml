@@ -28,7 +28,9 @@ else
             <th>
                 部位名稱
             </th>
-
+            <th>
+                診斷名稱
+            </th>
             @foreach (var column in Model.columns)
             {
                 <th>@column.DisplayName</th>
@@ -40,25 +42,28 @@ else
         @for (int i = 0; i < Model.datas.Count; i++)
         {
             var item = Model.datas[i];
-            <tr>
+        <tr>
+            <td>
+                @item.rName
+            </td>
+            <td>
+                @item.dName
+            </td>
+            @foreach (var column in Model.columns)
+            {
+
+                var value = item.GetType().GetProperty(column.Name).GetValue(item);
+
+
                 <td>
-                    @item.name_en
+                    @value
+
                 </td>
-                @foreach (var column in Model.columns)
-                {
-
-                    var value = item.GetType().GetProperty(column.Name).GetValue(item);
-                    
-                    
-                        <td>
-                            @value
-                          
-                        </td>
-                     
 
 
-                }
-            </tr>
+
+            }
+        </tr>
         }
     </tbody>
 </table>

@@ -14,7 +14,9 @@ namespace NHRIDB_DAL.DbModel
     public partial class GetTotal_Result
     {
         public string rId { get; set; }
-        public string name_en { get; set; }
+        public string dId { get; set; }
+        public string rName { get; set; }
+        public string dName { get; set; }
         public Nullable<int> sum_blood { get; set; }
         public Nullable<int> sum_frozenTissue { get; set; }
         public Nullable<int> sum_waxBlock { get; set; }
