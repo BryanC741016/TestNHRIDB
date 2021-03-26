@@ -35,6 +35,7 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
         public virtual DbSet<RLinkD> RLinkD { get; set; }
         public virtual DbSet<TubeData> TubeData { get; set; }
+        public virtual DbSet<LogLogin> LogLogin { get; set; }
     
         public virtual ObjectResult<GetDifferentTotal_Result> GetDifferentTotal(Nullable<System.Guid> hospitalId)
         {
@@ -52,6 +53,24 @@ namespace NHRIDB_DAL.DbModel
                 new ObjectParameter("hospitalId", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal", hospitalIdParameter);
+        }
+    
+        public virtual int SetUnLockUser(string userName)
+        {
+            var userNameParameter = userName != null ?
+                new ObjectParameter("userName", userName) :
+                new ObjectParameter("userName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SetUnLockUser", userNameParameter);
+        }
+    
+        public virtual ObjectResult<GetLockUser_Result> GetLockUser(Nullable<int> count)
+        {
+            var countParameter = count.HasValue ?
+                new ObjectParameter("count", count) :
+                new ObjectParameter("count", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetLockUser_Result>("GetLockUser", countParameter);
         }
     }
 }

@@ -17,16 +17,16 @@ namespace NHRIDB.Controllers
     public class HomeController : Controller
     {
         private string _ip;
-        private string _path;
-        private string _logErrMsg;
+ 
+    
         private ProjectSet _set { get; set; }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
             _ip = GetIp();
-            _path = Server.MapPath("~/Logs/LoginLog");
+        
             _set = new ProjectSet(Server.MapPath("~/Setting/Setting.xml"));
-            _logErrMsg = "@" + _ip + "@false";
+           
         }
         protected override void OnResultExecuting(ResultExecutingContext filterContext)
         {
@@ -51,20 +51,12 @@ namespace NHRIDB.Controllers
             if (!System.IO.Directory.Exists(Server.MapPath("~/Logs"))){
                 System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs"));
             }
-            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs/LoginLog")))
-            {
-                System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs/LoginLog"));
-            }
+           
             if (!System.IO.Directory.Exists(Server.MapPath("~/Logs/ActionLog")))
             {
                 System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs/ActionLog"));
             }
-
-            if (Logs.GetFind(Path.Combine(_path, DateTime.Now.ToString("yyyy-MM-dd") + ".txt"), _logErrMsg, _set.errorOutCount))
-            {
-                model.isLock = true;
-                model.message = "錯誤次數過多，已被鎖住";
-            }
+             
             return View(model);
         }
 
@@ -77,46 +69,46 @@ namespace NHRIDB.Controllers
                 model.message = "請確實填寫資料";
                 return View(model);
             }
-            if (Logs.GetFind(Path.Combine(_path, DateTime.Now.ToString("yyyy-MM-dd") + ".txt"), _logErrMsg, _set.errorOutCount))
+
+            if (string.IsNullOrEmpty(model.tonken) || string.IsNullOrEmpty(model.textshowCode))
+            {
+                model.message = "請輸入正確的驗證碼";
+                return View(model);
+            }
+
+            string tonken = model.tonken.Substring(1, model.tonken.Length - 1).Replace(",", "");
+            if (model.tonken.IndexOf(",") < 0 || !tonken.Equals(model.textshowCode))
+            {
+                model.message = "請輸入正確的驗證碼";
+
+                return View(model);
+            }
+
+            NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
+            UserDA uda = new UserDA(db);
+            LogLoginDA logLoginDA = new LogLoginDA(db);
+
+            if (logLoginDA.HasLock(_set.errorOutCount,model.userName))
             {
                 model.message = "錯誤次數過多，已被鎖住";
                 model.isLock = true;
                 return View(model);
             }
 
-            if (string.IsNullOrEmpty(model.tonken) || string.IsNullOrEmpty(model.textshowCode)) {
-                model.message = "請輸入正確的驗證碼";
-                Logs.WriteLog(_path, model.userName + _logErrMsg);
-                return View(model);
-            }
-
-            string tonken = model.tonken.Substring(1, model.tonken.Length - 1).Replace(",", "");
-            if (model.tonken.IndexOf(",")< 0 || !tonken.Equals(model.textshowCode))
-            {
-                model.message = "請輸入正確的驗證碼";
-                Logs.WriteLog(_path, model.userName + _logErrMsg);
-                return View(model);
-            }
-
-          
             
-           
-           
-         
-           
 
-            NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
-            UserDA uda = new UserDA(db);
+           
+          
            
             User user = uda.HasQuery(model.userName, model.passwd);
             if (user == null)
             {
-         
-                Logs.WriteLog(_path, model.userName+ _logErrMsg);
+                logLoginDA.Create(model.userName, _ip, false);
+             
             }
             else{
-    
-                Logs.WriteLog(_path, model.userName + "@" + _ip + "@true");
+
+                logLoginDA.Create(model.userName, _ip, true);
                 Session["uid"] = user.userId;
                 Session["hos"] = user.id_Hospital;
                 Session["name"] = user.userName;

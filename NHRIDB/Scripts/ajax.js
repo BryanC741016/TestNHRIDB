@@ -117,12 +117,17 @@ function ajaxPost(url, postdata) {
         // dataType: 'json',
         timeout: 3600000,
         success: function (result) {
-           
-            if (result == "yes") {
-                location.reload();
-            } else {
+            if (typeof fun === 'function') {
+                fun(result, el);
                 $(".loading").css("visibility", "hidden");
-                showMessage(result);
+            } else {
+                if (result.isSuccess) {
+                    location.reload();
+                } else {
+                    $(".loading").css("visibility", "hidden");
+                    showMessage(result.message);
+
+                }
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {

@@ -1,0 +1,50 @@
+﻿@model List<NHRIDB_DAL.DbModel.GetLockUser_Result>
+@{
+    ViewBag.Title = "登入解鎖";
+}
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>被鎖帳號</th>
+            <th>被鎖日期</th>
+            <th>解鎖</th>
+        </tr>
+    </thead>
+    @{
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.userName
+                </td>
+                <td>
+                    @item.maxDate
+                </td>
+               
+                <td>
+                    @if (ViewBag.CanEdit)
+                    {
+                        
+                       <button class="set" data-name="@item.userName">解鎖</button>
+                    }
+
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+@if (ViewBag.CanEdit) { 
+<text>
+<script>
+    $(".set").on("click", function (e) {
+        let data = new FormData();
+        data.append("name", $(this).data("name"));
+        ajaxPost("@Url.Action("SetUnlock")", data);
+    });
+</script>
+  
+</text>
+}

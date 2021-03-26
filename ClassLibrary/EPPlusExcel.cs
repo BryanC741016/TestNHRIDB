@@ -18,8 +18,8 @@ namespace ClassLibrary
 {
    public class EPPlusExcel  
     {
-      
 
+        protected Encoding _encode = Encoding.GetEncoding(65001);
         public DataTable GetDataTable(string path,Stream stream, bool hasHeader = true)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.Commercial;
@@ -27,18 +27,20 @@ namespace ClassLibrary
             if (path.EndsWith(".csv"))
             {
                 var pck = new OfficeOpenXml.ExcelPackage();
-                 ws = pck.Workbook.Worksheets.Add("Sheet1");
+                ws = pck.Workbook.Worksheets.Add("Sheet1");
                 ExcelTextFormat format = new ExcelTextFormat()
                 {
-                    Delimiter = ','
+                    Delimiter = ',',
+                    DataTypes = new[] { eDataTypes.String },
+                    TextQualifier = '"'
                 };
-                ws.Cells[1, 1].LoadFromText(File.ReadAllText(path, Encoding.Default), format);
+                ws.Cells[1, 1].LoadFromText(File.ReadAllText(path, _encode), format);
             }
             else {
                 var pck = new OfficeOpenXml.ExcelPackage(stream);
                  ws = pck.Workbook.Worksheets.First();
 
-            }
+             }
             //using (var pck = new OfficeOpenXml.ExcelPackage(stream))
             //{
 
@@ -59,6 +61,7 @@ namespace ClassLibrary
                 for (int i = ws.Dimension.Start.Column; i <= ws.Dimension.End.Column; i++)
                 {
                     var cell = ws.Cells[rowNum, i];
+                    
                     string column = tbl.Columns[index].ColumnName;
                     row[column] = cell.Text;
                     index++;

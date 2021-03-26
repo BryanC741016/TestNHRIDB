@@ -23,6 +23,17 @@
           <Property Name="name_en" Type="nvarchar" MaxLength="100" />
           <Property Name="fileExtension" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="LogLogin">
+          <Key>
+            <PropertyRef Name="userName" />
+            <PropertyRef Name="lognDate" />
+          </Key>
+          <Property Name="userName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ip" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="lognDate" Type="datetime" Nullable="false" />
+          <Property Name="isLogin" Type="bit" Nullable="false" />
+          <Property Name="isUnLock" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="MenuName">
           <Key>
             <PropertyRef Name="menuId" />
@@ -238,12 +249,19 @@
         <Function Name="GetDifferentTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="hospitalId" Type="uniqueidentifier" Mode="In" />
         </Function>
+        <Function Name="GetLockUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="count" Type="int" Mode="In" />
+        </Function>
         <Function Name="GetTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="SetUnLockUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="userName" Type="varchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
@@ -316,7 +334,14 @@
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-            <Parameter Name="hospitalId" Mode="In" Type="String" />
+          <Parameter Name="hospitalId" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="LogLogin" EntityType="NHRIDBModel.LogLogin" />
+          <FunctionImport Name="SetUnLockUser">
+          <Parameter Name="userName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetLockUser" ReturnType="Collection(NHRIDBModel.GetLockUser_Result)">
+            <Parameter Name="count" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="GroupUser">
@@ -616,6 +641,23 @@
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
         </ComplexType>
+        <EntityType Name="LogLogin">
+          <Key>
+            <PropertyRef Name="userName" />
+            <PropertyRef Name="lognDate" />
+          </Key>
+          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ip" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="lognDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isLogin" Type="Boolean" Nullable="false" />
+          <Property Name="isUnLock" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="GetLockUser_Result">
+          <Property Type="String" Name="userName" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="errorCount" Nullable="true" />
+          <Property Type="Int32" Name="unCount" Nullable="true" />
+          <Property Type="DateTime" Name="maxDate" Nullable="true" Precision="23" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -823,6 +865,28 @@
                 <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
                 <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
                 <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="LogLogin">
+            <EntityTypeMapping TypeName="NHRIDBModel.LogLogin">
+              <MappingFragment StoreEntitySet="LogLogin">
+                <ScalarProperty Name="isUnLock" ColumnName="isUnLock" />
+                <ScalarProperty Name="isLogin" ColumnName="isLogin" />
+                <ScalarProperty Name="lognDate" ColumnName="lognDate" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SetUnLockUser" FunctionName="NHRIDBModel.Store.SetUnLockUser" />
+          <FunctionImportMapping FunctionImportName="GetLockUser" FunctionName="NHRIDBModel.Store.GetLockUser">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetLockUser_Result">
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="errorCount" ColumnName="errorCount" />
+                <ScalarProperty Name="unCount" ColumnName="unCount" />
+                <ScalarProperty Name="maxDate" ColumnName="maxDate" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
