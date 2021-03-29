@@ -13,7 +13,7 @@ namespace NHRIDB_DAL.DAL
         {
         }
 
-        public IQueryable<Hospital> GetQuery(string searchText="",string name_en="",string name_tw="",Nullable<Guid> noID=null) {
+        public IQueryable<Hospital> GetQuery(string searchText="",string name_en="",string name_tw="",Nullable<Guid> noID=null,string hkey="") {
             IQueryable<Hospital> qu = _db.Hospital;
 
             if (!string.IsNullOrEmpty(searchText)) {
@@ -23,6 +23,10 @@ namespace NHRIDB_DAL.DAL
             if (!string.IsNullOrEmpty(name_en))
             {
                 qu = qu.Where(e => e.name_en.Equals(name_en));
+            }
+            if (!string.IsNullOrEmpty(hkey))
+            {
+                qu = qu.Where(e => e.name_en.Equals(hkey));
             }
 
             if (!string.IsNullOrEmpty(name_tw))
@@ -40,25 +44,26 @@ namespace NHRIDB_DAL.DAL
             return _db.Hospital.Where(e => e.id == id).SingleOrDefault();
         }
 
-        public Guid Create(string name_en, string name_tw,string ex) {
+        public Guid Create(string name_en, string name_tw,string ex,string hkey) {
 
             Hospital add = new Hospital();
             add.id = Guid.NewGuid();
             add.name_en = name_en;
             add.name_tw = name_tw;
             add.fileExtension = ex;
-           
+            add.hKey = hkey;
             _db.Hospital.Add(add);
             _db.SaveChanges();
 
             return add.id;
         }
 
-        public void Edit(Guid id, string name_en, string name_tw, string ex) {
+        public void Edit(Guid id, string name_en, string name_tw, string ex,string hkey) {
             Hospital edit = GetHospital(id);
             edit.name_en = name_en;
             edit.name_tw = name_tw;
             edit.fileExtension = ex;
+            edit.hKey = hkey;
             _db.SaveChanges();
         }
 

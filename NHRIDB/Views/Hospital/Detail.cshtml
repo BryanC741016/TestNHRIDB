@@ -14,22 +14,24 @@
 <div class="text-danger">
     @Html.ValidationSummary()
 </div>
-    <div class="formPanel">
+<div class="formPanel">
 
-        @Html.HiddenFor(e => e.id)
-        <label>醫院-中文</label>
-        @Html.TextBoxFor(e => e.name_tw, new { @class = "form-control" })
-        <label>醫院-英文</label>
-        @Html.TextBoxFor(e => e.name_en, new { @class = "form-control" })
-        <label>圖片</label>
-        <input type="file" id="img" name="img" accept="image/*">
-   
-        @if (!string.IsNullOrEmpty(Model.imgUrl))
-        {
+    @Html.HiddenFor(e => e.id)
+    <label>醫院代號</label>
+    @Html.TextBoxFor(e => e.hkey, new { @class = "form-control" })
+    <label>醫院-中文</label>
+    @Html.TextBoxFor(e => e.name_tw, new { @class = "form-control" })
+    <label>醫院-英文</label>
+    @Html.TextBoxFor(e => e.name_en, new { @class = "form-control" })
+    <label>圖片</label>
+    <input type="file" id="img" name="img" accept="image/*">
+
+    @if (!string.IsNullOrEmpty(Model.imgUrl))
+    {
         <img src="@Model.imgUrl" />
-      
-        }
-        </div>
+
+    }
+</div>
 
         <a class="btn" href="@Url.Action("Index", "Hospital")">放棄</a>
         <button class="btn" type="submit">儲存</button>

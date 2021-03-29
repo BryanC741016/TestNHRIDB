@@ -33,7 +33,9 @@ namespace NHRIDB.Models.ViewModels
 
         public HttpPostedFileBase img { get; set; }
 
- 
+        [Required]
+        [Display(Name = "醫院代號")]
+        public string hkey { get; set; }
 
         public string imgUrl { get; set; }
     }

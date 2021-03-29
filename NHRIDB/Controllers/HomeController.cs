@@ -149,7 +149,7 @@ namespace NHRIDB.Controllers
                 if (user.GroupUser.alwaysOpen || (now >= model.startDate && now <= model.endDate))
                 {
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Import");
+                    return RedirectToAction("Index", "Bar");
                 
                 }
                 model.message = "未開放或無權限";

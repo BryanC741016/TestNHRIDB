@@ -25,6 +25,7 @@ namespace NHRIDB_DAL.DbModel
         public string name_tw { get; set; }
         public string name_en { get; set; }
         public string fileExtension { get; set; }
+        public string hKey { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User> User { get; set; }

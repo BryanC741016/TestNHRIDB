@@ -65,6 +65,7 @@ namespace NHRIDB.Controllers
                 model.name_en = hos.name_en;
                 model.name_tw = hos.name_tw;
                 model.imgUrl = GetImgPath(hos.id, hos.fileExtension);
+                model.hkey = hos.hKey;
             }
 
             return View(model);
@@ -102,6 +103,12 @@ namespace NHRIDB.Controllers
                     ModelState.AddModelError(string.Empty, "中文名稱已被使用");
                     return View(model);
                 }
+
+                if (_hospitalDA.GetQuery(hkey: model.hkey, noID: id).Count() > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "此代號已被使用");
+                    return View(model);
+                }
                 Hospital hospital = _hospitalDA.GetHospital(id);
                 if (hospital == null) {
                     ModelState.AddModelError(string.Empty, "查無此醫院資料");
@@ -112,7 +119,7 @@ namespace NHRIDB.Controllers
                     delImg(id, hospital.fileExtension);
                 }
            
-                _hospitalDA.Edit(id, model.name_en, model.name_tw, ex);
+                _hospitalDA.Edit(id, model.name_en, model.name_tw, ex, model.hkey);
               
             }
             else { //新增
@@ -126,8 +133,12 @@ namespace NHRIDB.Controllers
                     ModelState.AddModelError(string.Empty, "中文名稱已被使用");
                     return View(model);
                 }
-
-                 id=  _hospitalDA.Create(model.name_en, model.name_tw, ex);
+                if (_hospitalDA.GetQuery(hkey: model.hkey).Count() > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "此代號已被使用");
+                    return View(model);
+                }
+                id =  _hospitalDA.Create(model.name_en, model.name_tw, ex,model.hkey);
                 
             }
             createImg(id, ex, model.img);

@@ -40,7 +40,7 @@ namespace NHRIDB.Filter
                 List<PurviewModel> funcList = httpcontext.Session["funcList"] as List<PurviewModel>;
                 if (funcList != null)
                 {
-                    if (funcList.Any(z => z.controllName.ToLower().Equals(exeController.ToLower()) && z.purview == PermissionsKind.Write))
+                    if (funcList.Any(z => z.controllName!=null && z.controllName.ToLower().Equals(exeController.ToLower()) && z.purview == PermissionsKind.Write))
                     {
 
                         ViewBag.CanEdit = true;

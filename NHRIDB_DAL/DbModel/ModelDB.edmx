@@ -22,6 +22,7 @@
           <Property Name="name_tw" Type="nvarchar" MaxLength="100" />
           <Property Name="name_en" Type="nvarchar" MaxLength="100" />
           <Property Name="fileExtension" Type="nvarchar" MaxLength="50" />
+          <Property Name="hKey" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="LogLogin">
           <Key>
@@ -341,7 +342,7 @@
           <Parameter Name="userName" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetLockUser" ReturnType="Collection(NHRIDBModel.GetLockUser_Result)">
-            <Parameter Name="count" Mode="In" Type="Int32" />
+          <Parameter Name="count" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="GroupUser">
@@ -416,6 +417,7 @@
           <Property Name="fileExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
           <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="Hospital" ToRole="TubeData" />
+          <Property Name="hKey" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -698,6 +700,7 @@
           <EntitySetMapping Name="Hospital">
             <EntityTypeMapping TypeName="NHRIDBModel.Hospital">
               <MappingFragment StoreEntitySet="Hospital">
+                <ScalarProperty Name="hKey" ColumnName="hKey" />
                 <ScalarProperty Name="fileExtension" ColumnName="fileExtension" />
                 <ScalarProperty Name="name_en" ColumnName="name_en" />
                 <ScalarProperty Name="name_tw" ColumnName="name_tw" />

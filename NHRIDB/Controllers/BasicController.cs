@@ -48,7 +48,7 @@ namespace NHRIDB.Controllers
                 _hos = Guid.Parse(Session["hos"].ToString());
                 _name = Session["name"].ToString();
                 _exName = Session["ex"]==null ?"": Session["ex"].ToString();
-                _leapProject = Boolean.Parse(Session["leapProject"].ToString());
+                _leapProject = bool.Parse(Session["leapProject"].ToString());
                 Session["imgPath"] = GetImgPath(_hos,_exName);
 
                 _funcList = Session["funcList"] as List<PurviewModel>;

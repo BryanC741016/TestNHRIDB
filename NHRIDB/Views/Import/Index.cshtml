@@ -1,4 +1,4 @@
-﻿ 
+﻿@model NHRIDB.Models.ViewModels.ImportViewModel
 @{
     ViewBag.Title = "上傳檢體";
 }
@@ -6,15 +6,26 @@
 <div class="msg">
     @TempData["msg"]
 </div>
-<a href="~/Template/v4_2021-01-22.xlsx" target="_blank" >下載範本</a>
- 
-            <form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
-                <input type="hidden" id="id" name="id" />
-                <button class="btn sure" type="submit">確認上傳</button>
-               
-            </form>
-        
- 
+
+<a href="~/Template/v4_2021-01-22.xlsx" target="_blank">下載範本</a>
+
+<form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    @if (bool.Parse(Session["leapProject"].ToString()))
+    {
+        <label>醫院：</label>
+        @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>)
+    }
+    else
+    {
+        @Html.Hidden("hosId", Session["hos"])
+    }
+    <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
+    <input type="hidden" id="id" name="id" />
+    <button class="btn sure" type="submit">確認上傳</button>
+
+</form>
+
+
 

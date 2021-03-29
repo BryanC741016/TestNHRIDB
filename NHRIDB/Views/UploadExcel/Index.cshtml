@@ -1,0 +1,20 @@
+﻿ 
+@{
+    ViewBag.Title = "上傳檢體";
+}
+
+<div class="msg">
+    @TempData["msg"]
+</div>
+<a href="~/Template/v4_2021-01-22.xlsx" target="_blank" >下載範本</a>
+ 
+            <form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
+                <input type="hidden" id="id" name="id" />
+                <button class="btn sure" type="submit">確認上傳</button>
+               
+            </form>
+        
+ 
+

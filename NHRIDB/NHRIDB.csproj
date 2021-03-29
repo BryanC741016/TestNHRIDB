@@ -148,6 +148,7 @@
     <Compile Include="Controllers\ProjectSetController.cs" />
     <Compile Include="Controllers\RLinkDController.cs" />
     <Compile Include="Controllers\UnLockController.cs" />
+    <Compile Include="Controllers\UploadExcelController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AjaxValidateAntiForgeryTokenAttribute .cs" />
     <Compile Include="Filter\LogonAuthorizeFilter.cs" />
@@ -270,7 +271,6 @@
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\Bar\Index.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
-    <Content Include="Views\Update\UpdateImg.cshtml" />
     <Content Include="Views\Account\Change.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
     <Content Include="Views\Group\Create.cshtml" />
@@ -284,11 +284,12 @@
     <Content Include="Views\RLinkD\Index.cshtml" />
     <Content Include="Views\RLinkD\Edit.cshtml" />
     <Content Include="Views\UnLock\Index.cshtml" />
+    <Content Include="Views\UploadExcel\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\HospitalLog\" />
-    <Folder Include="Upload\Datas\" />
+    <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

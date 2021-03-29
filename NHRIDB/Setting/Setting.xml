@@ -1,7 +1,7 @@
 <set>
   <startDate>2021/3/24 上午 12:00:00</startDate>
   <endDate>2022/3/25 上午 12:00:00</endDate>
-  <regex>[A-Z]+[0-9]+</regex>
+  <regex>\w*</regex>
   <regexMsg>只容許英文數字</regexMsg>
   <errorOutCount>2</errorOutCount>
 </set>
