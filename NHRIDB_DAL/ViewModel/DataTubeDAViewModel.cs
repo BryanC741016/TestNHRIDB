@@ -48,7 +48,8 @@ namespace NHRIDB_DAL.ViewModel
 
         [DisplayName("血液")]
         public bool blood { get; set; }
-
+        [DisplayName("blood DNA")]
+        public bool bloodDNA { get; set; }
         [DisplayName("冷凍組織")]
         public bool frozenTissue { get; set; }
         [DisplayName("蠟塊")]
@@ -93,6 +94,7 @@ namespace NHRIDB_DAL.ViewModel
         [DisplayName("口水")]
         public bool saliva { get; set; }
 
+      
     }
 
     public class TubeDataTotalType
@@ -103,7 +105,8 @@ namespace NHRIDB_DAL.ViewModel
 
         [DisplayName("血液")]
         public bool sum_blood { get; set; }
-
+        [DisplayName("blood DNA")]
+        public bool sum_bloodDNA { get; set; }
         [DisplayName("冷凍組織")]
         public bool sum_frozenTissue { get; set; }
         [DisplayName("蠟塊")]
@@ -147,6 +150,6 @@ namespace NHRIDB_DAL.ViewModel
         public bool sum_hair { get; set; }
         [DisplayName("口水")]
         public bool sum_saliva { get; set; }
-
+     
     }
 }

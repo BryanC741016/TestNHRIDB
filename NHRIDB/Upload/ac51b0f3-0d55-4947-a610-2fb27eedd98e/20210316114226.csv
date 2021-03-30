@@ -1,6 +1,0 @@
-﻿機構代碼,識別ID,收案年份 (西元年),Organ/ Region   (代碼),Diagnosis  (代碼), Organ/ Region  (器官/部位),Diagnosis 診斷,年齡 (歲),性別,沒有收到檢體,血液,血清,血漿,buffy coat,blood DNA,全血,冷凍組織,tissue DNA,tissue RNA,蠟塊                         ,石蠟切片,尿液,尿液       上清液,尿液 離心 pellet,胸水,腹水,骨髓液,腦脊髓液,糞便,糞便DNA ,膽汁,毛髮,口水
-NHRI,16000a77,2016,T-56000,M72030,Liver,Focal nodular hyperplasia,35,M,,1,1,1,,,1,1,,,,,,,,,,,,,,,,
-NHRI,15000b73,2015,T-56000,M81703,Liver,Hepatocellular carcinoma,53,M,,1,1,1,,,1,1,1,,,,,,,,,,,,,,,
-NHRI,15000a26,2015,T-56000,M72030,Liver,Focal nodular hyperplasia,41,F,,,,,,,1,1,1,,,,,,,,,,,,,,,
-NHRI,19000a37,2019,T-56000,M81400,Liver,hepatic adenoma,39,F,,1,1,1,,,,,,,,,,,,,,,,,,,,
-NHRI,20000b35,2020,T-56000,M81603,Liver,Cholangiocarcinoma,65,M,,1,1,1,,1,1,1,1,,,,,,,,,,,,,,,

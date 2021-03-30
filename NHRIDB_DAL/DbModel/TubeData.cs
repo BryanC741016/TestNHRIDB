@@ -46,6 +46,7 @@ namespace NHRIDB_DAL.DbModel
         public bool saliva { get; set; }
         public System.Guid createUser { get; set; }
         public System.DateTime createDate { get; set; }
+        public bool bloodDNA { get; set; }
     
         public virtual Hospital Hospital { get; set; }
         public virtual RLinkD RLinkD { get; set; }

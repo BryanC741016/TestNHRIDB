@@ -103,6 +103,7 @@
           <Property Name="bile" Type="bit" Nullable="false" />
           <Property Name="hair" Type="bit" Nullable="false" />
           <Property Name="saliva" Type="bit" Nullable="false" />
+          <Property Name="bloodDNA" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
           <Property Name="createDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
@@ -146,6 +147,7 @@
           <Property Name="bile" Type="bit" Nullable="false" />
           <Property Name="hair" Type="bit" Nullable="false" />
           <Property Name="saliva" Type="bit" Nullable="false" />
+          <Property Name="bloodDNA" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
@@ -321,9 +323,6 @@
             <End Role="User" EntitySet="User" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
-          <FunctionImport Name="GetDifferentTotal" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
-          <Parameter Name="hospitalId" Mode="In" Type="Guid" />
-          </FunctionImport>
           <EntitySet Name="RLinkD" EntityType="NHRIDBModel.RLinkD" />
           <EntitySet Name="TubeData" EntityType="NHRIDBModel.TubeData" />
           <AssociationSet Name="FK_TubeData_Hospital" Association="NHRIDBModel.FK_TubeData_Hospital">
@@ -334,15 +333,18 @@
             <End Role="RLinkD" EntitySet="RLinkD" />
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
-          <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-          <Parameter Name="hospitalId" Mode="In" Type="String" />
-          </FunctionImport>
           <EntitySet Name="LogLogin" EntityType="NHRIDBModel.LogLogin" />
           <FunctionImport Name="SetUnLockUser">
           <Parameter Name="userName" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetLockUser" ReturnType="Collection(NHRIDBModel.GetLockUser_Result)">
           <Parameter Name="count" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetDifferentTotal" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
+            <Parameter Name="hospitalId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
+            <Parameter Name="hospitalId" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="GroupUser">
@@ -503,33 +505,8 @@
           <Property Name="hair" Type="Boolean" Nullable="false" />
           <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
+          <Property Name="bloodDNA" Type="Boolean" Nullable="false" />
         </EntityType>
-        <ComplexType Name="GetDifferentTotal_Result">
-          <Property Type="String" Name="type" Nullable="true" MaxLength="3" />
-          <Property Type="Int32" Name="sum_blood" Nullable="true" />
-          <Property Type="Int32" Name="sum_frozenTissue" Nullable="true" />
-          <Property Type="Int32" Name="sum_waxBlock" Nullable="true" />
-          <Property Type="Int32" Name="sum_urine" Nullable="true" />
-          <Property Type="Int32" Name="sum_urineClearLiquid" Nullable="true" />
-          <Property Type="Int32" Name="sum_urinePellet" Nullable="true" />
-          <Property Type="Int32" Name="sum_tissueDNA" Nullable="true" />
-          <Property Type="Int32" Name="sum_tissueRNA" Nullable="true" />
-          <Property Type="Int32" Name="sum_stool" Nullable="true" />
-          <Property Type="Int32" Name="sum_stoolDNA" Nullable="true" />
-          <Property Type="Int32" Name="sum_sampleless" Nullable="true" />
-          <Property Type="Int32" Name="sum_pleuraleffusion" Nullable="true" />
-          <Property Type="Int32" Name="sum_CSF" Nullable="true" />
-          <Property Type="Int32" Name="sum_ascites" Nullable="true" />
-          <Property Type="Int32" Name="sum_boneMarrow" Nullable="true" />
-          <Property Type="Int32" Name="sum_serum" Nullable="true" />
-          <Property Type="Int32" Name="sum_plasma" Nullable="true" />
-          <Property Type="Int32" Name="sum_buffyCoat" Nullable="true" />
-          <Property Type="Int32" Name="sum_wholeBlood" Nullable="true" />
-          <Property Type="Int32" Name="sum_paraffinSection" Nullable="true" />
-          <Property Type="Int32" Name="sum_bile" Nullable="true" />
-          <Property Type="Int32" Name="sum_hair" Nullable="true" />
-          <Property Type="Int32" Name="sum_saliva" Nullable="true" />
-        </ComplexType>
         <EntityType Name="RLinkD">
           <Key>
             <PropertyRef Name="regionKey" />
@@ -583,6 +560,7 @@
           <Property Name="createDate" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
           <NavigationProperty Name="RLinkD" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="TubeData" ToRole="RLinkD" />
+          <Property Name="bloodDNA" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_TubeData_Hospital">
           <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
@@ -614,6 +592,50 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="LogLogin">
+          <Key>
+            <PropertyRef Name="userName" />
+            <PropertyRef Name="lognDate" />
+          </Key>
+          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ip" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="lognDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isLogin" Type="Boolean" Nullable="false" />
+          <Property Name="isUnLock" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="GetLockUser_Result">
+          <Property Type="String" Name="userName" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="errorCount" Nullable="true" />
+          <Property Type="Int32" Name="unCount" Nullable="true" />
+          <Property Type="DateTime" Name="maxDate" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="GetDifferentTotal_Result">
+          <Property Type="String" Name="type" Nullable="true" MaxLength="3" />
+          <Property Type="Int32" Name="sum_blood" Nullable="true" />
+          <Property Type="Int32" Name="sum_frozenTissue" Nullable="true" />
+          <Property Type="Int32" Name="sum_waxBlock" Nullable="true" />
+          <Property Type="Int32" Name="sum_urine" Nullable="true" />
+          <Property Type="Int32" Name="sum_urineClearLiquid" Nullable="true" />
+          <Property Type="Int32" Name="sum_urinePellet" Nullable="true" />
+          <Property Type="Int32" Name="sum_tissueDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_tissueRNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_stool" Nullable="true" />
+          <Property Type="Int32" Name="sum_stoolDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_sampleless" Nullable="true" />
+          <Property Type="Int32" Name="sum_pleuraleffusion" Nullable="true" />
+          <Property Type="Int32" Name="sum_CSF" Nullable="true" />
+          <Property Type="Int32" Name="sum_ascites" Nullable="true" />
+          <Property Type="Int32" Name="sum_boneMarrow" Nullable="true" />
+          <Property Type="Int32" Name="sum_serum" Nullable="true" />
+          <Property Type="Int32" Name="sum_plasma" Nullable="true" />
+          <Property Type="Int32" Name="sum_buffyCoat" Nullable="true" />
+          <Property Type="Int32" Name="sum_wholeBlood" Nullable="true" />
+          <Property Type="Int32" Name="sum_paraffinSection" Nullable="true" />
+          <Property Type="Int32" Name="sum_bile" Nullable="true" />
+          <Property Type="Int32" Name="sum_hair" Nullable="true" />
+          <Property Type="Int32" Name="sum_saliva" Nullable="true" />
+          <Property Type="Int32" Name="sum_bloodDNA" Nullable="true" />
+        </ComplexType>
         <ComplexType Name="GetTotal_Result">
           <Property Type="String" Name="rId" Nullable="true" />
           <Property Type="String" Name="dId" Nullable="true" />
@@ -642,23 +664,7 @@
           <Property Type="Int32" Name="sum_bile" Nullable="true" />
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
-        </ComplexType>
-        <EntityType Name="LogLogin">
-          <Key>
-            <PropertyRef Name="userName" />
-            <PropertyRef Name="lognDate" />
-          </Key>
-          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ip" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="lognDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="isLogin" Type="Boolean" Nullable="false" />
-          <Property Name="isUnLock" Type="Boolean" Nullable="false" />
-        </EntityType>
-        <ComplexType Name="GetLockUser_Result">
-          <Property Type="String" Name="userName" Nullable="false" MaxLength="50" />
-          <Property Type="Int32" Name="errorCount" Nullable="true" />
-          <Property Type="Int32" Name="unCount" Nullable="true" />
-          <Property Type="DateTime" Name="maxDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="sum_bloodDNA" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -725,6 +731,7 @@
           <EntitySetMapping Name="TubeDataLog">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeDataLog">
               <MappingFragment StoreEntitySet="TubeDataLog">
+                <ScalarProperty Name="bloodDNA" ColumnName="bloodDNA" />
                 <ScalarProperty Name="createUser" ColumnName="createUser" />
                 <ScalarProperty Name="saliva" ColumnName="saliva" />
                 <ScalarProperty Name="hair" ColumnName="hair" />
@@ -760,6 +767,77 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="RLinkD">
+            <EntityTypeMapping TypeName="NHRIDBModel.RLinkD">
+              <MappingFragment StoreEntitySet="RLinkD">
+                <ScalarProperty Name="dName" ColumnName="dName" />
+                <ScalarProperty Name="rName" ColumnName="rName" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TubeData">
+            <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
+              <MappingFragment StoreEntitySet="TubeData">
+                <ScalarProperty Name="bloodDNA" ColumnName="bloodDNA" />
+                <ScalarProperty Name="createDate" ColumnName="createDate" />
+                <ScalarProperty Name="createUser" ColumnName="createUser" />
+                <ScalarProperty Name="saliva" ColumnName="saliva" />
+                <ScalarProperty Name="hair" ColumnName="hair" />
+                <ScalarProperty Name="bile" ColumnName="bile" />
+                <ScalarProperty Name="paraffinSection" ColumnName="paraffinSection" />
+                <ScalarProperty Name="wholeBlood" ColumnName="wholeBlood" />
+                <ScalarProperty Name="buffyCoat" ColumnName="buffyCoat" />
+                <ScalarProperty Name="plasma" ColumnName="plasma" />
+                <ScalarProperty Name="serum" ColumnName="serum" />
+                <ScalarProperty Name="boneMarrow" ColumnName="boneMarrow" />
+                <ScalarProperty Name="ascites" ColumnName="ascites" />
+                <ScalarProperty Name="CSF" ColumnName="CSF" />
+                <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
+                <ScalarProperty Name="sampleless" ColumnName="sampleless" />
+                <ScalarProperty Name="stoolDNA" ColumnName="stoolDNA" />
+                <ScalarProperty Name="stool" ColumnName="stool" />
+                <ScalarProperty Name="tissueRNA" ColumnName="tissueRNA" />
+                <ScalarProperty Name="tissueDNA" ColumnName="tissueDNA" />
+                <ScalarProperty Name="urinePellet" ColumnName="urinePellet" />
+                <ScalarProperty Name="urineClearLiquid" ColumnName="urineClearLiquid" />
+                <ScalarProperty Name="urine" ColumnName="urine" />
+                <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
+                <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
+                <ScalarProperty Name="blood" ColumnName="blood" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="endYear" ColumnName="endYear" />
+                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
+                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
+                <ScalarProperty Name="patientKey" ColumnName="patientKey" />
+                <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogLogin">
+            <EntityTypeMapping TypeName="NHRIDBModel.LogLogin">
+              <MappingFragment StoreEntitySet="LogLogin">
+                <ScalarProperty Name="isUnLock" ColumnName="isUnLock" />
+                <ScalarProperty Name="isLogin" ColumnName="isLogin" />
+                <ScalarProperty Name="lognDate" ColumnName="lognDate" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SetUnLockUser" FunctionName="NHRIDBModel.Store.SetUnLockUser" />
+          <FunctionImportMapping FunctionImportName="GetLockUser" FunctionName="NHRIDBModel.Store.GetLockUser">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetLockUser_Result">
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="errorCount" ColumnName="errorCount" />
+                <ScalarProperty Name="unCount" ColumnName="unCount" />
+                <ScalarProperty Name="maxDate" ColumnName="maxDate" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="GetDifferentTotal" FunctionName="NHRIDBModel.Store.GetDifferentTotal">
             <ResultMapping>
               <ComplexTypeMapping TypeName="NHRIDBModel.GetDifferentTotal_Result">
@@ -787,57 +865,10 @@
                 <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
                 <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
                 <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+                <ScalarProperty Name="sum_bloodDNA" ColumnName="sum_bloodDNA" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="RLinkD">
-            <EntityTypeMapping TypeName="NHRIDBModel.RLinkD">
-              <MappingFragment StoreEntitySet="RLinkD">
-                <ScalarProperty Name="dName" ColumnName="dName" />
-                <ScalarProperty Name="rName" ColumnName="rName" />
-                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
-                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TubeData">
-            <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
-              <MappingFragment StoreEntitySet="TubeData">
-                <ScalarProperty Name="createDate" ColumnName="createDate" />
-                <ScalarProperty Name="createUser" ColumnName="createUser" />
-                <ScalarProperty Name="saliva" ColumnName="saliva" />
-                <ScalarProperty Name="hair" ColumnName="hair" />
-                <ScalarProperty Name="bile" ColumnName="bile" />
-                <ScalarProperty Name="paraffinSection" ColumnName="paraffinSection" />
-                <ScalarProperty Name="wholeBlood" ColumnName="wholeBlood" />
-                <ScalarProperty Name="buffyCoat" ColumnName="buffyCoat" />
-                <ScalarProperty Name="plasma" ColumnName="plasma" />
-                <ScalarProperty Name="serum" ColumnName="serum" />
-                <ScalarProperty Name="boneMarrow" ColumnName="boneMarrow" />
-                <ScalarProperty Name="ascites" ColumnName="ascites" />
-                <ScalarProperty Name="CSF" ColumnName="CSF" />
-                <ScalarProperty Name="pleuraleffusion" ColumnName="pleuraleffusion" />
-                <ScalarProperty Name="sampleless" ColumnName="sampleless" />
-                <ScalarProperty Name="stoolDNA" ColumnName="stoolDNA" />
-                <ScalarProperty Name="stool" ColumnName="stool" />
-                <ScalarProperty Name="tissueRNA" ColumnName="tissueRNA" />
-                <ScalarProperty Name="tissueDNA" ColumnName="tissueDNA" />
-                <ScalarProperty Name="urinePellet" ColumnName="urinePellet" />
-                <ScalarProperty Name="urineClearLiquid" ColumnName="urineClearLiquid" />
-                <ScalarProperty Name="urine" ColumnName="urine" />
-                <ScalarProperty Name="waxBlock" ColumnName="waxBlock" />
-                <ScalarProperty Name="frozenTissue" ColumnName="frozenTissue" />
-                <ScalarProperty Name="blood" ColumnName="blood" />
-                <ScalarProperty Name="gender" ColumnName="gender" />
-                <ScalarProperty Name="age" ColumnName="age" />
-                <ScalarProperty Name="endYear" ColumnName="endYear" />
-                <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
-                <ScalarProperty Name="regionKey" ColumnName="regionKey" />
-                <ScalarProperty Name="patientKey" ColumnName="patientKey" />
-                <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetTotal" FunctionName="NHRIDBModel.Store.GetTotal">
             <ResultMapping>
               <ComplexTypeMapping TypeName="NHRIDBModel.GetTotal_Result">
@@ -868,28 +899,7 @@
                 <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
                 <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
                 <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <EntitySetMapping Name="LogLogin">
-            <EntityTypeMapping TypeName="NHRIDBModel.LogLogin">
-              <MappingFragment StoreEntitySet="LogLogin">
-                <ScalarProperty Name="isUnLock" ColumnName="isUnLock" />
-                <ScalarProperty Name="isLogin" ColumnName="isLogin" />
-                <ScalarProperty Name="lognDate" ColumnName="lognDate" />
-                <ScalarProperty Name="ip" ColumnName="ip" />
-                <ScalarProperty Name="userName" ColumnName="userName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="SetUnLockUser" FunctionName="NHRIDBModel.Store.SetUnLockUser" />
-          <FunctionImportMapping FunctionImportName="GetLockUser" FunctionName="NHRIDBModel.Store.GetLockUser">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="NHRIDBModel.GetLockUser_Result">
-                <ScalarProperty Name="userName" ColumnName="userName" />
-                <ScalarProperty Name="errorCount" ColumnName="errorCount" />
-                <ScalarProperty Name="unCount" ColumnName="unCount" />
-                <ScalarProperty Name="maxDate" ColumnName="maxDate" />
+                <ScalarProperty Name="sum_bloodDNA" ColumnName="sum_bloodDNA" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

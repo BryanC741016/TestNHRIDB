@@ -37,5 +37,6 @@ namespace NHRIDB_DAL.DbModel
         public Nullable<int> sum_bile { get; set; }
         public Nullable<int> sum_hair { get; set; }
         public Nullable<int> sum_saliva { get; set; }
+        public Nullable<int> sum_bloodDNA { get; set; }
     }
 }

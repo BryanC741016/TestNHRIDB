@@ -46,5 +46,6 @@ namespace NHRIDB_DAL.DbModel
         public bool hair { get; set; }
         public bool saliva { get; set; }
         public System.Guid createUser { get; set; }
+        public bool bloodDNA { get; set; }
     }
 }
