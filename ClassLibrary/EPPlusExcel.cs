@@ -32,9 +32,10 @@ namespace ClassLibrary
                 {
                     Delimiter = ',',
                     DataTypes = new[] { eDataTypes.String },
-                    TextQualifier = '"'
+                    TextQualifier = '"',
+                    Encoding=_encode
                 };
-                ws.Cells[1, 1].LoadFromText(File.ReadAllText(path, _encode), format);
+                ws.Cells[1, 1].LoadFromText(File.ReadAllText(path, Encoding.Default), format);
             }
             else {
                 var pck = new OfficeOpenXml.ExcelPackage(stream);

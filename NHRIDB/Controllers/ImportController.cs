@@ -39,8 +39,8 @@ namespace NHRIDB.Controllers
         // GET: Form
         public ActionResult Index()
         {
-           
-          
+
+            TempData["msg"] = "";
             if (!Directory.Exists(_cPath))
             {
                 Directory.CreateDirectory(_cPath);

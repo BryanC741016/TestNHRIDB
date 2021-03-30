@@ -26,6 +26,7 @@ namespace NHRIDB.Controllers
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index()
         {
+            TempData["msg"] = "";
             if (!Directory.Exists(_path))
             {
                 Directory.CreateDirectory(_path);
