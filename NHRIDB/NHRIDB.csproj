@@ -279,7 +279,7 @@
     <Content Include="Views\Account\NoRight.cshtml" />
     <Content Include="Views\Import\ViewDatas.cshtml" />
     <Content Include="Views\Import\Different.cshtml" />
-    <Content Include="Template\v4_2021-01-22.xlsx" />
+    <Content Include="Template\Template.xlsx" />
     <Content Include="Views\RLinkD\Create.cshtml" />
     <Content Include="Views\RLinkD\Index.cshtml" />
     <Content Include="Views\RLinkD\Edit.cshtml" />

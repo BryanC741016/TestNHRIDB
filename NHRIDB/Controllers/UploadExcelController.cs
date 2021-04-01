@@ -24,14 +24,17 @@ namespace NHRIDB.Controllers
 
         [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
-        public ActionResult Index()
+        public ActionResult Index(string msg="")
         {
-            TempData["msg"] = "";
+          
             if (!Directory.Exists(_path))
             {
                 Directory.CreateDirectory(_path);
             }
-            return View();
+            ImportViewModel model = new ImportViewModel();
+            model.template = _template;
+            model.msg = msg;
+            return View(model);
         }
 
         [HttpPost]
@@ -41,16 +44,16 @@ namespace NHRIDB.Controllers
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
             if (string.IsNullOrEmpty(ex))
             {
-                TempData["msg"] = "請選擇檔案";
-                return View();
+               
+                return Index("請選擇檔案");
             }
             else
             {
                 string[] allow = new string[] { "xlsx", "csv" };
                 if (!allow.Contains(ex))
                 {
-                    TempData["msg"] = "不支援此格式上傳";
-                    return View();
+                 
+                    return Index("不支援此格式上傳");
                 }
             }
 
@@ -60,8 +63,8 @@ namespace NHRIDB.Controllers
             string fileName = hkey + now + "." + ex;
             string path = Path.Combine(_path, fileName);
             upload.SaveAs(path);//為了方便csv讀取
-            TempData["msg"] = "上傳完成，待管理者審核";
-            return View();
+
+            return Index("上傳完成，待管理者審核");
         }
   }
 }

@@ -37,17 +37,25 @@ namespace NHRIDB.Controllers
         [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         // GET: Form
-        public ActionResult Index()
+        public ActionResult Index(string msg="", Guid? hosId=null)
         {
-
-            TempData["msg"] = "";
+             
             if (!Directory.Exists(_cPath))
             {
                 Directory.CreateDirectory(_cPath);
             }
 
             ImportViewModel model = new ImportViewModel();
-            model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
+            if (hosId.HasValue)
+            {
+                model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw",hosId.Value);
+            }
+            else {
+                model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
+            }
+         
+            model.template = _template;
+            model.msg = msg;
             return View(model);
         }
 
@@ -80,15 +88,15 @@ namespace NHRIDB.Controllers
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
             if (string.IsNullOrEmpty(ex))
             {
-                TempData["msg"] = "請選擇檔案";
-                return View();
+               
+                return Index("請選擇檔案",hosId);
             }
             else{
                 string[] allow = new string[] { "xlsx", "csv" };
                 if (!allow.Contains(ex))
                 {
-                    TempData["msg"] = "不支援此格式上傳";
-                    return View();
+                   
+                    return Index("不支援此格式上傳",hosId);
                 }
             }
             //============建立目錄
@@ -123,16 +131,16 @@ namespace NHRIDB.Controllers
 
             string msg = "";
             if (!_dataTubeDA.ImportCheck(table, out msg)) {
-                TempData["msg"] = msg;
+            
                 System.IO.File.Delete(path);
-                return View("Index",new { hosId = hosId });
+                return  Index(msg,hosId);
             }
 
             //部位與診斷代碼(dlinkR)代碼比對
             if (!_rLinkDDA.CheckDLinkR(table,out msg)) {
-                TempData["msg"] = msg;
+           
                 System.IO.File.Delete(path);
-                return View("Index", new { hosId = hosId });
+                return Index(msg, hosId);
             }
 
           
@@ -158,7 +166,7 @@ namespace NHRIDB.Controllers
            string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
             System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));
           
-            TempData["msg"] = "儲存完畢";
+           
             return RedirectToAction("Different",new { hId=model.hId});
         }
 

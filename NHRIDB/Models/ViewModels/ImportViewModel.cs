@@ -10,6 +10,9 @@ namespace NHRIDB.Models.ViewModels
 {
     public class ImportViewModel {
         public SelectList hospitalSelect { get; set; }
+        public string template { get; set; }
+
+        public string msg { get; set; }
     }
     public class ViewDatasViewModel
     {

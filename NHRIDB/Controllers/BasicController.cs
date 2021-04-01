@@ -31,6 +31,7 @@ namespace NHRIDB.Controllers
         protected ProjectSet _set { get; set; }
 
         protected string _path { get; set; }
+        protected string _template { get; set; }
         protected override void Initialize(RequestContext requestContext)
         {
             base.Initialize(requestContext);
@@ -38,6 +39,7 @@ namespace NHRIDB.Controllers
             SetInitialData();
             _path = Server.MapPath("~/Setting/Setting.xml");
             _set = new ProjectSet(_path);
+            _template = GetTemplateFile();
         }
 
         private void SetInitialData() {
@@ -77,6 +79,22 @@ namespace NHRIDB.Controllers
 
             return "";
         }
+
+        private string GetTemplateFile() {
+            string[] allow = new string[] { ".xlsx" };
+            DirectoryInfo info = new DirectoryInfo(Server.MapPath("~/Template"));
+            FileInfo[] files = info.GetFiles().OrderByDescending(p => p.CreationTime).ToArray();
+            foreach (FileInfo file in files)
+            {
+                 
+                if (allow.Contains(file.Extension))
+                {
+                    return file.Name;
+                }
+            }
+
+            return "";
+       }
 
        
     }
