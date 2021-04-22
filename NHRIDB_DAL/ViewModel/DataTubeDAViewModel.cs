@@ -19,15 +19,15 @@ namespace NHRIDB_DAL.ViewModel
     {
 
 
-        [DisplayName("識別ID")]
+        [DisplayName("個案代碼")]
         [Required]
         public string patientKey { get; set; }
 
-        [DisplayName("Organ/ Region   (代碼)")]
+        [DisplayName("器官/部位代碼")]
         [Required]
         public string regionKey { get; set; }
 
-        [DisplayName("Diagnosis  (代碼)")]
+        [DisplayName("診斷代碼")]
         [Required]
         public string diagnosisKey { get; set; }
 
@@ -48,51 +48,61 @@ namespace NHRIDB_DAL.ViewModel
 
         [DisplayName("血液")]
         public bool blood { get; set; }
-        [DisplayName("blood DNA")]
-        public bool bloodDNA { get; set; }
-        [DisplayName("冷凍組織")]
-        public bool frozenTissue { get; set; }
-        [DisplayName("蠟塊")]
-        public bool waxBlock { get; set; }
-        [DisplayName("尿液")]
-        public bool urine { get; set; }
-        [DisplayName("尿液       上清液")]
-        public bool urineClearLiquid { get; set; }
-        [DisplayName("尿液 離心 pellet")]
-        public bool urinePellet { get; set; }
-        [DisplayName("tissue DNA")]
-        public bool tissueDNA { get; set; }
-        [DisplayName("tissue RNA")]
-        public bool tissueRNA { get; set; }
-        [DisplayName("糞便")]
-        public bool stool { get; set; }
-        [DisplayName("糞便DNA")]
-        public bool stoolDNA { get; set; }
-       
-        [DisplayName("胸水")]
-        public bool pleuraleffusion { get; set; }
-        [DisplayName("腦脊髓液")]
-        public bool CSF { get; set; }
-        [DisplayName("腹水")]
-        public bool ascites { get; set; }
-        [DisplayName("骨髓液")]
-        public bool boneMarrow { get; set; }
         [DisplayName("血清")]
         public bool serum { get; set; }
         [DisplayName("血漿")]
         public bool plasma { get; set; }
-        [DisplayName("buffy coat")]
+        [DisplayName("牛奶層buffy coat")]
         public bool buffyCoat { get; set; }
-        [DisplayName("全血")]
-        public bool wholeBlood { get; set; }
+
+         [DisplayName("血液DNA")]
+         public bool bloodDNA { get; set; }
+
+        [DisplayName("冷凍組織")]
+        public bool frozenTissue { get; set; }
+        [DisplayName("組織DNA")]
+        public bool tissueDNA { get; set; }
+        [DisplayName("組織 RNA")]
+        public bool tissueRNA { get; set; }
+
+        [DisplayName("蠟塊")]
+        public bool waxBlock { get; set; }
         [DisplayName("石蠟切片")]
         public bool paraffinSection { get; set; }
-        [DisplayName("膽汁")]
-        public bool bile { get; set; }
-        [DisplayName("毛髮")]
-        public bool hair { get; set; }
-        [DisplayName("口水")]
-        public bool saliva { get; set; }
+
+        [DisplayName("尿液")]
+        public bool urine { get; set; }
+        [DisplayName("胸水")]
+        public bool pleuraleffusion { get; set; }
+        [DisplayName("腹水")]
+        public bool ascites { get; set; }
+
+        [DisplayName("骨髓液")]
+        public bool boneMarrow { get; set; }
+
+        [DisplayName("腦脊髓液")]
+        public bool CSF { get; set; }
+         
+        //[DisplayName("尿液       上清液")]
+        //public bool urineClearLiquid { get; set; }
+        //[DisplayName("尿液 離心 pellet")]
+        //public bool urinePellet { get; set; }
+      
+        //[DisplayName("糞便")]
+        //public bool stool { get; set; }
+        //[DisplayName("糞便DNA")]
+        //public bool stoolDNA { get; set; }
+        
+      
+        //[DisplayName("全血")]
+        //public bool wholeBlood { get; set; }
+       
+        //[DisplayName("膽汁")]
+        //public bool bile { get; set; }
+        //[DisplayName("毛髮")]
+        //public bool hair { get; set; }
+        //[DisplayName("口水")]
+        //public bool saliva { get; set; }
 
       
     }
@@ -100,56 +110,62 @@ namespace NHRIDB_DAL.ViewModel
     public class TubeDataTotalType
     {
          
-        [DisplayName("沒有檢體")]
+        [DisplayName("沒有收到檢體")]
         public bool sum_sampleless { get; set; }
 
         [DisplayName("血液")]
         public bool sum_blood { get; set; }
-        [DisplayName("blood DNA")]
-        public bool sum_bloodDNA { get; set; }
-        [DisplayName("冷凍組織")]
-        public bool sum_frozenTissue { get; set; }
-        [DisplayName("蠟塊")]
-        public bool sum_waxBlock { get; set; }
-        [DisplayName("尿液")]
-        public bool sum_urine { get; set; }
-        [DisplayName("尿液清液")]
-        public bool sum_urineClearLiquid { get; set; }
-        [DisplayName("尿液顆粒")]
-        public bool sum_urinePellet { get; set; }
-        [DisplayName("tissue DNA")]
-        public bool sum_tissueDNA { get; set; }
-        [DisplayName("tissue RNA")]
-        public bool sum_tissueRNA { get; set; }
-        [DisplayName("糞便")]
-        public bool sum_stool { get; set; }
-        [DisplayName("糞便DNA")]
-        public bool sum_stoolDNA { get; set; }
-
-        [DisplayName("胸水")]
-        public bool sum_pleuraleffusion { get; set; }
-        [DisplayName("腦脊髓液")]
-        public bool sum_CSF { get; set; }
-        [DisplayName("腹水")]
-        public bool sum_ascites { get; set; }
-        [DisplayName("骨髓液")]
-        public bool sum_boneMarrow { get; set; }
         [DisplayName("血清")]
         public bool sum_serum { get; set; }
         [DisplayName("血漿")]
         public bool sum_plasma { get; set; }
-        [DisplayName("buffy coat")]
+        [DisplayName("牛奶層buffy coat")]
         public bool sum_buffyCoat { get; set; }
-        [DisplayName("全血")]
-        public bool sum_wholeBlood { get; set; }
+
+        [DisplayName("血液DNA")]
+        public bool sum_bloodDNA { get; set; }
+        [DisplayName("冷凍組織")]
+        public bool sum_frozenTissue { get; set; }
+        [DisplayName("組織DNA")]
+        public bool sum_tissueDNA { get; set; }
+        [DisplayName("組織 RNA")]
+        public bool sum_tissueRNA { get; set; }
+
+        [DisplayName("蠟塊")]
+        public bool sum_waxBlock { get; set; }
         [DisplayName("石蠟切片")]
         public bool sum_paraffinSection { get; set; }
-        [DisplayName("膽汁")]
-        public bool sum_bile { get; set; }
-        [DisplayName("毛髮")]
-        public bool sum_hair { get; set; }
-        [DisplayName("口水")]
-        public bool sum_saliva { get; set; }
+
+        [DisplayName("尿液")]
+        public bool sum_urine { get; set; }
+        [DisplayName("胸水")]
+        public bool sum_pleuraleffusion { get; set; }
+        [DisplayName("腹水")]
+        public bool sum_ascites { get; set; }
+        [DisplayName("骨髓液")]
+        public bool sum_boneMarrow { get; set; }
+        [DisplayName("腦脊髓液")]
+        public bool sum_CSF { get; set; }
+        //[DisplayName("尿液清液")]
+        //public bool sum_urineClearLiquid { get; set; }
+        //[DisplayName("尿液顆粒")]
+        //public bool sum_urinePellet { get; set; }
+
+        //[DisplayName("糞便")]
+        //public bool sum_stool { get; set; }
+        //[DisplayName("糞便DNA")]
+        //public bool sum_stoolDNA { get; set; }
+         
+       
+        //[DisplayName("全血")]
+        //public bool sum_wholeBlood { get; set; }
+       
+        //[DisplayName("膽汁")]
+        //public bool sum_bile { get; set; }
+        //[DisplayName("毛髮")]
+        //public bool sum_hair { get; set; }
+        //[DisplayName("口水")]
+        //public bool sum_saliva { get; set; }
      
     }
 }

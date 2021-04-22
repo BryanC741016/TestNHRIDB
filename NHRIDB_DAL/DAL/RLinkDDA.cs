@@ -149,7 +149,7 @@ namespace NHRIDB_DAL.DAL
         public bool CheckDLinkR(DataTable table, out string msg)
         {
             msg = "";
-            var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("Organ/ Region   (代碼)"), diagnosisKey = e.Field<string>("Diagnosis  (代碼)") })
+            var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("器官/部位代碼"), diagnosisKey = e.Field<string>("診斷代碼") })
                  .Distinct().ToList();
             IQueryable<RLinkD> qu = GetQuery();
             foreach (var data in datas)
@@ -158,7 +158,7 @@ namespace NHRIDB_DAL.DAL
                       .Any();
                 if (!commit)
                 {
-                    msg = data.diagnosisKey + "(診斷編號)與" + data.regionKey + "(部位編號)查無相關資料";
+                    msg = data.diagnosisKey + "(診斷代碼)與" + data.regionKey + "(部位編號)查無相關資料";
                     return false;
                 }
             }
