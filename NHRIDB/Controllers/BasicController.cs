@@ -96,6 +96,12 @@ namespace NHRIDB.Controllers
             return "";
        }
 
-       
+        public ActionResult ErrorSize(int size)
+        {
+            ViewBag.max = size;
+            return View();
+        }
+
+
     }
 }
