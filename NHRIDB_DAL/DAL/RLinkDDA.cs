@@ -10,8 +10,6 @@ namespace NHRIDB_DAL.DAL
 {
    public class RLinkDDA : DataAccess
     {
-       
-
         public IQueryable<RLinkD> GetQuery(string dkey="",string rKey="",string dName="",string rName="") {
             IQueryable<RLinkD> qu = _db.RLinkD;
 
@@ -145,25 +143,27 @@ namespace NHRIDB_DAL.DAL
             return table;
         }
       
-
         public bool CheckDLinkR(DataTable table, out string msg)
         {
-            msg = "";
+            msg = string.Empty;
+            bool isSuccess = true;
             var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("器官/部位代碼"), diagnosisKey = e.Field<string>("診斷代碼") })
                  .Distinct().ToList();
             IQueryable<RLinkD> qu = GetQuery();
+
             foreach (var data in datas)
             {
                 bool commit = qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.regionKey.Equals(data.regionKey))
                       .Any();
+
                 if (!commit)
                 {
-                    msg = data.diagnosisKey + "(診斷代碼)與" + data.regionKey + "(部位編號)查無相關資料";
-                    return false;
+                    msg = msg+ data.diagnosisKey + "(診斷代碼)與" + data.regionKey + "(部位編號)查無相關資料" + Environment.NewLine;
+                    isSuccess= false;
                 }
             }
 
-            return true;
+            return isSuccess;
         }
     }
 }

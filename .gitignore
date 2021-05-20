@@ -334,3 +334,6 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 
+/NHRIDB/App_Data/Elmah.Errors
+/NHRIDB/Logs/ActionLog
+/NHRIDB/Upload

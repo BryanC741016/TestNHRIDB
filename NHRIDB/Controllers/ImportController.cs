@@ -129,20 +129,26 @@ namespace NHRIDB.Controllers
             EPPlusExcel epp = new EPPlusExcel();
             DataTable table= epp.GetDataTable(path, upload.InputStream);
 
-            string msg = "";
-            if (!_dataTubeDA.ImportCheck(table, out msg)) {
-            
-                System.IO.File.Delete(path);
-                return  Index(msg,hosId);
+            string msg = string.Empty;
+            string StrAllMsg = string.Empty;
+            bool isSuccess = true;
+
+            if (!_dataTubeDA.ImportCheck(table, out msg)) 
+            {
+                StrAllMsg = StrAllMsg+ msg;
+                isSuccess = false;
+            }
+            else if (!_rLinkDDA.CheckDLinkR(table,out msg)) //部位與診斷代碼(dlinkR)代碼比對
+            {
+                StrAllMsg = StrAllMsg + msg;
+                isSuccess = false;
             }
 
-            //部位與診斷代碼(dlinkR)代碼比對
-            if (!_rLinkDDA.CheckDLinkR(table,out msg)) {
-           
+            if(!isSuccess)
+            {
                 System.IO.File.Delete(path);
-                return Index(msg, hosId);
+                return Index(StrAllMsg, hosId);
             }
-
           
             model.datas = _dataTubeDA.GetDatasByDataTable(table);
             model.columns = _dataTubeDA.GetColummns();
