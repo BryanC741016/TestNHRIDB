@@ -18,8 +18,8 @@ namespace ClassLibrary
 {
    public class EPPlusExcel  
     {
-
         protected Encoding _encode = Encoding.GetEncoding(65001);
+
         public DataTable GetDataTable(string path,Stream stream, bool hasHeader = true)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.Commercial;
@@ -42,6 +42,7 @@ namespace ClassLibrary
                  ws = pck.Workbook.Worksheets.First();
 
              }
+
             //using (var pck = new OfficeOpenXml.ExcelPackage(stream))
             //{
 
@@ -51,11 +52,9 @@ namespace ClassLibrary
                 tbl.Columns.Add(hasHeader ?  firstRowCell.Text.Trim()
                     : string.Format("Column {0}", firstRowCell.Start.Column));
 
-
             int startRow = hasHeader ? 2 : 1;
             for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
             {
-
                 DataRow row = tbl.NewRow();
                 int index = 0;
 
@@ -71,13 +70,10 @@ namespace ClassLibrary
                 if (!string.IsNullOrEmpty(string.Join("", row.ItemArray))) {
                     tbl.Rows.Add(row);
                 }
-              
             }
             return tbl;
             //}
         }
-
-        
 
         public MemoryStream ExportSample(string[] workbookName, List<System.Data.DataTable> dt)
         {
@@ -102,18 +98,13 @@ namespace ClassLibrary
                         rng.Style.Font.Color.SetColor(Color.White);
                     }
                 }
-
                 
-                
-                  MemoryStream stream = new MemoryStream();
+                MemoryStream stream = new MemoryStream();
 
                 package.SaveAs(stream);
 
                 return stream;
-            }
- 
+            } 
         }
-
-       
     }
 }

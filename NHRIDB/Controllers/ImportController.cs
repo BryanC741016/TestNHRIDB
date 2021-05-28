@@ -116,7 +116,7 @@ namespace NHRIDB.Controllers
             upload.SaveAs(path);//為了方便csv讀取
             ViewDatasViewModel model = new ViewDatasViewModel();
             model.fileName = fileName;
-           
+
             /***
              * 1.欄位名稱是否相符
              * 必填欄位沒有填
@@ -126,12 +126,24 @@ namespace NHRIDB.Controllers
              * 4.部位與診斷代碼(dlinkR)代碼比對
              * 資料型別(f:m , 數字 , 0:1)
              * **/
-            EPPlusExcel epp = new EPPlusExcel();
-            DataTable table= epp.GetDataTable(path, upload.InputStream);
-
             string msg = string.Empty;
             string StrAllMsg = string.Empty;
             bool isSuccess = true;
+            EPPlusExcel epp = new EPPlusExcel();
+            DataTable table=new DataTable();
+
+            try
+            {
+                table = epp.GetDataTable(path, upload.InputStream);
+            }
+            catch(Exception e)
+            {
+                StrAllMsg = "檔案轉換失敗,請確定檔案格式是否正確";
+                isSuccess = false;                
+
+                System.IO.File.Delete(path);
+                return Index(StrAllMsg, hosId);
+            }
 
             if (!_dataTubeDA.ImportCheck(table, out msg)) 
             {
@@ -189,6 +201,7 @@ namespace NHRIDB.Controllers
         /// </summary>
         /// <returns></returns>
         [MvcAdminRightAuthorizeFilter(param = 'r')]
+
         public ActionResult ExportData() {
             EPPlusExcel epp = new EPPlusExcel();
             List<DataTable> table = new List<DataTable>();
@@ -196,8 +209,7 @@ namespace NHRIDB.Controllers
             table.Add(tb);
         
             DataTable tb2 = _rLinkDDA.GetDataTable();
-            table.Add(tb2);
-           
+            table.Add(tb2);           
 
             string[] names = new string[] { "檢體資料", "部位與診斷編號" };
 
@@ -207,10 +219,8 @@ namespace NHRIDB.Controllers
             string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
             stream.Position = 0;
-            return File(stream, contentType, fileName);
-             
-        }
 
-      
+            return File(stream, contentType, fileName);             
+        }
     }
 }

@@ -4,7 +4,15 @@
 }
 
 <div class="msg">
-   @Model.msg
+   @*@Model.msg*@
+    @{ 
+        string[] StrArry = Model.msg.Replace("\r\n", ";").Split(';');
+
+        for(int i=0;i< StrArry.Length;i++)
+        {
+        <label>@StrArry[i]</label><br />
+        }
+    }
 </div>
 
 <a href="~/Template/@Model.template" target="_blank">下載範本</a>
