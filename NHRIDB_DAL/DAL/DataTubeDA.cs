@@ -129,8 +129,8 @@ namespace NHRIDB_DAL.DAL
                         sings = sing;
                     }
 
-                    if ((sings - sing)>1 || (sings - sing)<-1) {
-                        msg = msg+ "個案代碼:" + key + "年齡欄位輸入錯誤(誤差值大於+-1)" + Environment.NewLine;
+                    if ((sings - sing)>1.5 || (sings - sing)<-1.5) {
+                        msg = msg+ "個案代碼:" + key + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
                         isSuccess= false;
                     }
                 }
