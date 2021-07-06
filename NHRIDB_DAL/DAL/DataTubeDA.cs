@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ClassLibrary;
+using Newtonsoft.Json;
 using NHRIDB_DAL.DbModel;
 using NHRIDB_DAL.ViewModel;
 using System;
@@ -232,28 +233,45 @@ namespace NHRIDB_DAL.DAL
             return datas;
         }
 
-        public void Create(List<TubeDataType> datas,Guid hkey,Guid uid) {
-            List<TubeData> adds = new List<TubeData>();
-            DateTime now = DateTime.Now;
-            foreach (TubeDataType data in datas) {
-                TubeData tube = new TubeData();
-                foreach (var info in _columns)
+        public DataSaveAns Create(List<TubeDataType> datas,Guid hkey,Guid uid) 
+        {
+            DataSaveAns _DataSaveAns = new DataSaveAns();
+
+            try
+            {
+                List<TubeData> adds = new List<TubeData>();
+                DateTime now = DateTime.Now;
+                foreach (TubeDataType data in datas)
                 {
-                    var value = data.GetType().GetProperty(info.Name).GetValue(data);
-                    tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
-                }
-                tube.hospitalId = hkey;
-                tube.createUser = uid;
+                    TubeData tube = new TubeData();
+                    foreach (var info in _columns)
+                    {
+                        var value = data.GetType().GetProperty(info.Name).GetValue(data);
+                        tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
+                    }
+                    tube.hospitalId = hkey;
+                    tube.createUser = uid;
                     tube.createDate = now;
 
-                adds.Add(tube);
+                    adds.Add(tube);
+                }
+
+                List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+                TubeDataToLog(old, hkey, uid);
+                _db.TubeData.RemoveRange(old);
+                _db.TubeData.AddRange(adds);
+                _db.SaveChanges();
+
+                _DataSaveAns.isSuccess = true;
+            }
+            catch(Exception e)
+            {
+                _DataSaveAns.StrMsg = e.Message;
+                _DataSaveAns.StackTrace= e.StackTrace;
+                _DataSaveAns.isSuccess = false;
             }
 
-            List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
-            TubeDataToLog(old,hkey,uid);
-            _db.TubeData.RemoveRange(old);
-            _db.TubeData.AddRange(adds);
-            _db.SaveChanges();
+            return _DataSaveAns;
         }
 
         private void TubeDataToLog(List<TubeData> datas,Guid hoid,Guid uId)

@@ -142,6 +142,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionFilters\MvcHandleErrorFilter.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Models\Rs.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BarViewModel.cs" />
+    <Compile Include="Models\ViewModels\BatchTableViewModel.cs" />
     <Compile Include="Models\ViewModels\ImportViewModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectSetViewModel.cs" />
@@ -294,6 +296,7 @@
     <Content Include="Views\UnLock\Index.cshtml" />
     <Content Include="Views\UploadExcel\Index.cshtml" />
     <Content Include="Views\Basic\ErrorSize.cshtml" />
+    <Content Include="Views\Import\BatchTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

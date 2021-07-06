@@ -1,0 +1,36 @@
+﻿@model NHRIDB.Models.ViewModels.BatchTableViewModel
+
+@{
+    ViewBag.Title = "大量資料匯入-批次檢查處理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>
+    @Model.StrBatchMsg
+</h4>
+
+<div class="msg">
+    @{
+        string[] StrArry = Model.StrCheckMsg.Replace("\r\n", ";").Split(';');
+
+        for (int i = 0; i < StrArry.Length; i++)
+        {
+            <label>@StrArry[i]</label><br />
+        }
+    }
+</div>
+
+<form action="@Url.Action("BatchTable")" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <button class="btn sure" type="submit">繼續批次檢查</button>
+    <button class="btn sure" type="button" id="BtnABC">取消</button>
+</form>
+
+<form id="FromABC" action="@Url.Action("Index")" method="get" enctype="multipart/form-data" />
+
+<script>
+    $("#BtnABC").click(function () {
+        $("#FromABC").submit();
+    });
+</script>

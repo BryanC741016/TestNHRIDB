@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoSHA512.cs" />
+    <Compile Include="DataSaveAns.cs" />
     <Compile Include="EPPlusExcel.cs" />
     <Compile Include="Logs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -24,5 +24,9 @@ namespace NHRIDB.Models.ViewModels
     public class DiffViewModel {
         public List<GetDifferentTotal_Result> datas { get; set; }
         public List<InfoColummns> columns { get; set; }
+
+        public bool isSuccess { get; set; }
+        public string StrMsg { get; set; }
+        public string StackTrace { get; set; }
     }
 }
