@@ -8,6 +8,7 @@ namespace NHRIDB.Models.ViewModels
     public class BatchTableViewModel
     {
         public string StrBatchMsg;
+        public string StrBatchMsgNext;
         public string StrCheckMsg;
     }
 }

@@ -28,5 +28,6 @@ namespace NHRIDB.Models.ViewModels
         public bool isSuccess { get; set; }
         public string StrMsg { get; set; }
         public string StackTrace { get; set; }
+        public string Test { get; set; }
     }
 }

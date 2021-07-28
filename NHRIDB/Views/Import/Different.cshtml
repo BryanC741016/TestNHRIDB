@@ -3,18 +3,22 @@
     ViewBag.Title = "匯入資料的總數差異表";
 }
 
-@{
+    <div class="msg">
+        測試-2021/7/12->結果已寫入DB,剩回傳結果確認!!
+    </div>
+
+@*@{
     if (Model.isSuccess)
     {
-        <div class="msg">
-            匯入完成
-        </div>
+    <div class="msg">
+        @Model.Test 匯入完成
+    </div>
     }
     else
     {
-        <div class="msg">
-            匯入失敗,@Model.StrMsg
-        </div>
+<div class="msg">
+    @Model.Test 匯入失敗,@Model.StrMsg
+</div>
         <div>
             StackTrace:@Model.StackTrace
         </div>
@@ -34,7 +38,6 @@
 
         </tr>
     </thead>
-
 
     @for (int i = 0; i < Model.datas.Count; i++)
     {
@@ -59,6 +62,6 @@
             }
         </tr>
     }
+</table>*@
 
-</table>
 <a class="btn" href="@Url.Action("Index")">離開</a>

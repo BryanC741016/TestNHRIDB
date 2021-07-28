@@ -44,7 +44,7 @@ namespace NHRIDB.Controllers
                  model.startDate
                 +"</startDate>"
                 +"<endDate>" +
-                      model.endDate +
+                      Convert.ToDateTime(model.endDate.Value.ToString("yyyy/MM/dd 23:59:59")) +
                "</endDate>"+
                 "<regex>" +
                       model.regex +

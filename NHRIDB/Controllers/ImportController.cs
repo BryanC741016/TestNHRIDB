@@ -41,6 +41,7 @@ namespace NHRIDB.Controllers
             Session.Remove("BatchTablePath");
             Session.Remove("BatchType");
             Session.Remove("hosId");
+            Session.Remove("isCountAll");
 
             if (!Directory.Exists(_cPath))
             {
@@ -92,22 +93,24 @@ namespace NHRIDB.Controllers
             Session.Remove("BatchTablePath");
             Session.Remove("BatchType");
             Session.Remove("hosId");
+            Session.Remove("isCountAll");
 
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
 
             if (string.IsNullOrEmpty(ex))
-            {               
-                return Index("請選擇檔案",hosId);
+            {
+                return Index("請選擇檔案", hosId);
             }
-            else{
+            else
+            {
                 string[] allow = new string[] { "xlsx", "csv" };
                 if (!allow.Contains(ex))
-                {                   
-                    return Index("不支援此格式上傳",hosId);
+                {
+                    return Index("不支援此格式上傳", hosId);
                 }
             }
             //============建立目錄
-            string dpath = Server.MapPath("~/Upload/" + hosId.ToString());            
+            string dpath = Server.MapPath("~/Upload/" + hosId.ToString());
 
             if (!Directory.Exists(dpath))
             {
@@ -117,7 +120,7 @@ namespace NHRIDB.Controllers
             DeleteFiles(dpath);
             //==========上傳excel檔
             string now = DateTime.Now.ToString(_dateFormat);
-            string fileName = hosId.ToString()+ now + "." + ex;
+            string fileName = hosId.ToString() + now + "." + ex;
             string path = Path.Combine(_cPath, fileName);
             upload.SaveAs(path);//為了方便csv讀取
             ViewDatasViewModel model = new ViewDatasViewModel();
@@ -136,49 +139,50 @@ namespace NHRIDB.Controllers
             string StrAllMsg = string.Empty;
             bool isSuccess = true;
             EPPlusExcel epp = new EPPlusExcel();
-            DataTable table=new DataTable();
+            DataTable table = new DataTable();
 
             try
             {
                 table = epp.GetDataTable(path, upload.InputStream);
 
-                if(table.Rows.Count>100000)
+                if (table.Rows.Count > 100000)
                 {
                     Session["BatchTable"] = table;
                     Session["BatchTablePath"] = path;
                     Session["BatchType"] = 0;
                     Session["hosId"] = hosId.ToString();
-                    BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();                    
+                    Session["isCountAll"]=false;
+                    BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
 
                     return BatchTable(_BatchTableViewModel);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 StrAllMsg = "檔案轉換失敗,請確定檔案格式是否正確";
-                isSuccess = false;                
+                isSuccess = false;
 
                 System.IO.File.Delete(path);
                 return Index(StrAllMsg, hosId);
             }
 
-            if (!_dataTubeDA.ImportCheck(table, out msg)) 
+            if (!_dataTubeDA.ImportCheck(table, out msg))
             {
-                StrAllMsg = StrAllMsg+ msg;
+                StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
             }
-            else if (!_rLinkDDA.CheckDLinkR(table,out msg)) //部位與診斷代碼(dlinkR)代碼比對
+            else if (!_rLinkDDA.CheckDLinkR(table, out msg)) //部位與診斷代碼(dlinkR)代碼比對
             {
                 StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
             }
 
-            if(!isSuccess)
+            if (!isSuccess)
             {
                 System.IO.File.Delete(path);
                 return Index(StrAllMsg, hosId);
             }
-          
+
             model.datas = _dataTubeDA.GetDatasByDataTable(table);
             model.columns = _dataTubeDA.GetColummns();
             model.hId = hosId;
@@ -200,24 +204,25 @@ namespace NHRIDB.Controllers
             string path = Path.Combine(_cPath, model.fileName);
             //移動至正式目錄
             string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
-            System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));
-          
+            System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));          
            
             return RedirectToAction("Different",new { hId=model.hId, _DataSaveAns = _DataSaveAns });
         }
 
         public ActionResult Different(Guid hId, DataSaveAns _DataSaveAns) 
         {
-            List<GetDifferentTotal_Result> diff= _TubeDataTotalDA.GetDifferent(hId);
-            DiffViewModel model = new DiffViewModel();
+            List<GetDifferentTotal_Result> diff = _TubeDataTotalDA.GetDifferent(hId);
+            //DiffViewModel model = new DiffViewModel();
 
-            model.columns = _TubeDataTotalDA.GetColummns();
-            model.datas = diff;
-            model.isSuccess = _DataSaveAns.isSuccess;
-            model.StrMsg = _DataSaveAns.StrMsg;
-            model.StackTrace = _DataSaveAns.StackTrace;
+            //model.columns = _TubeDataTotalDA.GetColummns();
+            //model.datas = diff;
+            //model.isSuccess = _DataSaveAns.isSuccess;
+            //model.StrMsg = _DataSaveAns.StrMsg;
+            //model.StackTrace = _DataSaveAns.StackTrace;
+            //model.Test = "2021/7/7";
 
-            return View(model);
+            //return View(model);
+            return View();
         }
 
         /// <summary>
@@ -265,6 +270,7 @@ namespace NHRIDB.Controllers
                 case 0:
                     {
                         BatchTableViewModel.StrBatchMsg = "因大量資料故採取批次分量檢查";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:欄位名稱是否相符";
                         BatchTableViewModel.StrCheckMsg = string.Empty;
 
                         Session["BatchType"] = 1;
@@ -272,7 +278,8 @@ namespace NHRIDB.Controllers
                     break;
                 case 1:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:欄位名稱是否相符";
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:欄位名稱是否相符";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:必填欄位沒有填";
 
                         if (!_dataTubeDA.HasColumns(Session["BatchTable"] as DataTable))
                         {
@@ -287,7 +294,8 @@ namespace NHRIDB.Controllers
                     break;
                 case 2:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:必填欄位沒有填";
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:必填欄位沒有填";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:性別是否統一、年齡是否統一";
 
                         if (!_dataTubeDA.CheckRequired(Session["BatchTable"] as DataTable,out BatchTableViewModel.StrCheckMsg))
                         {
@@ -301,21 +309,42 @@ namespace NHRIDB.Controllers
                     break;
                 case 3:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:性別是否統一、年齡是否統一";
+                        bool isCountAll = (Session["isCountAll"] as bool?).HasValue? (Session["isCountAll"] as bool?).Value:false;
 
-                        if (!_dataTubeDA.RepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        if(!isCountAll)
                         {
-                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.StrBatchMsg = "目前檢查(前半):性別是否統一、年齡是否統一";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+
+                            if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                            {
+                                System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            }
+                            else
+                            {
+                                Session["isCountAll"] = true;
+                            }
                         }
                         else
                         {
-                            Session["BatchType"] = 4;
-                        }
+                            BatchTableViewModel.StrBatchMsg = "目前檢查(後半):性別是否統一、年齡是否統一";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+
+                            if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                            {
+                                System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            }
+                            else
+                            {
+                                Session["BatchType"] = 4;
+                            }
+                        }                        
                     }
                     break;
                 case 4:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:主key重複";
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:主key重複";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
 
                         if (!_dataTubeDA.MatchKey(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {
@@ -329,7 +358,8 @@ namespace NHRIDB.Controllers
                     break;
                 case 5:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                         if (!_dataTubeDA.CheckType(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {
@@ -343,7 +373,8 @@ namespace NHRIDB.Controllers
                     break;
                 case 6:
                     {
-                        BatchTableViewModel.StrBatchMsg = "檢查:部位與診斷代碼(dlinkR)代碼比對";
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對";
+                        BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
 
                         if (!_rLinkDDA.CheckDLinkR(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {

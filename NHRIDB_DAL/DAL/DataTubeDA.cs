@@ -43,10 +43,10 @@ namespace NHRIDB_DAL.DAL
             //1.欄位名稱是否相符
             if (!HasColumns(table))
             {
-                msg = msg +  "欄位名稱不符合，請參照範本" + Environment.NewLine;
+                msg = msg + "欄位名稱不符合，請參照範本" + Environment.NewLine;
                 return false;
             }
-           
+
             //必填欄位沒有填
             if (!CheckRequired(table, out msg))
             {
@@ -140,6 +140,81 @@ namespace NHRIDB_DAL.DAL
             return isSuccess;
         }
 
+        public bool BatchRepleData(DataTable table, out string msg,bool isCountAll)
+        {
+            msg = string.Empty;            
+            List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼")).Where(e => e.Count() > 1)
+                .Select(e => e.Key).ToList();
+            bool isSuccess = true;
+            int IntStartIndex = 0;
+            int IntRunCount = keys.Count / 2;
+
+            if (isCountAll)
+            {
+                IntStartIndex= keys.Count / 2;
+                IntRunCount=keys.Count;
+            }
+
+            //分批跑,只跑一半
+            for (int i= IntStartIndex; i< IntRunCount; i++)
+            {
+                var datas = table.AsEnumerable().Where(e => e.Field<string>("個案代碼").Trim().Equals(keys[i].Trim()));
+                int sexCount = datas.GroupBy(e => e.Field<string>("性別")).Count();
+
+                if (sexCount > 1)
+                {
+                    msg = msg + "個案代碼:" + keys[i] + "性別欄位輸入錯誤" + Environment.NewLine;
+                    isSuccess = false;
+                }
+
+                double sings = 0;
+                foreach (var item in datas)
+                {
+                    double sing = double.Parse(item.Field<string>("收案年份 (西元年)")) - double.Parse(item.Field<string>("年齡 (歲)"));
+                    if (sings == 0)
+                    {
+                        sings = sing;
+                    }
+
+                    if ((sings - sing) > 1.5 || (sings - sing) < -1.5)
+                    {
+                        msg = msg + "個案代碼:" + keys[i] + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
+                        isSuccess = false;
+                    }
+                }
+            }
+
+            //foreach (string key in keys)
+            //{
+            //    var datas = table.AsEnumerable().Where(e => e.Field<string>("個案代碼").Trim().Equals(key.Trim()));
+            //    int sexCount = datas.GroupBy(e => e.Field<string>("性別")).Count();
+
+            //    if (sexCount > 1)
+            //    {
+            //        msg = msg + "個案代碼:" + key + "性別欄位輸入錯誤" + Environment.NewLine;
+            //        isSuccess = false;
+            //    }
+
+            //    double sings = 0;
+            //    foreach (var item in datas)
+            //    {
+            //        double sing = double.Parse(item.Field<string>("收案年份 (西元年)")) - double.Parse(item.Field<string>("年齡 (歲)"));
+            //        if (sings == 0)
+            //        {
+            //            sings = sing;
+            //        }
+
+            //        if ((sings - sing) > 1.5 || (sings - sing) < -1.5)
+            //        {
+            //            msg = msg + "個案代碼:" + key + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
+            //            isSuccess = false;
+            //        }
+            //    }
+            //}//end foreach key
+
+            return isSuccess;
+        }
+
         public bool MatchKey(DataTable table,out string msg)
         {
             msg = string.Empty;
@@ -194,7 +269,6 @@ namespace NHRIDB_DAL.DAL
                     default:
                         commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).Any();
                         break;
-
                 }
 
                 if (!commit)
