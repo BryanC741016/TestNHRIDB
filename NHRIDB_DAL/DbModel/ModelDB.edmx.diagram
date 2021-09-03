@@ -14,12 +14,12 @@
         <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="1.25" />
         <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
-        <EntityTypeShape EntityType="NHRIDBModel.TubeDataLog" Width="1.5" PointX="7.375" PointY="7.75" />
         <EntityTypeShape EntityType="NHRIDBModel.RLinkD" Width="1.5" PointX="0.75" PointY="8.875" />
         <EntityTypeShape EntityType="NHRIDBModel.LogLogin" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="NHRIDBModel.TubeData" Width="1.5" PointX="12.125" PointY="2" />
         <AssociationConnector Association="NHRIDBModel.FK_TubeData_Hospital" />
         <AssociationConnector Association="NHRIDBModel.FK_TubeData_RLinkD" />
+        <EntityTypeShape EntityType="NHRIDBModel.TubeDataLog" Width="1.5" PointX="7.375" PointY="7.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

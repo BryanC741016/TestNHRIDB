@@ -21,6 +21,7 @@ namespace NHRIDB_DAL.DbModel
         public string endYear { get; set; }
         public System.DateTime createDate { get; set; }
         public decimal age { get; set; }
+        public System.DateTime LogDate { get; set; }
         public string gender { get; set; }
         public bool blood { get; set; }
         public bool frozenTissue { get; set; }
@@ -45,7 +46,7 @@ namespace NHRIDB_DAL.DbModel
         public bool bile { get; set; }
         public bool hair { get; set; }
         public bool saliva { get; set; }
-        public System.Guid createUser { get; set; }
         public bool bloodDNA { get; set; }
+        public System.Guid createUser { get; set; }
     }
 }

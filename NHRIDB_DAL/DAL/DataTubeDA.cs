@@ -140,24 +140,24 @@ namespace NHRIDB_DAL.DAL
             return isSuccess;
         }
 
-        public bool BatchRepleData(DataTable table, out string msg,bool isCountAll)
+        public bool BatchRepleData(DataTable table, out string msg,int intBatchStartIndex)
         {
             msg = string.Empty;            
             List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼")).Where(e => e.Count() > 1)
                 .Select(e => e.Key).ToList();
             bool isSuccess = true;
-            int IntStartIndex = 0;
-            int IntRunCount = keys.Count / 2;
+            int IntBatchRunCount = 1;
 
-            if (isCountAll)
+            //分批跑,只跑 1萬
+            for (int i= intBatchStartIndex; i< keys.Count; i++)
             {
-                IntStartIndex= keys.Count / 2;
-                IntRunCount=keys.Count;
-            }
+                if (IntBatchRunCount > 10000)
+                {
+                    intBatchStartIndex = i;
 
-            //分批跑,只跑一半
-            for (int i= IntStartIndex; i< IntRunCount; i++)
-            {
+                    break;
+                }
+
                 var datas = table.AsEnumerable().Where(e => e.Field<string>("個案代碼").Trim().Equals(keys[i].Trim()));
                 int sexCount = datas.GroupBy(e => e.Field<string>("性別")).Count();
 
@@ -182,6 +182,8 @@ namespace NHRIDB_DAL.DAL
                         isSuccess = false;
                     }
                 }
+
+                IntBatchRunCount++;
             }
 
             //foreach (string key in keys)
@@ -348,6 +350,52 @@ namespace NHRIDB_DAL.DAL
             return _DataSaveAns;
         }
 
+        public DataSaveAns CreateBatch(List<TubeDataType> datas, Guid hkey, Guid uid,bool isFirst)
+        {
+            DataSaveAns _DataSaveAns = new DataSaveAns();
+
+            try
+            {
+                List<TubeData> adds = new List<TubeData>();
+                DateTime now = DateTime.Now;
+                foreach (TubeDataType data in datas)
+                {
+                    TubeData tube = new TubeData();
+                    foreach (var info in _columns)
+                    {
+                        var value = data.GetType().GetProperty(info.Name).GetValue(data);
+                        tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
+                    }
+                    tube.hospitalId = hkey;
+                    tube.createUser = uid;
+                    tube.createDate = now;
+
+                    adds.Add(tube);
+                }
+
+                List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+
+                if (isFirst)
+                    TubeDataToLog(old, hkey, uid);
+
+                if(isFirst)
+                    _db.TubeData.RemoveRange(old);
+
+                _db.TubeData.AddRange(adds);
+                _db.SaveChanges();
+
+                _DataSaveAns.isSuccess = true;
+            }
+            catch (Exception e)
+            {
+                _DataSaveAns.StrMsg = e.Message;
+                _DataSaveAns.StackTrace = e.StackTrace;
+                _DataSaveAns.isSuccess = false;
+            }
+
+            return _DataSaveAns;
+        }
+
         private void TubeDataToLog(List<TubeData> datas,Guid hoid,Guid uId)
         {
             List<TubeDataLog> adds = new List<TubeDataLog>();
@@ -364,11 +412,13 @@ namespace NHRIDB_DAL.DAL
                 tube.hospitalId = hoid;
                 tube.createUser = data.createUser;
                 tube.createDate = data.createDate;
+                tube.age = data.age;
+                tube.LogDate = DateTime.Now;
+
                 adds.Add(tube);
             }
 
-            _db.TubeDataLog.AddRange(adds);
-            
+            _db.TubeDataLog.AddRange(adds);            
         }
 
         public DataTable GetEmptyDataTable()
@@ -383,7 +433,6 @@ namespace NHRIDB_DAL.DAL
                 column.AllowDBNull = item.Required;
                 table.Columns.Add(column);
             }
-            
 
             return table;
         }

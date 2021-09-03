@@ -3,6 +3,7 @@ using NHRIDB.Filter;
 using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
+using NHRIDB_DAL.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,11 +38,7 @@ namespace NHRIDB.Controllers
         // GET: Form
         public ActionResult Index(string msg="", Guid? hosId=null)
         {
-            Session.Remove("BatchTable");
-            Session.Remove("BatchTablePath");
-            Session.Remove("BatchType");
-            Session.Remove("hosId");
-            Session.Remove("isCountAll");
+            setRemoveSession();
 
             if (!Directory.Exists(_cPath))
             {
@@ -89,11 +86,7 @@ namespace NHRIDB.Controllers
         [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Index(HttpPostedFileBase upload,Guid hosId) 
         {
-            Session.Remove("BatchTable");
-            Session.Remove("BatchTablePath");
-            Session.Remove("BatchType");
-            Session.Remove("hosId");
-            Session.Remove("isCountAll");
+            setRemoveSession();
 
             string ex = upload == null ? null : Path.GetExtension(upload.FileName).Replace(".", "");
 
@@ -145,13 +138,15 @@ namespace NHRIDB.Controllers
             {
                 table = epp.GetDataTable(path, upload.InputStream);
 
-                if (table.Rows.Count > 100000)
+                if (table.Rows.Count >100000)
                 {
                     Session["BatchTable"] = table;
                     Session["BatchTablePath"] = path;
                     Session["BatchType"] = 0;
                     Session["hosId"] = hosId.ToString();
-                    Session["isCountAll"]=false;
+                    Session["intBatchStartIndex"] =0;
+                    Session["isBatchError"] = false;
+                    Session["fileName"] = model.fileName;
                     BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
 
                     return BatchTable(_BatchTableViewModel);
@@ -207,6 +202,53 @@ namespace NHRIDB.Controllers
             System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));          
            
             return RedirectToAction("Different",new { hId=model.hId, _DataSaveAns = _DataSaveAns });
+        }
+
+        /// <summary>
+        /// View Batch Datas介面傳送資料
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [MvcAdminRightAuthorizeFilter(param = 'w')]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveBatchData(ViewBatchDatasViewModel model)
+        {
+            DataSaveAns _DataSaveAns = _dataTubeDA.CreateBatch(model.datas, model.hId, _uid,model.isFirst);
+
+            if(model.isFirst)
+            {
+                string path = Path.Combine(_cPath, model.fileName);
+                //移動至正式目錄
+                string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
+                System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(), "")));
+            }            
+
+            if(!model.isEnd)
+            {
+                BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
+                _BatchTableViewModel.isExeSetTimeOut = true;
+
+                if (!_DataSaveAns.isSuccess)
+                {
+                    _BatchTableViewModel.isExeSetTimeOut = false;
+                }
+
+                return RedirectToAction("BatchTable", new { StrAnsError = _DataSaveAns.StrMsg, isExeSetTimeOut = _BatchTableViewModel.isExeSetTimeOut });
+            }                
+            else
+            {
+                if(!_DataSaveAns.isSuccess)
+                {
+                    BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
+                    _BatchTableViewModel.isExeSetTimeOut = false;
+
+                    return RedirectToAction("BatchTable", new { StrAnsError = _DataSaveAns.StrMsg, isExeSetTimeOut = _BatchTableViewModel.isExeSetTimeOut });
+                }
+                else
+                {
+                    return RedirectToAction("Different", new { hId = model.hId, _DataSaveAns = _DataSaveAns });
+                }
+            } 
         }
 
         public ActionResult Different(Guid hId, DataSaveAns _DataSaveAns) 
@@ -272,6 +314,7 @@ namespace NHRIDB.Controllers
                         BatchTableViewModel.StrBatchMsg = "因大量資料故採取批次分量檢查";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:欄位名稱是否相符";
                         BatchTableViewModel.StrCheckMsg = string.Empty;
+                        BatchTableViewModel.isExeSetTimeOut = true;
 
                         Session["BatchType"] = 1;
                     }
@@ -285,10 +328,12 @@ namespace NHRIDB.Controllers
                         {
                             BatchTableViewModel.StrCheckMsg = BatchTableViewModel.StrCheckMsg + "欄位名稱不符合，請參照範本" + Environment.NewLine;
                             System.IO.File.Delete(Session["BatchTablePath"]as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
                         }
                         else
                         {
                             Session["BatchType"] = 2;
+                            BatchTableViewModel.isExeSetTimeOut = true;
                         }
                     }
                     break;
@@ -300,45 +345,135 @@ namespace NHRIDB.Controllers
                         if (!_dataTubeDA.CheckRequired(Session["BatchTable"] as DataTable,out BatchTableViewModel.StrCheckMsg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
                         }
                         else
                         {
                             Session["BatchType"] = 3;
+                            BatchTableViewModel.isExeSetTimeOut = true;
                         }
                     }
                     break;
                 case 3:
                     {
-                        bool isCountAll = (Session["isCountAll"] as bool?).HasValue? (Session["isCountAll"] as bool?).Value:false;
+                        DataTable table = (Session["BatchTable"] as DataTable);
+                        List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼")).Where(e => e.Count() > 1).Select(e => e.Key).ToList();
+                        int intBatchStartIndex = (Session["intBatchStartIndex"] as int?).HasValue ? (Session["intBatchStartIndex"] as int?).Value : 0;
+                        int IntBatchRunCount = 1;
+                        string msg = string.Empty;
 
-                        if(!isCountAll)
+                        //分批跑,只跑 1百
+                        for (int i = intBatchStartIndex; i < keys.Count; i++)
                         {
-                            BatchTableViewModel.StrBatchMsg = "目前檢查(前半):性別是否統一、年齡是否統一";
-                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
-
-                            if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                            if (IntBatchRunCount > 100)
                             {
-                                System.IO.File.Delete(Session["BatchTablePath"] as string);
+                                intBatchStartIndex = i-1;
+
+                                break;
+                            }
+
+                            if((i+1).Equals(keys.Count))
+                            {
+                                intBatchStartIndex = i;
+                            }
+
+                            var datas = table.AsEnumerable().Where(e => e.Field<string>("個案代碼").Trim().Equals(keys[i].Trim()));
+                            int sexCount = datas.GroupBy(e => e.Field<string>("性別")).Count();
+
+                            if (sexCount > 1)
+                            {
+                                msg = msg + "個案代碼:" + keys[i] + "性別欄位輸入錯誤" + Environment.NewLine;
+                            }
+
+                            double sings = 0;
+                            foreach (var item in datas)
+                            {
+                                double sing = double.Parse(item.Field<string>("收案年份 (西元年)")) - double.Parse(item.Field<string>("年齡 (歲)"));
+                                if (sings == 0)
+                                {
+                                    sings = sing;
+                                }
+
+                                if ((sings - sing) > 1.5 || (sings - sing) < -1.5)
+                                {
+                                    msg = msg + "個案代碼:" + keys[i] + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
+                                }
+                            }
+
+                            IntBatchRunCount++;
+                        }
+
+                        BatchTableViewModel.StrCheckMsg = msg;
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            Session["isBatchError"] = true;                            
+                        }
+
+                        if (!(intBatchStartIndex+1).Equals(keys.Count))
+                        {
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:"+ keys.Count.ToString()+";目前執行到第幾 "+(intBatchStartIndex+1 ) +" 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";                            
+
+                            if(!(Session["isBatchError"] as bool?).Value)
+                            {
+                                BatchTableViewModel.isExeSetTimeOut = true;
+                                Session["intBatchStartIndex"] = intBatchStartIndex + 1;
                             }
                             else
                             {
-                                Session["isCountAll"] = true;
+                                BatchTableViewModel.isExeSetTimeOut = false;
                             }
                         }
                         else
                         {
-                            BatchTableViewModel.StrBatchMsg = "目前檢查(後半):性別是否統一、年齡是否統一";
-                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:" + keys.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1) + " 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";                            
 
-                            if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                            if (!(Session["isBatchError"] as bool?).Value)
                             {
-                                System.IO.File.Delete(Session["BatchTablePath"] as string);
+                                Session["BatchType"] = 4;
+                                BatchTableViewModel.isExeSetTimeOut = true;
+
+                                // 歸零,重跑或給下一動
+                                Session["intBatchStartIndex"] = 0;
                             }
                             else
                             {
-                                Session["BatchType"] = 4;
+                                BatchTableViewModel.isExeSetTimeOut = false;
                             }
-                        }                        
+                        }
+
+                        #region Old
+                        //if(!isCountAll)
+                        //{
+                        //    BatchTableViewModel.StrBatchMsg = "目前檢查(前半):性別是否統一、年齡是否統一";
+                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+
+                        //    if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                        //    {
+                        //        System.IO.File.Delete(Session["BatchTablePath"] as string);
+                        //    }
+                        //    else
+                        //    {
+                        //        Session["isCountAll"] = true;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    BatchTableViewModel.StrBatchMsg = "目前檢查(後半):性別是否統一、年齡是否統一";
+                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+
+                        //    if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
+                        //    {
+                        //        System.IO.File.Delete(Session["BatchTablePath"] as string);
+                        //    }
+                        //    else
+                        //    {
+                        //        Session["BatchType"] = 4;
+                        //    }
+                        //}       
+                        #endregion
                     }
                     break;
                 case 4:
@@ -349,10 +484,12 @@ namespace NHRIDB.Controllers
                         if (!_dataTubeDA.MatchKey(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
                         }
                         else
                         {
                             Session["BatchType"] = 5;
+                            BatchTableViewModel.isExeSetTimeOut = true;
                         }
                     }
                     break;
@@ -364,41 +501,191 @@ namespace NHRIDB.Controllers
                         if (!_dataTubeDA.CheckType(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
                         }
                         else
                         {
                             Session["BatchType"] = 6;
+                            BatchTableViewModel.isExeSetTimeOut = true;
                         }
                     }
                     break;
                 case 6:
                     {
-                        BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對";
-                        BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
+                        DataTable table = (Session["BatchTable"] as DataTable);
+                        var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("器官/部位代碼"), diagnosisKey = e.Field<string>("診斷代碼") })
+                                    .Distinct().ToList();
+                        IQueryable<RLinkD> qu = new RLinkDDA().GetQuery();
+                        int intBatchStartIndex = (Session["intBatchStartIndex"] as int?).HasValue ? (Session["intBatchStartIndex"] as int?).Value : 0;
+                        int IntBatchRunCount = 1;
+                        string msg = string.Empty;
 
-                        if (!_rLinkDDA.CheckDLinkR(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        //分批跑,只跑 1百
+                        for (int i = intBatchStartIndex; i < datas.Count; i++)
+                        {
+                            if (IntBatchRunCount > 100)
+                            {
+                                intBatchStartIndex = i-1;
+
+                                break;
+                            }
+
+                            if ((i + 1).Equals(datas.Count))
+                            {
+                                intBatchStartIndex = i;
+                            }
+
+                            var data = datas[i];
+
+                            bool commit = qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.regionKey.Equals(data.regionKey)).Any();
+
+                            if (!commit)
+                            {
+                                msg = msg + datas[i].diagnosisKey + "(診斷代碼)與" + datas[i].regionKey + "(部位編號)查無相關資料" + Environment.NewLine;
+                            }
+
+                            IntBatchRunCount++;
+                        }
+
+                        BatchTableViewModel.StrCheckMsg = msg;
+                        if (!string.IsNullOrEmpty(msg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            Session["isBatchError"] = true;
+                        }
+
+                        if(!(intBatchStartIndex+1).Equals(datas.Count))
+                        {
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對;總量:" + datas.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1 ) + " 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";                            
+
+                            if (!(Session["isBatchError"] as bool?).Value)
+                            {
+                                BatchTableViewModel.isExeSetTimeOut = true;
+                                Session["intBatchStartIndex"] = intBatchStartIndex + 1;
+                            }
+                            else
+                            {
+                                BatchTableViewModel.isExeSetTimeOut = false;
+                            }
                         }
                         else
                         {
-                            Session["BatchType"] = 7;
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對;總量:" + datas.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1) + " 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
+
+                            if (!(Session["isBatchError"] as bool?).Value)
+                            {
+                                Session["BatchType"] = 7;
+                                BatchTableViewModel.isExeSetTimeOut = true;
+
+                                // 歸零,重跑或給下一動
+                                Session["intBatchStartIndex"] = 0;
+                            }
+                            else
+                            {
+                                BatchTableViewModel.isExeSetTimeOut = false;
+                            }
                         }
+
+                        #region Old
+                        //BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對";
+                        //BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
+
+                        //if (!_rLinkDDA.CheckDLinkR(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        //{
+                        //    System.IO.File.Delete(Session["BatchTablePath"] as string);
+                        //}
+                        //else
+                        //{
+                        //    Session["BatchType"] = 7;
+                        //}
+                        #endregion
                     }
                     break;
                 case 7:
                     {
-                        ViewDatasViewModel model = new ViewDatasViewModel();
-                        model.datas = _dataTubeDA.GetDatasByDataTable(Session["BatchTable"] as DataTable);
+                        ViewBatchDatasViewModel model = new ViewBatchDatasViewModel();
+                        model.StrAnsError = BatchTableViewModel.StrAnsError;
+                        model.isExeSetTimeOut = BatchTableViewModel.isExeSetTimeOut;
                         model.columns = _dataTubeDA.GetColummns();
-                        model.hId = Guid.Parse(( Session["hosId"] as string));
+                        model.hId = Guid.Parse((Session["hosId"] as string));
+                        model.fileName = Session["fileName"] as string;
+
+                        DataTable table = (Session["BatchTable"] as DataTable);
+                        List<DataRow> AllDataRow = table.AsEnumerable().ToList();
+                        
+                        int intBatchStartIndex = (Session["intBatchStartIndex"] as int?).HasValue ? (Session["intBatchStartIndex"] as int?).Value : 0;
+                        int IntBatchRunCount = 1;
+
+                        List<TubeDataType> datas = new List<TubeDataType>();
+
+                        if (intBatchStartIndex.Equals(0))
+                            model.isFirst = true;
+
+                        for (int i= intBatchStartIndex; i< AllDataRow.Count;i++)
+                        {
+                            if (IntBatchRunCount > 1000)
+                            {
+                                intBatchStartIndex = i - 1;
+
+                                break;
+                            }
+
+                            if ((i + 1).Equals(AllDataRow.Count))
+                            {
+                                intBatchStartIndex = i;                                
+                            }
+
+                            TubeDataType data = new TubeDataType();
+                            foreach (var info in model.columns)
+                            {
+                                if (info.PropertyType.Name.Equals("Boolean"))
+                                {
+                                    bool bo = AllDataRow[i][info.DisplayName].Equals("1") ? true : false;
+                                    data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(bo, info.PropertyType), null);
+                                }
+                                else
+                                {
+                                    data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(AllDataRow[i][info.DisplayName], info.PropertyType), null);
+                                }
+                            }
+
+                            datas.Add(data);
+
+                            IntBatchRunCount++;
+                        }
+
+                        if(!(intBatchStartIndex+1).Equals(AllDataRow.Count))
+                        {
+                            Session["intBatchStartIndex"] = intBatchStartIndex + 1;
+                        }
+                        else
+                        {                            
+                            model.isEnd = true;
+                            Session["intBatchStartIndex"] = 0;
+                        }
+
+                        model.StrBatchMsgNext = "目前儲存=>總量:" + AllDataRow.Count.ToString() + ";目前準備儲存到第幾 " + (intBatchStartIndex + 1) + " 筆";
+                        model.datas = datas;
 
                         //紀錄檔名，若沒有點選儲存則刪除該檔；若有即移到至正式目錄
-                        return View("ViewDatas", model); //顯示匯入的資
+                        return View("ViewBatchDatas", model); //顯示匯入的資
                     }
             }
 
             return View("BatchTable",BatchTableViewModel);
+        }
+
+        private void setRemoveSession()
+        {
+            Session.Remove("BatchTable");
+            Session.Remove("BatchTablePath");
+            Session.Remove("BatchType");
+            Session.Remove("hosId");
+            Session.Remove("intBatchStartIndex");
+            Session.Remove("isBatchError");
+            Session.Remove("fileName");
         }
     }
 }

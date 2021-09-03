@@ -1,0 +1,93 @@
+﻿@model  NHRIDB.Models.ViewModels.ViewBatchDatasViewModel
+@{
+    ViewBag.Title = "批次匯入資料明細";
+}
+@using (Html.BeginForm("SaveBatchData", "Import", FormMethod.Post, new { id = "FormSaveBatchData" }))
+{
+
+    @Html.AntiForgeryToken()
+    <div class="text-danger">
+        @Html.ValidationSummary()
+        @*@Html.ValidationMessageFor(model => model.gName, "", new { @class = "text-danger" })*@
+        @Html.HiddenFor(e => e.fileName)
+        @Html.HiddenFor(e => e.hId)
+        @Html.Hidden("isFirst", Model.isFirst)
+        @Html.Hidden("isEnd", Model.isEnd)
+    </div>
+
+    <div class="msg">
+        <label>@Model.StrAnsError</label>
+    </div>
+    <h4>
+        @Model.StrBatchMsgNext
+    </h4>
+    if (Model.isExeSetTimeOut || Model.isFirst)
+    {
+        <h4>
+            倒數3秒後,自動 繼續批次儲存
+        </h4>
+    }
+
+    if (string.IsNullOrEmpty(Model.StrAnsError))
+    {
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    @foreach (var column in Model.columns)
+                    {
+                        <th>@column.DisplayName</th>
+                    }
+                </tr>
+            </thead>
+
+            @for (int i = 0; i < Model.datas.Count; i++)
+            {
+                var item = Model.datas[i];
+                <tr>
+                    @foreach (var column in Model.columns)
+                    {
+
+                        var value = item.GetType().GetProperty(column.Name).GetValue(item);
+                        string showText = "";
+                        if (column.PropertyType.Name.Equals("Boolean"))
+                        {
+
+                            showText = bool.Parse(value.ToString()) ? "1" : "0";
+                            <td>
+                                @showText
+                                @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @value
+                                @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+    }
+
+    <a class="btn" href="@Url.Action("Index")">取消</a>
+    if (string.IsNullOrEmpty(Model.StrAnsError))
+    {
+        <button class="btn" type="submit">儲存</button>
+    }
+}
+
+<script>
+     @{
+        if(Model.isExeSetTimeOut || Model.isFirst)
+        {
+            <text>
+    $(function () {
+        setTimeout(function () { $("#FormSaveBatchData").submit(); }, 3000);
+    });
+            </text>
+        }
+    }
+</script>
+

@@ -10,5 +10,9 @@ namespace NHRIDB.Models.ViewModels
         public string StrBatchMsg;
         public string StrBatchMsgNext;
         public string StrCheckMsg;
+
+        public bool isExeSetTimeOut { get; set; }
+
+        public string StrAnsError { get; set; }
     }
 }
