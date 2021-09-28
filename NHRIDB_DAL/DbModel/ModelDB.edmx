@@ -65,6 +65,13 @@
           <Property Name="rName" Type="varchar(max)" Nullable="false" />
           <Property Name="dName" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="TemplateExcelUpDataRecord">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="TubeData">
           <Key>
             <PropertyRef Name="hospitalId" />
@@ -272,6 +279,7 @@
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TemplateExcelUpDataRecord" EntityType="Self.TemplateExcelUpDataRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
@@ -350,6 +358,7 @@
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
+          <EntitySet Name="TemplateExcelUpDataRecord" EntityType="NHRIDBModel.TemplateExcelUpDataRecord" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -674,6 +683,13 @@
           <Property Name="bloodDNA" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
         </EntityType>
+        <EntityType Name="TemplateExcelUpDataRecord">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -909,6 +925,14 @@
                 <ScalarProperty Name="regionKey" ColumnName="regionKey" />
                 <ScalarProperty Name="patientKey" ColumnName="patientKey" />
                 <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TemplateExcelUpDataRecord">
+            <EntityTypeMapping TypeName="NHRIDBModel.TemplateExcelUpDataRecord">
+              <MappingFragment StoreEntitySet="TemplateExcelUpDataRecord">
+                <ScalarProperty Name="UpDateTime" ColumnName="UpDateTime" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

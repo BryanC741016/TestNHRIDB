@@ -53,7 +53,21 @@ namespace NHRIDB.Controllers
             else {
                 model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
             }
-         
+
+            TemplateExcelUpDataRecordDA _TemplateExcelUpDataRecordDA = new TemplateExcelUpDataRecordDA();
+            List<TemplateExcelUpDataRecord> old = _TemplateExcelUpDataRecordDA.getAllList();
+            string templateTime = string.Empty;
+
+            if(old!=null)
+            {
+                if(old.Count>0)
+                {
+                    templateTime = templateTime + old[0].UpDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                }
+            }
+
+            model.templateTime = templateTime;
+
             model.template = _template;
             model.msg = msg;
             return View(model);
@@ -137,6 +151,9 @@ namespace NHRIDB.Controllers
             try
             {
                 table = epp.GetDataTable(path, upload.InputStream);
+
+                List<TubeData> _LitTubeData = _dataTubeDA.getTubeData(hosId);
+                Session["OldTubeDataCount"] = _LitTubeData != null ? _LitTubeData.Count : 0;
 
                 if (table.Rows.Count >100000)
                 {
@@ -253,7 +270,12 @@ namespace NHRIDB.Controllers
 
         public ActionResult Different(Guid hId, DataSaveAns _DataSaveAns) 
         {
-            List<GetDifferentTotal_Result> diff = _TubeDataTotalDA.GetDifferent(hId);
+            ImportAnsViewModel _ImportAnsViewModel = new ImportAnsViewModel();
+            _ImportAnsViewModel.OldCount = Convert.ToInt32(Session["OldTubeDataCount"]);
+            List<TubeData> _LitTubeData=_dataTubeDA.getTubeData(hId);
+            _ImportAnsViewModel.NewCount= _LitTubeData != null? _LitTubeData.Count:0;
+
+            //List<GetDifferentTotal_Result> diff = _TubeDataTotalDA.GetDifferent(hId);
             //DiffViewModel model = new DiffViewModel();
 
             //model.columns = _TubeDataTotalDA.GetColummns();
@@ -264,7 +286,7 @@ namespace NHRIDB.Controllers
             //model.Test = "2021/7/7";
 
             //return View(model);
-            return View();
+            return View(_ImportAnsViewModel);
         }
 
         /// <summary>
@@ -679,6 +701,7 @@ namespace NHRIDB.Controllers
 
         private void setRemoveSession()
         {
+            Session.Remove("OldTubeDataCount");
             Session.Remove("BatchTable");
             Session.Remove("BatchTablePath");
             Session.Remove("BatchType");

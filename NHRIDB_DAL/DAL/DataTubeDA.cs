@@ -436,5 +436,12 @@ namespace NHRIDB_DAL.DAL
 
             return table;
         }
+
+        public List<TubeData> getTubeData(Guid hospitalId)
+        {
+            List<TubeData> _LitTubeData = _db.TubeData.Where(e => e.hospitalId == hospitalId).ToList();
+
+            return _LitTubeData;
+        }
     }
 }

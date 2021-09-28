@@ -1,0 +1,19 @@
+﻿@model NHRIDB.Models.ViewModels.TemplateExcelViewModel
+@{
+    ViewBag.Title = "檢體範本";
+}
+
+    <div class="msg">
+        @Model.msg
+    </div>
+
+<form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <label style="color:red;text-align:right">上傳的檔案將變更:檢體管理->上傳檢體->下載範本的檔案</label>
+    <br />
+    <label style="color:red;text-align:right">檔案只接受 .xlsx 檔案格式</label>
+
+    <input type="file" id="upload" name="upload" accept=".xlsx">
+    <button class="btn sure" type="submit">確認上傳</button>
+</form>

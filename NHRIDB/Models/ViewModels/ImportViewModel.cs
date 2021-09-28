@@ -13,6 +13,8 @@ namespace NHRIDB.Models.ViewModels
         public string template { get; set; }
 
         public string msg { get; set; }
+
+        public string templateTime { get; set; }
     }
     public class ViewDatasViewModel
     {

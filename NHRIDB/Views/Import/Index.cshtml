@@ -15,6 +15,8 @@
     }
 </div>
 
+<label style="color:red">下載範本最後更新時間: @Model.templateTime</label>
+<br />
 <a href="~/Template/@Model.template" target="_blank">下載範本</a>
 
 <form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">

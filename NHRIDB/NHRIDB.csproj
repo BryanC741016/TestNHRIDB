@@ -155,6 +155,7 @@
     <Compile Include="Controllers\HospitalController.cs" />
     <Compile Include="Controllers\ProjectSetController.cs" />
     <Compile Include="Controllers\RLinkDController.cs" />
+    <Compile Include="Controllers\TemplateExcelController.cs" />
     <Compile Include="Controllers\UnLockController.cs" />
     <Compile Include="Controllers\UploadExcelController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -169,11 +170,13 @@
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BarViewModel.cs" />
     <Compile Include="Models\ViewModels\BatchTableViewModel.cs" />
+    <Compile Include="Models\ViewModels\ImportAnsViewModel.cs" />
     <Compile Include="Models\ViewModels\ImportViewModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectSetViewModel.cs" />
     <Compile Include="Models\ViewModels\PurviewModel.cs" />
     <Compile Include="Models\ViewModels\RLinkDViewModel.cs" />
+    <Compile Include="Models\ViewModels\TemplateExcelViewModel.cs" />
     <Compile Include="Models\ViewModels\UserModelView.cs" />
     <Compile Include="Models\ViewModels\HospitalViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
@@ -299,6 +302,7 @@
     <Content Include="Views\Basic\ErrorSize.cshtml" />
     <Content Include="Views\Import\BatchTable.cshtml" />
     <Content Include="Views\Import\ViewBatchDatas.cshtml" />
+    <Content Include="Views\TemplateExcel\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
