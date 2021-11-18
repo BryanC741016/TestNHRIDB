@@ -155,7 +155,7 @@ namespace NHRIDB.Controllers
                 List<TubeData> _LitTubeData = _dataTubeDA.getTubeData(hosId);
                 Session["OldTubeDataCount"] = _LitTubeData != null ? _LitTubeData.Count : 0;
 
-                if (table.Rows.Count >100000)
+                if (table.Rows.Count >20000)
                 {
                     Session["BatchTable"] = table;
                     Session["BatchTablePath"] = path;
@@ -333,7 +333,7 @@ namespace NHRIDB.Controllers
             {
                 case 0:
                     {
-                        BatchTableViewModel.StrBatchMsg = "因大量資料故採取批次分量檢查";
+                        BatchTableViewModel.StrBatchMsg = "因大量資料(超過2萬筆)故採取批次分量檢查";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:欄位名稱是否相符";
                         BatchTableViewModel.StrCheckMsg = string.Empty;
                         BatchTableViewModel.isExeSetTimeOut = true;
@@ -387,6 +387,7 @@ namespace NHRIDB.Controllers
                         //分批跑,只跑 1百
                         for (int i = intBatchStartIndex; i < keys.Count; i++)
                         {
+                            // 大於100 ,則記錄下次起跑位置
                             if (IntBatchRunCount > 100)
                             {
                                 intBatchStartIndex = i-1;
@@ -394,11 +395,13 @@ namespace NHRIDB.Controllers
                                 break;
                             }
 
+                            // 最後一筆,記錄起跑位置
                             if((i+1).Equals(keys.Count))
                             {
                                 intBatchStartIndex = i;
                             }
 
+                            #region 原小不點邏輯位置
                             var datas = table.AsEnumerable().Where(e => e.Field<string>("個案代碼").Trim().Equals(keys[i].Trim()));
                             int sexCount = datas.GroupBy(e => e.Field<string>("性別")).Count();
 
@@ -421,25 +424,33 @@ namespace NHRIDB.Controllers
                                     msg = msg + "個案代碼:" + keys[i] + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
                                 }
                             }
+                            #endregion
 
                             IntBatchRunCount++;
                         }
 
                         BatchTableViewModel.StrCheckMsg = msg;
+
+                        // 代表匯入值有錯,則停止檢查,及通知匯入者
                         if (!string.IsNullOrEmpty(msg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
                             Session["isBatchError"] = true;                            
                         }
 
+                        // 不是最後一筆的話
                         if (!(intBatchStartIndex+1).Equals(keys.Count))
                         {
                             BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:"+ keys.Count.ToString()+";目前執行到第幾 "+(intBatchStartIndex+1 ) +" 筆";
                             BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";                            
 
+                            // 沒有錯誤(匯入值)
                             if(!(Session["isBatchError"] as bool?).Value)
                             {
+                                // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
+
+                                // 下次啟動位置
                                 Session["intBatchStartIndex"] = intBatchStartIndex + 1;
                             }
                             else
@@ -447,14 +458,18 @@ namespace NHRIDB.Controllers
                                 BatchTableViewModel.isExeSetTimeOut = false;
                             }
                         }
-                        else
+                        else // 最後一筆
                         {
                             BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:" + keys.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1) + " 筆";
-                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";                            
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
 
+                            // 沒有錯誤(匯入值)
                             if (!(Session["isBatchError"] as bool?).Value)
                             {
+                                // 執行下一個檢查模式
                                 Session["BatchType"] = 4;
+
+                                // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
 
                                 // 歸零,重跑或給下一動
@@ -545,6 +560,7 @@ namespace NHRIDB.Controllers
                         //分批跑,只跑 1百
                         for (int i = intBatchStartIndex; i < datas.Count; i++)
                         {
+                            // 大於100 ,則記錄下次起跑位置
                             if (IntBatchRunCount > 100)
                             {
                                 intBatchStartIndex = i-1;
@@ -552,11 +568,13 @@ namespace NHRIDB.Controllers
                                 break;
                             }
 
+                            // 最後一筆,記錄起跑位置
                             if ((i + 1).Equals(datas.Count))
                             {
                                 intBatchStartIndex = i;
                             }
 
+                            #region 原小不點邏輯位置
                             var data = datas[i];
 
                             bool commit = qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.regionKey.Equals(data.regionKey)).Any();
@@ -565,25 +583,33 @@ namespace NHRIDB.Controllers
                             {
                                 msg = msg + datas[i].diagnosisKey + "(診斷代碼)與" + datas[i].regionKey + "(部位編號)查無相關資料" + Environment.NewLine;
                             }
+                            #endregion
 
                             IntBatchRunCount++;
                         }
 
                         BatchTableViewModel.StrCheckMsg = msg;
+
+                        // 代表匯入值有錯,則停止檢查,及通知匯入者
                         if (!string.IsNullOrEmpty(msg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
                             Session["isBatchError"] = true;
                         }
 
-                        if(!(intBatchStartIndex+1).Equals(datas.Count))
+                        // 不是最後一筆的話
+                        if (!(intBatchStartIndex+1).Equals(datas.Count))
                         {
                             BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對;總量:" + datas.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1 ) + " 筆";
-                            BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";                            
+                            BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
 
+                            // 沒有錯誤(匯入值)
                             if (!(Session["isBatchError"] as bool?).Value)
                             {
+                                // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
+
+                                // 下次啟動位置
                                 Session["intBatchStartIndex"] = intBatchStartIndex + 1;
                             }
                             else
@@ -591,14 +617,18 @@ namespace NHRIDB.Controllers
                                 BatchTableViewModel.isExeSetTimeOut = false;
                             }
                         }
-                        else
+                        else // 最後一筆
                         {
                             BatchTableViewModel.StrBatchMsg = "目前檢查:部位與診斷代碼(dlinkR)代碼比對;總量:" + datas.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1) + " 筆";
                             BatchTableViewModel.StrBatchMsgNext = "下個:顯示結果";
 
+                            // 沒有錯誤(匯入值)
                             if (!(Session["isBatchError"] as bool?).Value)
                             {
+                                // 執行下一個檢查模式
                                 Session["BatchType"] = 7;
+
+                                // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
 
                                 // 歸零,重跑或給下一動

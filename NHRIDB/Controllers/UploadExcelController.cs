@@ -1,6 +1,7 @@
 ﻿using NHRIDB.Filter;
 using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
+using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,13 +26,27 @@ namespace NHRIDB.Controllers
         [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index(string msg="")
-        {
-          
+        {          
             if (!Directory.Exists(_path))
             {
                 Directory.CreateDirectory(_path);
             }
             ImportViewModel model = new ImportViewModel();
+
+            TemplateExcelUpDataRecordDA _TemplateExcelUpDataRecordDA = new TemplateExcelUpDataRecordDA();
+            List<TemplateExcelUpDataRecord> old = _TemplateExcelUpDataRecordDA.getAllList();
+            string templateTime = string.Empty;
+
+            if (old != null)
+            {
+                if (old.Count > 0)
+                {
+                    templateTime = templateTime + old[0].UpDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                }
+            }
+
+            model.templateTime = templateTime;
+
             model.template = _template;
             model.msg = msg;
             return View(model);
