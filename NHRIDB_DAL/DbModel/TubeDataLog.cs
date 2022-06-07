@@ -15,6 +15,7 @@ namespace NHRIDB_DAL.DbModel
     public partial class TubeDataLog
     {
         public System.Guid hospitalId { get; set; }
+        public string planKey { get; set; }
         public string patientKey { get; set; }
         public string regionKey { get; set; }
         public string diagnosisKey { get; set; }
@@ -48,5 +49,15 @@ namespace NHRIDB_DAL.DbModel
         public bool saliva { get; set; }
         public bool bloodDNA { get; set; }
         public System.Guid createUser { get; set; }
+        public bool CDM { get; set; }
+        public bool questionnaire { get; set; }
+        public bool CT { get; set; }
+        public bool MRI { get; set; }
+        public bool ultrasound { get; set; }
+        public bool digit_pathology_image_data { get; set; }
+        public bool DNA_WGS { get; set; }
+        public bool DNA_WES { get; set; }
+        public bool DNA_pannel { get; set; }
+        public bool RNA { get; set; }
     }
 }

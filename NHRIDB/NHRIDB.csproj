@@ -153,6 +153,7 @@
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HospitalController.cs" />
+    <Compile Include="Controllers\PlanController.cs" />
     <Compile Include="Controllers\ProjectSetController.cs" />
     <Compile Include="Controllers\RLinkDController.cs" />
     <Compile Include="Controllers\TemplateExcelController.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Models\ViewModels\ImportAnsViewModel.cs" />
     <Compile Include="Models\ViewModels\ImportViewModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
+    <Compile Include="Models\ViewModels\PlanViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectSetViewModel.cs" />
     <Compile Include="Models\ViewModels\PurviewModel.cs" />
     <Compile Include="Models\ViewModels\RLinkDViewModel.cs" />
@@ -303,6 +305,9 @@
     <Content Include="Views\Import\BatchTable.cshtml" />
     <Content Include="Views\Import\ViewBatchDatas.cshtml" />
     <Content Include="Views\TemplateExcel\Index.cshtml" />
+    <Content Include="Views\Plan\Index.cshtml" />
+    <Content Include="Views\Plan\Create.cshtml" />
+    <Content Include="Views\Plan\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

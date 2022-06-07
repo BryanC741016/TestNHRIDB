@@ -56,6 +56,7 @@
     <Compile Include="DAL\DataAccess.cs" />
     <Compile Include="DAL\DataTubeDA.cs" />
     <Compile Include="DAL\LogLoginDA.cs" />
+    <Compile Include="DAL\PlanDA.cs" />
     <Compile Include="DAL\RLinkDDA.cs" />
     <Compile Include="DAL\MenuDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
@@ -101,6 +102,9 @@
       <DependentUpon>ModelDB.edmx</DependentUpon>
     </Compile>
     <Compile Include="DbModel\Permissions.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\Plan.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\RLinkD.cs">

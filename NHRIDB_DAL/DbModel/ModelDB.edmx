@@ -55,6 +55,14 @@
           <Property Name="purview" Type="smallint" Nullable="false" />
           <Property Name="menuId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Plan">
+          <Key>
+            <PropertyRef Name="planKey" />
+          </Key>
+          <Property Name="planKey" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="planName" Type="varchar" MaxLength="50" />
+          <Property Name="Remark" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="RLinkD">
           <Key>
             <PropertyRef Name="regionKey" />
@@ -82,6 +90,7 @@
             <PropertyRef Name="age" />
           </Key>
           <Property Name="hospitalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="planKey" Type="varchar" MaxLength="4" />
           <Property Name="patientKey" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="regionKey" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="diagnosisKey" Type="varchar" MaxLength="20" Nullable="false" />
@@ -114,6 +123,16 @@
           <Property Name="bloodDNA" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
           <Property Name="createDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="CDM" Type="bit" Nullable="false" />
+          <Property Name="questionnaire" Type="bit" Nullable="false" />
+          <Property Name="CT" Type="bit" Nullable="false" />
+          <Property Name="MRI" Type="bit" Nullable="false" />
+          <Property Name="ultrasound" Type="bit" Nullable="false" />
+          <Property Name="digit_pathology_image_data" Type="bit" Nullable="false" />
+          <Property Name="DNA_WGS" Type="bit" Nullable="false" />
+          <Property Name="DNA_WES" Type="bit" Nullable="false" />
+          <Property Name="DNA_pannel" Type="bit" Nullable="false" />
+          <Property Name="RNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TubeDataLog">
           <Key>
@@ -127,6 +146,7 @@
             <PropertyRef Name="LogDate" />
           </Key>
           <Property Name="hospitalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="planKey" Type="varchar" MaxLength="4" />
           <Property Name="patientKey" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="regionKey" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="diagnosisKey" Type="varchar" MaxLength="20" Nullable="false" />
@@ -160,6 +180,16 @@
           <Property Name="saliva" Type="bit" Nullable="false" />
           <Property Name="bloodDNA" Type="bit" Nullable="false" />
           <Property Name="createUser" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CDM" Type="bit" Nullable="false" />
+          <Property Name="questionnaire" Type="bit" Nullable="false" />
+          <Property Name="CT" Type="bit" Nullable="false" />
+          <Property Name="MRI" Type="bit" Nullable="false" />
+          <Property Name="ultrasound" Type="bit" Nullable="false" />
+          <Property Name="digit_pathology_image_data" Type="bit" Nullable="false" />
+          <Property Name="DNA_WGS" Type="bit" Nullable="false" />
+          <Property Name="DNA_WES" Type="bit" Nullable="false" />
+          <Property Name="DNA_pannel" Type="bit" Nullable="false" />
+          <Property Name="RNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -278,6 +308,7 @@
           <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MenuName" EntityType="Self.MenuName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Plan" EntityType="Self.Plan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TemplateExcelUpDataRecord" EntityType="Self.TemplateExcelUpDataRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
@@ -348,6 +379,14 @@
           <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
           <Parameter Name="hospitalId" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="TemplateExcelUpDataRecord" EntityType="NHRIDBModel.TemplateExcelUpDataRecord" />
+          <FunctionImport Name="GetTotal_Result" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
+          <Parameter Name="hospitalId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetDifferentTotal_Result" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
+          <Parameter Name="hospitalId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <EntitySet Name="Plan" EntityType="NHRIDBModel.Plan" />
           <EntitySet Name="TubeData" EntityType="NHRIDBModel.TubeData" />
           <AssociationSet Name="FK_TubeData_Hospital" Association="NHRIDBModel.FK_TubeData_Hospital">
             <End Role="Hospital" EntitySet="Hospital" />
@@ -358,7 +397,6 @@
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
-          <EntitySet Name="TemplateExcelUpDataRecord" EntityType="NHRIDBModel.TemplateExcelUpDataRecord" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -531,6 +569,16 @@
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
           <Property Type="Int32" Name="sum_bloodDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_CDM" Nullable="true" />
+          <Property Type="Int32" Name="sum_questionnaire" Nullable="true" />
+          <Property Type="Int32" Name="sum_CT" Nullable="true" />
+          <Property Type="Int32" Name="sum_MRI" Nullable="true" />
+          <Property Type="Int32" Name="sum_ultrasound" Nullable="true" />
+          <Property Type="Int32" Name="sum_digit_pathology_image_data" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_WGS" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_WES" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_pannel" Nullable="true" />
+          <Property Type="Int32" Name="sum_RNA" Nullable="true" />
         </ComplexType>
         <ComplexType Name="GetTotal_Result">
           <Property Type="String" Name="rId" Nullable="true" />
@@ -561,7 +609,32 @@
           <Property Type="Int32" Name="sum_hair" Nullable="true" />
           <Property Type="Int32" Name="sum_saliva" Nullable="true" />
           <Property Type="Int32" Name="sum_bloodDNA" Nullable="true" />
+          <Property Type="Int32" Name="sum_CDM" Nullable="true" />
+          <Property Type="Int32" Name="sum_questionnaire" Nullable="true" />
+          <Property Type="Int32" Name="sum_CT" Nullable="true" />
+          <Property Type="Int32" Name="sum_MRI" Nullable="true" />
+          <Property Type="Int32" Name="sum_ultrasound" Nullable="true" />
+          <Property Type="Int32" Name="sum_digit_pathology_image_data" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_WGS" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_WES" Nullable="true" />
+          <Property Type="Int32" Name="sum_DNA_pannel" Nullable="true" />
+          <Property Type="Int32" Name="sum_RNA" Nullable="true" />
         </ComplexType>
+        <EntityType Name="TemplateExcelUpDataRecord">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Plan">
+          <Key>
+            <PropertyRef Name="planKey" />
+          </Key>
+          <Property Name="planKey" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="planName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Remark" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
         <EntityType Name="TubeData">
           <Key>
             <PropertyRef Name="hospitalId" />
@@ -572,6 +645,7 @@
             <PropertyRef Name="age" />
           </Key>
           <Property Name="hospitalId" Type="Guid" Nullable="false" />
+          <Property Name="planKey" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
           <Property Name="patientKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="regionKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
@@ -604,6 +678,16 @@
           <Property Name="bloodDNA" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
           <Property Name="createDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="CDM" Type="Boolean" Nullable="false" />
+          <Property Name="questionnaire" Type="Boolean" Nullable="false" />
+          <Property Name="CT" Type="Boolean" Nullable="false" />
+          <Property Name="MRI" Type="Boolean" Nullable="false" />
+          <Property Name="ultrasound" Type="Boolean" Nullable="false" />
+          <Property Name="digit_pathology_image_data" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_WGS" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_WES" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_pannel" Type="Boolean" Nullable="false" />
+          <Property Name="RNA" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
           <NavigationProperty Name="RLinkD" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="TubeData" ToRole="RLinkD" />
         </EntityType>
@@ -649,6 +733,7 @@
             <PropertyRef Name="LogDate" />
           </Key>
           <Property Name="hospitalId" Type="Guid" Nullable="false" />
+          <Property Name="planKey" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
           <Property Name="patientKey" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="regionKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="diagnosisKey" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
@@ -682,13 +767,16 @@
           <Property Name="saliva" Type="Boolean" Nullable="false" />
           <Property Name="bloodDNA" Type="Boolean" Nullable="false" />
           <Property Name="createUser" Type="Guid" Nullable="false" />
-        </EntityType>
-        <EntityType Name="TemplateExcelUpDataRecord">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CDM" Type="Boolean" Nullable="false" />
+          <Property Name="questionnaire" Type="Boolean" Nullable="false" />
+          <Property Name="CT" Type="Boolean" Nullable="false" />
+          <Property Name="MRI" Type="Boolean" Nullable="false" />
+          <Property Name="ultrasound" Type="Boolean" Nullable="false" />
+          <Property Name="digit_pathology_image_data" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_WGS" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_WES" Type="Boolean" Nullable="false" />
+          <Property Name="DNA_pannel" Type="Boolean" Nullable="false" />
+          <Property Name="RNA" Type="Boolean" Nullable="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -849,9 +937,121 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="TemplateExcelUpDataRecord">
+            <EntityTypeMapping TypeName="NHRIDBModel.TemplateExcelUpDataRecord">
+              <MappingFragment StoreEntitySet="TemplateExcelUpDataRecord">
+                <ScalarProperty Name="UpDateTime" ColumnName="UpDateTime" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetTotal_Result" FunctionName="NHRIDBModel.Store.GetTotal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetTotal_Result">
+                <ScalarProperty Name="rId" ColumnName="rId" />
+                <ScalarProperty Name="dId" ColumnName="dId" />
+                <ScalarProperty Name="rName" ColumnName="rName" />
+                <ScalarProperty Name="dName" ColumnName="dName" />
+                <ScalarProperty Name="sum_blood" ColumnName="sum_blood" />
+                <ScalarProperty Name="sum_frozenTissue" ColumnName="sum_frozenTissue" />
+                <ScalarProperty Name="sum_waxBlock" ColumnName="sum_waxBlock" />
+                <ScalarProperty Name="sum_urine" ColumnName="sum_urine" />
+                <ScalarProperty Name="sum_urineClearLiquid" ColumnName="sum_urineClearLiquid" />
+                <ScalarProperty Name="sum_urinePellet" ColumnName="sum_urinePellet" />
+                <ScalarProperty Name="sum_tissueDNA" ColumnName="sum_tissueDNA" />
+                <ScalarProperty Name="sum_tissueRNA" ColumnName="sum_tissueRNA" />
+                <ScalarProperty Name="sum_stool" ColumnName="sum_stool" />
+                <ScalarProperty Name="sum_stoolDNA" ColumnName="sum_stoolDNA" />
+                <ScalarProperty Name="sum_sampleless" ColumnName="sum_sampleless" />
+                <ScalarProperty Name="sum_pleuraleffusion" ColumnName="sum_pleuraleffusion" />
+                <ScalarProperty Name="sum_CSF" ColumnName="sum_CSF" />
+                <ScalarProperty Name="sum_ascites" ColumnName="sum_ascites" />
+                <ScalarProperty Name="sum_boneMarrow" ColumnName="sum_boneMarrow" />
+                <ScalarProperty Name="sum_serum" ColumnName="sum_serum" />
+                <ScalarProperty Name="sum_plasma" ColumnName="sum_plasma" />
+                <ScalarProperty Name="sum_buffyCoat" ColumnName="sum_buffyCoat" />
+                <ScalarProperty Name="sum_wholeBlood" ColumnName="sum_wholeBlood" />
+                <ScalarProperty Name="sum_paraffinSection" ColumnName="sum_paraffinSection" />
+                <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
+                <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
+                <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+                <ScalarProperty Name="sum_bloodDNA" ColumnName="sum_bloodDNA" />
+                <ScalarProperty Name="sum_CDM" ColumnName="sum_CDM" />
+                <ScalarProperty Name="sum_questionnaire" ColumnName="sum_questionnaire" />
+                <ScalarProperty Name="sum_CT" ColumnName="sum_CT" />
+                <ScalarProperty Name="sum_MRI" ColumnName="sum_MRI" />
+                <ScalarProperty Name="sum_ultrasound" ColumnName="sum_ultrasound" />
+                <ScalarProperty Name="sum_digit_pathology_image_data" ColumnName="sum_digit_pathology_image_data" />
+                <ScalarProperty Name="sum_DNA_WGS" ColumnName="sum_DNA_WGS" />
+                <ScalarProperty Name="sum_DNA_WES" ColumnName="sum_DNA_WES" />
+                <ScalarProperty Name="sum_DNA_pannel" ColumnName="sum_DNA_pannel" />
+                <ScalarProperty Name="sum_RNA" ColumnName="sum_RNA" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetDifferentTotal_Result" FunctionName="NHRIDBModel.Store.GetDifferentTotal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NHRIDBModel.GetDifferentTotal_Result">
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="sum_blood" ColumnName="sum_blood" />
+                <ScalarProperty Name="sum_frozenTissue" ColumnName="sum_frozenTissue" />
+                <ScalarProperty Name="sum_waxBlock" ColumnName="sum_waxBlock" />
+                <ScalarProperty Name="sum_urine" ColumnName="sum_urine" />
+                <ScalarProperty Name="sum_urineClearLiquid" ColumnName="sum_urineClearLiquid" />
+                <ScalarProperty Name="sum_urinePellet" ColumnName="sum_urinePellet" />
+                <ScalarProperty Name="sum_tissueDNA" ColumnName="sum_tissueDNA" />
+                <ScalarProperty Name="sum_tissueRNA" ColumnName="sum_tissueRNA" />
+                <ScalarProperty Name="sum_stool" ColumnName="sum_stool" />
+                <ScalarProperty Name="sum_stoolDNA" ColumnName="sum_stoolDNA" />
+                <ScalarProperty Name="sum_sampleless" ColumnName="sum_sampleless" />
+                <ScalarProperty Name="sum_pleuraleffusion" ColumnName="sum_pleuraleffusion" />
+                <ScalarProperty Name="sum_CSF" ColumnName="sum_CSF" />
+                <ScalarProperty Name="sum_ascites" ColumnName="sum_ascites" />
+                <ScalarProperty Name="sum_boneMarrow" ColumnName="sum_boneMarrow" />
+                <ScalarProperty Name="sum_serum" ColumnName="sum_serum" />
+                <ScalarProperty Name="sum_plasma" ColumnName="sum_plasma" />
+                <ScalarProperty Name="sum_buffyCoat" ColumnName="sum_buffyCoat" />
+                <ScalarProperty Name="sum_wholeBlood" ColumnName="sum_wholeBlood" />
+                <ScalarProperty Name="sum_paraffinSection" ColumnName="sum_paraffinSection" />
+                <ScalarProperty Name="sum_bile" ColumnName="sum_bile" />
+                <ScalarProperty Name="sum_hair" ColumnName="sum_hair" />
+                <ScalarProperty Name="sum_saliva" ColumnName="sum_saliva" />
+                <ScalarProperty Name="sum_bloodDNA" ColumnName="sum_bloodDNA" />
+                <ScalarProperty Name="sum_CDM" ColumnName="sum_CDM" />
+                <ScalarProperty Name="sum_questionnaire" ColumnName="sum_questionnaire" />
+                <ScalarProperty Name="sum_CT" ColumnName="sum_CT" />
+                <ScalarProperty Name="sum_MRI" ColumnName="sum_MRI" />
+                <ScalarProperty Name="sum_ultrasound" ColumnName="sum_ultrasound" />
+                <ScalarProperty Name="sum_digit_pathology_image_data" ColumnName="sum_digit_pathology_image_data" />
+                <ScalarProperty Name="sum_DNA_WGS" ColumnName="sum_DNA_WGS" />
+                <ScalarProperty Name="sum_DNA_WES" ColumnName="sum_DNA_WES" />
+                <ScalarProperty Name="sum_DNA_pannel" ColumnName="sum_DNA_pannel" />
+                <ScalarProperty Name="sum_RNA" ColumnName="sum_RNA" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Plan">
+            <EntityTypeMapping TypeName="NHRIDBModel.Plan">
+              <MappingFragment StoreEntitySet="Plan">
+                <ScalarProperty Name="Remark" ColumnName="Remark" />
+                <ScalarProperty Name="planName" ColumnName="planName" />
+                <ScalarProperty Name="planKey" ColumnName="planKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="TubeData">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
               <MappingFragment StoreEntitySet="TubeData">
+                <ScalarProperty Name="RNA" ColumnName="RNA" />
+                <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
+                <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
+                <ScalarProperty Name="DNA_WGS" ColumnName="DNA_WGS" />
+                <ScalarProperty Name="digit_pathology_image_data" ColumnName="digit_pathology_image_data" />
+                <ScalarProperty Name="ultrasound" ColumnName="ultrasound" />
+                <ScalarProperty Name="MRI" ColumnName="MRI" />
+                <ScalarProperty Name="CT" ColumnName="CT" />
+                <ScalarProperty Name="questionnaire" ColumnName="questionnaire" />
+                <ScalarProperty Name="CDM" ColumnName="CDM" />
                 <ScalarProperty Name="createDate" ColumnName="createDate" />
                 <ScalarProperty Name="createUser" ColumnName="createUser" />
                 <ScalarProperty Name="bloodDNA" ColumnName="bloodDNA" />
@@ -884,6 +1084,7 @@
                 <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
                 <ScalarProperty Name="regionKey" ColumnName="regionKey" />
                 <ScalarProperty Name="patientKey" ColumnName="patientKey" />
+                <ScalarProperty Name="planKey" ColumnName="planKey" />
                 <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -891,6 +1092,16 @@
           <EntitySetMapping Name="TubeDataLog">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeDataLog">
               <MappingFragment StoreEntitySet="TubeDataLog">
+                <ScalarProperty Name="RNA" ColumnName="RNA" />
+                <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
+                <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
+                <ScalarProperty Name="DNA_WGS" ColumnName="DNA_WGS" />
+                <ScalarProperty Name="digit_pathology_image_data" ColumnName="digit_pathology_image_data" />
+                <ScalarProperty Name="ultrasound" ColumnName="ultrasound" />
+                <ScalarProperty Name="MRI" ColumnName="MRI" />
+                <ScalarProperty Name="CT" ColumnName="CT" />
+                <ScalarProperty Name="questionnaire" ColumnName="questionnaire" />
+                <ScalarProperty Name="CDM" ColumnName="CDM" />
                 <ScalarProperty Name="createUser" ColumnName="createUser" />
                 <ScalarProperty Name="bloodDNA" ColumnName="bloodDNA" />
                 <ScalarProperty Name="saliva" ColumnName="saliva" />
@@ -924,15 +1135,8 @@
                 <ScalarProperty Name="diagnosisKey" ColumnName="diagnosisKey" />
                 <ScalarProperty Name="regionKey" ColumnName="regionKey" />
                 <ScalarProperty Name="patientKey" ColumnName="patientKey" />
+                <ScalarProperty Name="planKey" ColumnName="planKey" />
                 <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TemplateExcelUpDataRecord">
-            <EntityTypeMapping TypeName="NHRIDBModel.TemplateExcelUpDataRecord">
-              <MappingFragment StoreEntitySet="TemplateExcelUpDataRecord">
-                <ScalarProperty Name="UpDateTime" ColumnName="UpDateTime" />
-                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

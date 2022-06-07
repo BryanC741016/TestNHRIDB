@@ -10,5 +10,9 @@ namespace NHRIDB.Models.ViewModels
         public int OldCount { get; set; }
 
         public int NewCount { get; set; }
+
+        public string StrMesage { get; set; }
+
+        public string StrisSuccess { get; set; }
     }
 }

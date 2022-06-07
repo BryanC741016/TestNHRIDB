@@ -20,6 +20,7 @@ namespace NHRIDB.Controllers
         private DataTubeDA _dataTubeDA;
         private TubeDataTotalDA _TubeDataTotalDA;
         private HospitalDA _hospitalDA;
+        private PlanDA _PlanDA;
         private string _cPath;
         private string _dateFormat="yyyyMMddHHmmss";
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -31,6 +32,7 @@ namespace NHRIDB.Controllers
          //   _dPath = Server.MapPath("~/Upload/" + _hos.ToString());
             _cPath = Server.MapPath("~/Upload/Cache");
             _hospitalDA = new HospitalDA(_db);
+            _PlanDA = new PlanDA();
         }
 
         [HttpGet]
@@ -152,6 +154,13 @@ namespace NHRIDB.Controllers
             {
                 table = epp.GetDataTable(path, upload.InputStream);
 
+                // Bryan 2022/5/10
+                var col = table.Columns["計畫代碼"];
+                foreach (DataRow row in table.Rows)
+                {
+                    row[col] = Convert.ToString(row[col]).Trim().ToUpper();
+                }                
+
                 List<TubeData> _LitTubeData = _dataTubeDA.getTubeData(hosId);
                 Session["OldTubeDataCount"] = _LitTubeData != null ? _LitTubeData.Count : 0;
 
@@ -179,6 +188,11 @@ namespace NHRIDB.Controllers
             }
 
             if (!_dataTubeDA.ImportCheck(table, out msg))
+            {
+                StrAllMsg = StrAllMsg + msg;
+                isSuccess = false;
+            }
+            else if(!_PlanDA.CheckPlan(table, out msg))
             {
                 StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
@@ -218,7 +232,7 @@ namespace NHRIDB.Controllers
             string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
             System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));          
            
-            return RedirectToAction("Different",new { hId=model.hId, _DataSaveAns = _DataSaveAns });
+            return RedirectToAction("Different",new { hId=model.hId, isSuccess = _DataSaveAns.isSuccess, StrMesage = _DataSaveAns.StrMsg });
         }
 
         /// <summary>
@@ -268,9 +282,21 @@ namespace NHRIDB.Controllers
             } 
         }
 
-        public ActionResult Different(Guid hId, DataSaveAns _DataSaveAns) 
+        public ActionResult Different(Guid hId,bool isSuccess,string StrMesage) 
         {
             ImportAnsViewModel _ImportAnsViewModel = new ImportAnsViewModel();
+
+            if(isSuccess)
+            {
+                _ImportAnsViewModel.StrisSuccess = "儲存成功";
+                _ImportAnsViewModel.StrMesage = string.Empty;
+            }
+            else
+            {
+                _ImportAnsViewModel.StrisSuccess = "儲存失敗";
+                _ImportAnsViewModel.StrMesage = StrMesage;
+            }
+
             _ImportAnsViewModel.OldCount = Convert.ToInt32(Session["OldTubeDataCount"]);
             List<TubeData> _LitTubeData=_dataTubeDA.getTubeData(hId);
             _ImportAnsViewModel.NewCount= _LitTubeData != null? _LitTubeData.Count:0;
@@ -341,7 +367,7 @@ namespace NHRIDB.Controllers
                         Session["BatchType"] = 1;
                     }
                     break;
-                case 1:
+                case 1:// 欄位名稱是否相符
                     {
                         BatchTableViewModel.StrBatchMsg = "目前檢查:欄位名稱是否相符";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:必填欄位沒有填";
@@ -359,7 +385,7 @@ namespace NHRIDB.Controllers
                         }
                     }
                     break;
-                case 2:
+                case 2:// 必填欄位沒有填
                     {
                         BatchTableViewModel.StrBatchMsg = "目前檢查:必填欄位沒有填";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:性別是否統一、年齡是否統一";
@@ -376,7 +402,7 @@ namespace NHRIDB.Controllers
                         }
                     }
                     break;
-                case 3:
+                case 3:// 性別是否統一、年齡是否統一
                     {
                         DataTable table = (Session["BatchTable"] as DataTable);
                         List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼")).Where(e => e.Count() > 1).Select(e => e.Key).ToList();
@@ -513,7 +539,7 @@ namespace NHRIDB.Controllers
                         #endregion
                     }
                     break;
-                case 4:
+                case 4:// 主key重複
                     {
                         BatchTableViewModel.StrBatchMsg = "目前檢查:主key重複";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
@@ -530,12 +556,17 @@ namespace NHRIDB.Controllers
                         }
                     }
                     break;
-                case 5:
+                case 5:// 各欄位的資料型別 f:m , 數字 , 0:1
                     {
                         BatchTableViewModel.StrBatchMsg = "目前檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
                         BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                         if (!_dataTubeDA.CheckType(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        {
+                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
+                        }
+                        else if(!_PlanDA.CheckPlan(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
                             BatchTableViewModel.isExeSetTimeOut = false;
@@ -547,7 +578,7 @@ namespace NHRIDB.Controllers
                         }
                     }
                     break;
-                case 6:
+                case 6:// 部位與診斷代碼(dlinkR)代碼比對
                     {
                         DataTable table = (Session["BatchTable"] as DataTable);
                         var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("器官/部位代碼"), diagnosisKey = e.Field<string>("診斷代碼") })
@@ -655,7 +686,7 @@ namespace NHRIDB.Controllers
                         #endregion
                     }
                     break;
-                case 7:
+                case 7:// 顯示結果
                     {
                         ViewBatchDatasViewModel model = new ViewBatchDatasViewModel();
                         model.StrAnsError = BatchTableViewModel.StrAnsError;

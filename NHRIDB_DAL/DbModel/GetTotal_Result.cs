@@ -41,5 +41,15 @@ namespace NHRIDB_DAL.DbModel
         public Nullable<int> sum_hair { get; set; }
         public Nullable<int> sum_saliva { get; set; }
         public Nullable<int> sum_bloodDNA { get; set; }
+        public Nullable<int> sum_CDM { get; set; }
+        public Nullable<int> sum_questionnaire { get; set; }
+        public Nullable<int> sum_CT { get; set; }
+        public Nullable<int> sum_MRI { get; set; }
+        public Nullable<int> sum_ultrasound { get; set; }
+        public Nullable<int> sum_digit_pathology_image_data { get; set; }
+        public Nullable<int> sum_DNA_WGS { get; set; }
+        public Nullable<int> sum_DNA_WES { get; set; }
+        public Nullable<int> sum_DNA_pannel { get; set; }
+        public Nullable<int> sum_RNA { get; set; }
     }
 }
