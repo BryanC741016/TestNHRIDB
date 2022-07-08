@@ -53,12 +53,6 @@ namespace NHRIDB_DAL.DAL
                 return false;
             }
 
-            //性別是否統一、年齡是否統一
-            if (!RepleData(table, out msg))
-            {
-                return false;
-            }
-
             //主key重複
             if (!MatchKey(table, out msg))
             {
@@ -66,7 +60,13 @@ namespace NHRIDB_DAL.DAL
             }
 
             //各欄位的資料型別 f:m , 數字 , 0:1)  ,此判斷是否放在更前面點 ???????????????????
-            if (!CheckType(table, out msg)) 
+            if (!CheckType(table, out msg))
+            {
+                return false;
+            }
+
+            //性別是否統一、年齡是否統一
+            if (!RepleData(table, out msg))
             {
                 return false;
             }
@@ -105,6 +105,74 @@ namespace NHRIDB_DAL.DAL
                     columnName = columnName + "必要欄位「" + column.DisplayName + "」未填寫" + Environment.NewLine;
                     isSuccess= false;
                 }                
+            }
+
+            return isSuccess;
+        }
+
+        public bool MatchKey(DataTable table, out string msg)
+        {
+            msg = string.Empty;
+            var data = table.AsEnumerable().GroupBy(e => new { key1 = e.Field<string>("個案代碼"), key2 = e.Field<string>("器官/部位代碼"), key3 = e.Field<string>("診斷代碼"), key4 = e.Field<string>("收案年份 (西元年)"), key5 = e.Field<string>("年齡 (歲)") })
+                .Where(e => e.Count() > 1);
+
+            if (data.Count() > 0)
+            {
+
+                foreach (var Item in data)
+                {
+                    msg = msg
+                        + Item.Key.key1 + "(個案代碼),"
+                        + Item.Key.key2 + "(器官/部位代碼),"
+                        + Item.Key.key3 + "(診斷代碼),"
+                        + Item.Key.key4 + "(收案年份 (西元年)),"
+                        + Item.Key.key5 + "(年齡 (歲)) 資料重複"
+                        + Environment.NewLine;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckType(DataTable table, out string msg)
+        {
+            msg = string.Empty;
+            bool isSuccess = true;
+
+            foreach (var column in _columns)
+            {
+                var datas = table.AsEnumerable().Where(e => !e.Field<string>(column.DisplayName).Equals(""));
+                decimal age;
+                int endYear;
+                bool commit = true;
+                switch (column.Name)
+                {
+                    case "planKey":
+                    case "patientKey":
+                    case "regionKey":
+                    case "diagnosisKey":
+                        break;
+                    case "endYear":
+                        commit = !datas.Where(e => e.Field<string>(column.DisplayName).Length != 4 || !int.TryParse(e.Field<string>(column.DisplayName), out endYear)).Any();
+                        break;
+                    case "age":
+                        commit = !datas.Where(e => !decimal.TryParse(e.Field<string>(column.DisplayName), out age) || age < 0).Any();
+                        break;
+                    case "gender":
+                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("F") && !e.Field<string>(column.DisplayName).Equals("M")).Any();
+                        break;
+                    default:
+                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).Any();
+                        break;
+                }
+
+                if (!commit)
+                {
+                    msg = msg + column.DisplayName + "型別不正確" + Environment.NewLine;
+                    isSuccess = false;
+                }
             }
 
             return isSuccess;
@@ -218,74 +286,7 @@ namespace NHRIDB_DAL.DAL
             //}//end foreach key
 
             return isSuccess;
-        }
-
-        public bool MatchKey(DataTable table,out string msg)
-        {
-            msg = string.Empty;
-            var data= table.AsEnumerable().GroupBy(e => new { key1= e.Field<string>("個案代碼"), key2=e.Field<string>("器官/部位代碼"), key3 = e.Field<string>("診斷代碼"), key4 = e.Field<string>("收案年份 (西元年)"), key5 = e.Field<string>("年齡 (歲)") })
-                .Where(e=>e.Count() > 1);
-
-            if (data.Count() > 0) {
-                
-                foreach(var Item in data)
-                {
-                    msg = msg
-                        + Item.Key.key1 + "(個案代碼)," 
-                        + Item.Key.key2 + "(器官/部位代碼)," 
-                        + Item.Key.key3 + "(診斷代碼)," 
-                        + Item.Key.key4 + "(收案年份 (西元年)),"
-                        + Item.Key.key5 + "(年齡 (歲)) 資料重複"
-                        + Environment.NewLine;
-                }
-                
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool CheckType(DataTable table, out string msg)
-        {
-            msg = string.Empty;
-            bool isSuccess = true;
-
-            foreach (var column in _columns)
-            {
-                var datas = table.AsEnumerable().Where(e => !e.Field<string>(column.DisplayName).Equals(""));
-                decimal age;
-                int endYear;
-                bool commit = true;
-                switch (column.Name)
-                {
-                    case "planKey":
-                    case "patientKey":
-                    case "regionKey":
-                    case "diagnosisKey":
-                        break;
-                    case "endYear":
-                        commit = !datas.Where(e => e.Field<string>(column.DisplayName).Length != 4 || !int.TryParse(e.Field<string>(column.DisplayName), out endYear)).Any();
-                        break;
-                    case "age":
-                        commit = !datas.Where(e => !decimal.TryParse(e.Field<string>(column.DisplayName), out age) || age < 0).Any();
-                        break;
-                    case "gender":
-                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("F") && !e.Field<string>(column.DisplayName).Equals("M")).Any();
-                        break;
-                    default:
-                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).Any();
-                        break;
-                }
-
-                if (!commit)
-                {
-                    msg = msg + column.DisplayName + "型別不正確" + Environment.NewLine;
-                    isSuccess = false;
-                }
-            }
-
-            return isSuccess;
-        }
+        }        
 
         public List<TubeDataType> GetDatasByDataTable(DataTable table) {
             List<DataRow> tt = table.AsEnumerable().ToList();
@@ -354,7 +355,7 @@ namespace NHRIDB_DAL.DAL
             return _DataSaveAns;
         }
 
-        public DataSaveAns CreateBatch(List<TubeDataType> datas, Guid hkey, Guid uid,bool isFirst)
+        public DataSaveAns BatchCreate(List<TubeDataType> datas, Guid hkey, Guid uid,bool isFirst)
         {
             DataSaveAns _DataSaveAns = new DataSaveAns();
 

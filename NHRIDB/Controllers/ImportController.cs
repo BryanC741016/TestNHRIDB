@@ -244,7 +244,7 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveBatchData(ViewBatchDatasViewModel model)
         {
-            DataSaveAns _DataSaveAns = _dataTubeDA.CreateBatch(model.datas, model.hId, _uid,model.isFirst);
+            DataSaveAns _DataSaveAns = _dataTubeDA.BatchCreate(model.datas, model.hId, _uid,model.isFirst);
 
             if(model.isFirst)
             {
@@ -277,7 +277,7 @@ namespace NHRIDB.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Different", new { hId = model.hId, _DataSaveAns = _DataSaveAns });
+                    return RedirectToAction("Different", new { hId = model.hId, isSuccess = _DataSaveAns.isSuccess, StrMesage = _DataSaveAns.StrMsg });
                 }
             } 
         }
@@ -402,7 +402,46 @@ namespace NHRIDB.Controllers
                         }
                     }
                     break;
-                case 3:// 性別是否統一、年齡是否統一
+                case 3:// 主key重複
+                    {
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:主key重複";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
+
+                        if (!_dataTubeDA.MatchKey(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        {
+                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
+                        }
+                        else
+                        {
+                            Session["BatchType"] = 4;
+                            BatchTableViewModel.isExeSetTimeOut = true;
+                        }
+                    }
+                    break;
+                case 4:// 各欄位的資料型別 f:m , 數字 , 0:1
+                    {
+                        BatchTableViewModel.StrBatchMsg = "目前檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
+                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:性別是否統一、年齡是否統一";
+
+                        if (!_dataTubeDA.CheckType(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        {
+                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
+                        }
+                        else if (!_PlanDA.CheckPlan(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
+                        {
+                            System.IO.File.Delete(Session["BatchTablePath"] as string);
+                            BatchTableViewModel.isExeSetTimeOut = false;
+                        }
+                        else
+                        {
+                            Session["BatchType"] = 5;
+                            BatchTableViewModel.isExeSetTimeOut = true;
+                        }
+                    }
+                    break;
+                case 5:// 性別是否統一、年齡是否統一
                     {
                         DataTable table = (Session["BatchTable"] as DataTable);
                         List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼")).Where(e => e.Count() > 1).Select(e => e.Key).ToList();
@@ -416,13 +455,13 @@ namespace NHRIDB.Controllers
                             // 大於100 ,則記錄下次起跑位置
                             if (IntBatchRunCount > 100)
                             {
-                                intBatchStartIndex = i-1;
+                                intBatchStartIndex = i - 1;
 
                                 break;
                             }
 
                             // 最後一筆,記錄起跑位置
-                            if((i+1).Equals(keys.Count))
+                            if ((i + 1).Equals(keys.Count))
                             {
                                 intBatchStartIndex = i;
                             }
@@ -461,17 +500,17 @@ namespace NHRIDB.Controllers
                         if (!string.IsNullOrEmpty(msg))
                         {
                             System.IO.File.Delete(Session["BatchTablePath"] as string);
-                            Session["isBatchError"] = true;                            
+                            Session["isBatchError"] = true;
                         }
 
                         // 不是最後一筆的話
-                        if (!(intBatchStartIndex+1).Equals(keys.Count))
+                        if (!(intBatchStartIndex + 1).Equals(keys.Count))
                         {
-                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:"+ keys.Count.ToString()+";目前執行到第幾 "+(intBatchStartIndex+1 ) +" 筆";
-                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";                            
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:" + keys.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex + 1) + " 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                             // 沒有錯誤(匯入值)
-                            if(!(Session["isBatchError"] as bool?).Value)
+                            if (!(Session["isBatchError"] as bool?).Value)
                             {
                                 // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
@@ -486,14 +525,14 @@ namespace NHRIDB.Controllers
                         }
                         else // 最後一筆
                         {
-                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:" + keys.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex+1) + " 筆";
-                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+                            BatchTableViewModel.StrBatchMsg = "目前檢查:性別是否統一、年齡是否統一;總量:" + keys.Count.ToString() + ";目前執行到第幾 " + (intBatchStartIndex + 1) + " 筆";
+                            BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                             // 沒有錯誤(匯入值)
                             if (!(Session["isBatchError"] as bool?).Value)
                             {
                                 // 執行下一個檢查模式
-                                Session["BatchType"] = 4;
+                                Session["BatchType"] = 6;
 
                                 // 持續啟動批次Request(前端)
                                 BatchTableViewModel.isExeSetTimeOut = true;
@@ -511,7 +550,7 @@ namespace NHRIDB.Controllers
                         //if(!isCountAll)
                         //{
                         //    BatchTableViewModel.StrBatchMsg = "目前檢查(前半):性別是否統一、年齡是否統一";
-                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                         //    if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
                         //    {
@@ -525,7 +564,7 @@ namespace NHRIDB.Controllers
                         //else
                         //{
                         //    BatchTableViewModel.StrBatchMsg = "目前檢查(後半):性別是否統一、年齡是否統一";
-                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:主key重複";
+                        //    BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
 
                         //    if (!_dataTubeDA.BatchRepleData(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg, isCountAll))
                         //    {
@@ -533,49 +572,10 @@ namespace NHRIDB.Controllers
                         //    }
                         //    else
                         //    {
-                        //        Session["BatchType"] = 4;
+                        //        Session["BatchType"] = 6;
                         //    }
                         //}       
                         #endregion
-                    }
-                    break;
-                case 4:// 主key重複
-                    {
-                        BatchTableViewModel.StrBatchMsg = "目前檢查:主key重複";
-                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
-
-                        if (!_dataTubeDA.MatchKey(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
-                        {
-                            System.IO.File.Delete(Session["BatchTablePath"] as string);
-                            BatchTableViewModel.isExeSetTimeOut = false;
-                        }
-                        else
-                        {
-                            Session["BatchType"] = 5;
-                            BatchTableViewModel.isExeSetTimeOut = true;
-                        }
-                    }
-                    break;
-                case 5:// 各欄位的資料型別 f:m , 數字 , 0:1
-                    {
-                        BatchTableViewModel.StrBatchMsg = "目前檢查:各欄位的資料型別 f:m , 數字 , 0:1)";
-                        BatchTableViewModel.StrBatchMsgNext = "下個檢查:部位與診斷代碼(dlinkR)代碼比對";
-
-                        if (!_dataTubeDA.CheckType(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
-                        {
-                            System.IO.File.Delete(Session["BatchTablePath"] as string);
-                            BatchTableViewModel.isExeSetTimeOut = false;
-                        }
-                        else if(!_PlanDA.CheckPlan(Session["BatchTable"] as DataTable, out BatchTableViewModel.StrCheckMsg))
-                        {
-                            System.IO.File.Delete(Session["BatchTablePath"] as string);
-                            BatchTableViewModel.isExeSetTimeOut = false;
-                        }
-                        else
-                        {
-                            Session["BatchType"] = 6;
-                            BatchTableViewModel.isExeSetTimeOut = true;
-                        }
                     }
                     break;
                 case 6:// 部位與診斷代碼(dlinkR)代碼比對
