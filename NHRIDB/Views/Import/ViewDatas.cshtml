@@ -12,7 +12,10 @@
         @Html.HiddenFor(e=>e.fileName)
         @Html.HiddenFor(e=>e.hId)
     </div>
-    <table class="table table-hover table-bordered">
+
+    <label>總共筆數: @Model.datas.Count</label>
+
+    @*<table class="table table-hover table-bordered">
         <thead>
             <tr>
                 @foreach (var column in Model.columns)
@@ -55,7 +58,7 @@
     </tr>
         }
 
-    </table>
+    </table>*@
 
    <a class="btn" href="@Url.Action("Index")">取消</a> <button class="btn" type="submit">儲存</button>
 }

@@ -30,45 +30,47 @@
 
     if (string.IsNullOrEmpty(Model.StrAnsError))
     {
-        <table class="table table-hover table-bordered">
-            <thead>
-                <tr>
-                    @foreach (var column in Model.columns)
-                    {
-                        <th>@column.DisplayName</th>
-                    }
-                </tr>
-            </thead>
+        <label>總共筆數: @Model.datas.Count</label>
 
-            @for (int i = 0; i < Model.datas.Count; i++)
-            {
-                var item = Model.datas[i];
-                <tr>
-                    @foreach (var column in Model.columns)
-                    {
+        @*<table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        @foreach (var column in Model.columns)
+                        {
+                            <th>@column.DisplayName</th>
+                        }
+                    </tr>
+                </thead>
 
-                        var value = item.GetType().GetProperty(column.Name).GetValue(item);
-                        string showText = "";
-                        if (column.PropertyType.Name.Equals("Boolean"))
+                @for (int i = 0; i < Model.datas.Count; i++)
+                {
+                    var item = Model.datas[i];
+                    <tr>
+                        @foreach (var column in Model.columns)
                         {
 
-                            showText = bool.Parse(value.ToString()) ? "1" : "0";
-                            <td>
-                                @showText
-                                @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
-                            </td>
+                            var value = item.GetType().GetProperty(column.Name).GetValue(item);
+                            string showText = "";
+                            if (column.PropertyType.Name.Equals("Boolean"))
+                            {
+
+                                showText = bool.Parse(value.ToString()) ? "1" : "0";
+                                <td>
+                                    @showText
+                                    @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @value
+                                    @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
+                                </td>
+                            }
                         }
-                        else
-                        {
-                            <td>
-                                @value
-                                @Html.Hidden("datas[" + i.ToString() + "]." + column.Name, value)
-                            </td>
-                        }
-                    }
-                </tr>
-            }
-        </table>
+                    </tr>
+                }
+            </table>*@
     }
 
     <a class="btn" href="@Url.Action("Index")">取消</a>

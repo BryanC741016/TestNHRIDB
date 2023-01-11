@@ -213,6 +213,8 @@ namespace NHRIDB.Controllers
             model.columns = _dataTubeDA.GetColummns();
             model.hId = hosId;
 
+            Session["SaveModelDatas"] = model.datas;
+
             //紀錄檔名，若沒有點選儲存則刪除該檔；若有即移到至正式目錄
             return View("ViewDatas",model); //顯示匯入的資
         }
@@ -226,7 +228,8 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveData(ViewDatasViewModel model) 
         {
-            DataSaveAns _DataSaveAns = _dataTubeDA.Create(model.datas,model.hId,_uid);
+            List< TubeDataType > _LitTubeDataType = Session["SaveModelDatas"] as List<TubeDataType>;
+            DataSaveAns _DataSaveAns = _dataTubeDA.Create(_LitTubeDataType, model.hId,_uid);
             string path = Path.Combine(_cPath, model.fileName);
             //移動至正式目錄
             string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
@@ -244,7 +247,8 @@ namespace NHRIDB.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveBatchData(ViewBatchDatasViewModel model)
         {
-            DataSaveAns _DataSaveAns = _dataTubeDA.BatchCreate(model.datas, model.hId, _uid,model.isFirst);
+            List<TubeDataType> _LitTubeDataType = Session["SaveModelDatas"] as List<TubeDataType>;
+            DataSaveAns _DataSaveAns = _dataTubeDA.BatchCreate(_LitTubeDataType, model.hId, _uid,model.isFirst);
 
             if(model.isFirst)
             {
@@ -751,6 +755,8 @@ namespace NHRIDB.Controllers
 
                         model.StrBatchMsgNext = "目前儲存=>總量:" + AllDataRow.Count.ToString() + ";目前準備儲存到第幾 " + (intBatchStartIndex + 1) + " 筆";
                         model.datas = datas;
+
+                        Session["SaveModelDatas"] = model.datas;
 
                         //紀錄檔名，若沒有點選儲存則刪除該檔；若有即移到至正式目錄
                         return View("ViewBatchDatas", model); //顯示匯入的資

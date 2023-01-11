@@ -64,6 +64,9 @@ namespace NHRIDB_DAL.ViewModel
          [DisplayName("血液DNA")]
          public bool bloodDNA { get; set; }
 
+        //[DisplayName("血液RNA")]
+        //public bool bloodRNA { get; set; }
+
         [DisplayName("冷凍組織")]
         public bool frozenTissue { get; set; }
 
@@ -146,6 +149,9 @@ namespace NHRIDB_DAL.ViewModel
 
         [DisplayName("血液DNA")]
         public bool sum_bloodDNA { get; set; }
+
+        //[DisplayName("血液RNA")]
+        //public bool sum_bloodRNA { get; set; }
 
         [DisplayName("冷凍組織")]
         public bool sum_frozenTissue { get; set; }
