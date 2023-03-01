@@ -12,16 +12,16 @@ using System.Web.Mvc;
 namespace NHRIDB.Controllers
 {
     public class BarController : BasicController
-    {
-       
+    {       
         private HospitalDA _hospitalDA;
         private TubeDataTotalDA _tubeTotal;
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
           
             _hospitalDA = new HospitalDA(_db);
-          _tubeTotal= new TubeDataTotalDA();
+            _tubeTotal= new TubeDataTotalDA();
         }
 
         [MvcAdminRightAuthorizeFilter(param = 'r')]
@@ -40,8 +40,6 @@ namespace NHRIDB.Controllers
 
             model.datas = _tubeTotal.GetTotal(hosId);
             model.columns = _tubeTotal.GetColummns();
-
-
 
             return View(model);
         }

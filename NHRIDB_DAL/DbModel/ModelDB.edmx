@@ -5,6 +5,17 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="NHRIDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ErrorLog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="createtime" Type="datetime" />
+          <Property Name="controller" Type="nvarchar" MaxLength="40" />
+          <Property Name="action" Type="nvarchar" MaxLength="40" />
+          <Property Name="message" Type="nvarchar" MaxLength="50" />
+          <Property Name="stacktrace" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="GroupUser">
           <Key>
             <PropertyRef Name="groupId" />
@@ -133,6 +144,7 @@
           <Property Name="DNA_WES" Type="bit" Nullable="false" />
           <Property Name="DNA_pannel" Type="bit" Nullable="false" />
           <Property Name="RNA" Type="bit" Nullable="false" />
+          <Property Name="bloodRNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TubeDataLog">
           <Key>
@@ -190,6 +202,7 @@
           <Property Name="DNA_WES" Type="bit" Nullable="false" />
           <Property Name="DNA_pannel" Type="bit" Nullable="false" />
           <Property Name="RNA" Type="bit" Nullable="false" />
+          <Property Name="bloodRNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -303,6 +316,7 @@
           <Parameter Name="userName" Type="varchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="NHRIDBModelStoreContainer">
+          <EntitySet Name="ErrorLog" EntityType="Self.ErrorLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupUser" EntityType="Self.GroupUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital" EntityType="Self.Hospital" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LogLogin" EntityType="Self.LogLogin" Schema="dbo" store:Type="Tables" />
@@ -397,6 +411,7 @@
             <End Role="TubeData" EntitySet="TubeData" />
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
+          <EntitySet Name="ErrorLog" EntityType="NHRIDBModel.ErrorLog" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -690,6 +705,7 @@
           <Property Name="RNA" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
           <NavigationProperty Name="RLinkD" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="TubeData" ToRole="RLinkD" />
+          <Property Name="bloodRNA" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_TubeData_Hospital">
           <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
@@ -777,6 +793,18 @@
           <Property Name="DNA_WES" Type="Boolean" Nullable="false" />
           <Property Name="DNA_pannel" Type="Boolean" Nullable="false" />
           <Property Name="RNA" Type="Boolean" Nullable="false" />
+          <Property Name="bloodRNA" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ErrorLog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="createtime" Type="DateTime" Precision="3" />
+          <Property Name="controller" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="action" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="message" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="stacktrace" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1042,6 +1070,7 @@
           <EntitySetMapping Name="TubeData">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
               <MappingFragment StoreEntitySet="TubeData">
+                <ScalarProperty Name="bloodRNA" ColumnName="bloodRNA" />
                 <ScalarProperty Name="RNA" ColumnName="RNA" />
                 <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
                 <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
@@ -1092,6 +1121,7 @@
           <EntitySetMapping Name="TubeDataLog">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeDataLog">
               <MappingFragment StoreEntitySet="TubeDataLog">
+                <ScalarProperty Name="bloodRNA" ColumnName="bloodRNA" />
                 <ScalarProperty Name="RNA" ColumnName="RNA" />
                 <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
                 <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
@@ -1137,6 +1167,18 @@
                 <ScalarProperty Name="patientKey" ColumnName="patientKey" />
                 <ScalarProperty Name="planKey" ColumnName="planKey" />
                 <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ErrorLog">
+            <EntityTypeMapping TypeName="NHRIDBModel.ErrorLog">
+              <MappingFragment StoreEntitySet="ErrorLog">
+                <ScalarProperty Name="stacktrace" ColumnName="stacktrace" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="action" ColumnName="action" />
+                <ScalarProperty Name="controller" ColumnName="controller" />
+                <ScalarProperty Name="createtime" ColumnName="createtime" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

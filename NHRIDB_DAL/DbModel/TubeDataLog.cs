@@ -59,5 +59,6 @@ namespace NHRIDB_DAL.DbModel
         public bool DNA_WES { get; set; }
         public bool DNA_pannel { get; set; }
         public bool RNA { get; set; }
+        public bool bloodRNA { get; set; }
     }
 }

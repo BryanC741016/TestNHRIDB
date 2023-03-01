@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="DAL\DataAccess.cs" />
     <Compile Include="DAL\DataTubeDA.cs" />
+    <Compile Include="DAL\ErrorLogDA.cs" />
     <Compile Include="DAL\LogLoginDA.cs" />
     <Compile Include="DAL\PlanDA.cs" />
     <Compile Include="DAL\RLinkDDA.cs" />
@@ -65,6 +66,9 @@
     <Compile Include="DAL\TubeDataTotalDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
+    <Compile Include="DbModel\ErrorLog.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="DbModel\GetDifferentTotal_Result.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>

@@ -11,15 +11,15 @@
         <h2>處理您的要求時發生錯誤。</h2>
         <div>
             <p>
-                <b>Controller:</b> @Model.ControllerName<br />
-                <b>Action:</b> @Model.ActionName<br />
-                <b>Exception:</b> @Model.Exception.Message<br />
+                <b>錯誤碼:</b> @Model.ControllerName<br />
+                @*<b>Action:</b> @Model.ActionName<br />
+                <b>Exception:</b> @Model.Exception.Message<br />*@
             </p>
-            <div style="overflow: scroll">
+            @*<div style="overflow: scroll">
                 <pre>
                     @Model.Exception.StackTrace
                 </pre>
-            </div>
+            </div>*@
         </div>
     </hgroup>
 </body>
