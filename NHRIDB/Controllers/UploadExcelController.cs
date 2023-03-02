@@ -13,14 +13,18 @@ namespace NHRIDB.Controllers
 {
     public class UploadExcelController : BasicController
     {
+        private SysLogDA _SysLogDA;
         private HospitalDA _hospitalDA;
         private string _path = "";
         private string _dateFormat = "yyyyMMddHHmmss";
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
+
             _path = Server.MapPath("~/Upload/Excel");
             _hospitalDA = new HospitalDA(_db);
+            _SysLogDA = new SysLogDA(_db);
         }
 
         [HttpGet]
@@ -77,6 +81,9 @@ namespace NHRIDB.Controllers
             string hkey = _hospitalDA.GetHospital(_hos).hKey;
             string fileName = hkey + now + "." + ex;
             string path = Path.Combine(_path, fileName);
+
+            _SysLogDA.Create(evettype: "檔案上傳", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+
             upload.SaveAs(path);//為了方便csv讀取
 
             return Index("上傳完成，待管理者審核");

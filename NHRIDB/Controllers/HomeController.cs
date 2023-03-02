@@ -16,21 +16,24 @@ namespace NHRIDB.Controllers
 {
     public class HomeController : Controller
     {
+        private NHRIDBEntitiesDB _db;
+        private SysLogDA _SysLogDA;
         private string _ip;
- 
-    
+        
         private ProjectSet _set { get; set; }
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
             _ip = GetIp();
-        
-            _set = new ProjectSet(Server.MapPath("~/Setting/Setting.xml"));
-           
+            _db = new NHRIDBEntitiesDB();
+            _SysLogDA = new SysLogDA(_db);
+
+            _set = new ProjectSet(Server.MapPath("~/Setting/Setting.xml"));           
         }
+
         protected override void OnResultExecuting(ResultExecutingContext filterContext)
         {
-
             filterContext.HttpContext.Response.Cache.SetExpires(DateTime.UtcNow.AddDays(-1));
             filterContext.HttpContext.Response.Cache.SetValidUntilExpires(false);
             filterContext.HttpContext.Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
@@ -39,6 +42,7 @@ namespace NHRIDB.Controllers
 
             base.OnResultExecuting(filterContext);
         }
+
         // GET: Account
         public ActionResult Index()
         {
@@ -94,26 +98,32 @@ namespace NHRIDB.Controllers
                 model.isLock = true;
                 return View(model);
             }
-
-            
-
-           
-          
            
             User user = uda.HasQuery(model.userName, model.passwd);
+
             if (user == null)
             {
-                logLoginDA.Create(model.userName, _ip, false);
-             
+                logLoginDA.Create(model.userName, _ip, false);             
             }
             else{
 
                 logLoginDA.Create(model.userName, _ip, true);
+
+                bool isstart = user.isstart.HasValue ? user.isstart.Value : false;
+
+                if (!isstart)
+                {
+                    model.message = "帳號未啟用";
+
+                    return View(model);
+                }
+
                 Session["uid"] = user.userId;
                 Session["hos"] = user.id_Hospital;
                 Session["name"] = user.userName;
                 Session["ex"] = user.Hospital.fileExtension;
                 Session["leapProject"] = user.GroupUser.leapProject;
+
                 List<PurviewModel> list= user.GroupUser.Permissions
                       .Where(e=>e.purview>=1)
                      .Select(e => new PurviewModel {
@@ -146,16 +156,23 @@ namespace NHRIDB.Controllers
                 Session["funcList"] = fun;
 
                 DateTime now = DateTime.Now;
+
                 if (user.GroupUser.alwaysOpen || (now >= model.startDate && now <= model.endDate))
                 {
+                    _SysLogDA.Create(evettype: "使用者登入", ip: _ip, userName: Convert.ToString(Session["name"]));
+
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);
-                    return RedirectToAction("Index", "Bar");
-                
+
+                    return RedirectToAction("Index", "Bar");                
                 }
+
                 model.message = "未開放或無權限";
+
                 return View(model);
             }
+
             model.message = "帳號密碼錯誤請重新填寫";
+
             return View(model);
         }
 
@@ -168,7 +185,5 @@ namespace NHRIDB.Controllers
             }
             return ip;
         }
-
-
     }
 }

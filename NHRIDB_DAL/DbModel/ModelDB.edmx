@@ -84,6 +84,16 @@
           <Property Name="rName" Type="varchar(max)" Nullable="false" />
           <Property Name="dName" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="SysLog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="createtime" Type="datetime" />
+          <Property Name="evettype" Type="nvarchar" MaxLength="20" />
+          <Property Name="ip" Type="nvarchar" MaxLength="50" />
+          <Property Name="userName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="TemplateExcelUpDataRecord">
           <Key>
             <PropertyRef Name="id" />
@@ -216,6 +226,7 @@
           <Property Name="email" Type="nvarchar(max)" />
           <Property Name="name" Type="nvarchar" MaxLength="10" />
           <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="isstart" Type="bit" />
         </EntityType>
         <Association Name="FK_Permissions_GroupUser">
           <End Role="GroupUser" Type="Self.GroupUser" Multiplicity="1">
@@ -324,6 +335,7 @@
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan" EntityType="Self.Plan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RLinkD" EntityType="Self.RLinkD" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SysLog" EntityType="Self.SysLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TemplateExcelUpDataRecord" EntityType="Self.TemplateExcelUpDataRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
@@ -370,15 +382,6 @@
             <End Role="Permissions" EntitySet="Permissions" />
           </AssociationSet>
           <EntitySet Name="Hospital" EntityType="NHRIDBModel.Hospital" />
-          <EntitySet Name="User" EntityType="NHRIDBModel.User" />
-          <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
-            <End Role="GroupUser" EntitySet="GroupUser" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_Hospital" Association="NHRIDBModel.FK_User_Hospital">
-            <End Role="Hospital" EntitySet="Hospital" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
           <EntitySet Name="RLinkD" EntityType="NHRIDBModel.RLinkD" />
           <EntitySet Name="LogLogin" EntityType="NHRIDBModel.LogLogin" />
           <FunctionImport Name="SetUnLockUser">
@@ -412,6 +415,16 @@
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
           <EntitySet Name="ErrorLog" EntityType="NHRIDBModel.ErrorLog" />
+          <EntitySet Name="SysLog" EntityType="NHRIDBModel.SysLog" />
+          <EntitySet Name="User" EntityType="NHRIDBModel.User" />
+          <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
+            <End Role="GroupUser" EntitySet="GroupUser" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Hospital" Association="NHRIDBModel.FK_User_Hospital">
+            <End Role="Hospital" EntitySet="Hospital" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -483,53 +496,10 @@
           <Property Name="name_tw" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="name_en" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="fileExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
           <Property Name="hKey" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TubeData" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="Hospital" ToRole="TubeData" />
+          <NavigationProperty Name="User" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="Hospital" ToRole="User" />
         </EntityType>
-        <EntityType Name="User">
-          <Key>
-            <PropertyRef Name="userId" />
-          </Key>
-          <Property Name="userId" Type="Guid" Nullable="false" />
-          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="del" Type="Boolean" Nullable="false" />
-          <Property Name="id_Hospital" Type="Guid" Nullable="false" />
-          <Property Name="email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="groupId" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="User" ToRole="GroupUser" />
-          <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="User" ToRole="Hospital" />
-        </EntityType>
-        <Association Name="FK_User_GroupUser">
-          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GroupUser">
-              <PropertyRef Name="groupId" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="groupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_User_Hospital">
-          <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Hospital">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="id_Hospital" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="RLinkD">
           <Key>
             <PropertyRef Name="regionKey" />
@@ -806,6 +776,60 @@
           <Property Name="message" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="stacktrace" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="SysLog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="createtime" Type="DateTime" Precision="3" />
+          <Property Name="evettype" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ip" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userId" />
+          </Key>
+          <Property Name="userId" Type="Guid" Nullable="false" />
+          <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="del" Type="Boolean" Nullable="false" />
+          <Property Name="id_Hospital" Type="Guid" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="groupId" Type="Guid" Nullable="false" />
+          <Property Name="isstart" Type="Boolean" />
+          <NavigationProperty Name="GroupUser" Relationship="NHRIDBModel.FK_User_GroupUser" FromRole="User" ToRole="GroupUser" />
+          <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_User_Hospital" FromRole="User" ToRole="Hospital" />
+        </EntityType>
+        <Association Name="FK_User_GroupUser">
+          <End Type="NHRIDBModel.GroupUser" Role="GroupUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GroupUser">
+              <PropertyRef Name="groupId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Hospital">
+          <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="NHRIDBModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hospital">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="id_Hospital" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -851,20 +875,6 @@
                 <ScalarProperty Name="name_en" ColumnName="name_en" />
                 <ScalarProperty Name="name_tw" ColumnName="name_tw" />
                 <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="User">
-            <EntityTypeMapping TypeName="NHRIDBModel.User">
-              <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="groupId" ColumnName="groupId" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="id_Hospital" ColumnName="id_Hospital" />
-                <ScalarProperty Name="del" ColumnName="del" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="userName" ColumnName="userName" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1179,6 +1189,32 @@
                 <ScalarProperty Name="controller" ColumnName="controller" />
                 <ScalarProperty Name="createtime" ColumnName="createtime" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SysLog">
+            <EntityTypeMapping TypeName="NHRIDBModel.SysLog">
+              <MappingFragment StoreEntitySet="SysLog">
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="evettype" ColumnName="evettype" />
+                <ScalarProperty Name="createtime" ColumnName="createtime" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="NHRIDBModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="isstart" ColumnName="isstart" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="id_Hospital" ColumnName="id_Hospital" />
+                <ScalarProperty Name="del" ColumnName="del" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

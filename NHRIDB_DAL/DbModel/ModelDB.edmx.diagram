@@ -11,9 +11,6 @@
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_Permissions_MenuName" />
         <EntityTypeShape EntityType="NHRIDBModel.Hospital" Width="1.5" PointX="6.875" PointY="0.75" />
-        <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="1.25" />
-        <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
-        <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
         <EntityTypeShape EntityType="NHRIDBModel.RLinkD" Width="1.5" PointX="0.75" PointY="8.875" />
         <EntityTypeShape EntityType="NHRIDBModel.LogLogin" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="NHRIDBModel.TemplateExcelUpDataRecord" Width="1.5" PointX="3.375" PointY="0.75" />
@@ -23,6 +20,10 @@
         <AssociationConnector Association="NHRIDBModel.FK_TubeData_RLinkD" />
         <EntityTypeShape EntityType="NHRIDBModel.TubeDataLog" Width="1.5" PointX="7.375" PointY="7.75" />
         <EntityTypeShape EntityType="NHRIDBModel.ErrorLog" Width="1.5" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.SysLog" Width="1.5" PointX="9.375" PointY="7.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="0.75" />
+        <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
+        <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

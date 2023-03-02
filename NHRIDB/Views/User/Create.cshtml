@@ -13,32 +13,35 @@
     @Html.ValidationSummary()
 </div>
       
-    <div class="formPanel">
-        <label>醫院</label>
-        @Html.DropDownListFor(e => e.hospitalId, Model.hospitalSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
+<div class="formPanel">
+    <label>醫院</label>
+    @Html.DropDownListFor(e => e.hospitalId, Model.hospitalSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
 
 
-        <label>帳號</label>
-        @Html.TextBoxFor(e => e.username, new { @class = "form-control" })
+    <label>帳號</label>
+    @Html.TextBoxFor(e => e.username, new { @class = "form-control" })
 
-        <label>姓名</label>
-        @Html.TextBoxFor(e => e.name, new { @class = "form-control" })
-
-
-        <label>Email</label>
-        @Html.TextBoxFor(e => e.email, new { @class = "form-control" })
+    <label>姓名</label>
+    @Html.TextBoxFor(e => e.name, new { @class = "form-control" })
 
 
-        <label>群組</label>
-        @Html.DropDownListFor(e => e.groupId, Model.msSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
+    <label>Email</label>
+    @Html.TextBoxFor(e => e.email, new { @class = "form-control" })
 
 
-        <label>密碼</label>
-        @Html.PasswordFor(e => e.password, new { @class = "form-control" })
+    <label>群組</label>
+    @Html.DropDownListFor(e => e.groupId, Model.msSelect as IEnumerable<SelectListItem>, new { @class = "form-control" })
 
-        <label>確認密碼</label>
-        @Html.PasswordFor(e => e.repassword, new { @class = "form-control" })
-    </div>
+
+    <label>密碼</label>
+    @Html.PasswordFor(e => e.password, new { @class = "form-control" })
+
+    <label>確認密碼</label>
+    @Html.PasswordFor(e => e.repassword, new { @class = "form-control" })
+
+<label>啟用</label>
+    @Html.CheckBox("isstart",true)
+</div>
         <a class="btn" href="@Url.Action("Index", "User")">放棄</a>
         <button class="btn" type="submit">儲存</button>
         }

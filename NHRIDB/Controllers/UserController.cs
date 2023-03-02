@@ -14,14 +14,16 @@ namespace NHRIDB.Controllers
 {
     public class UserController : BasicController
     {
-     
+        private SysLogDA _SysLogDA;
         private UserDA _userDA;
         private List<Hospital> _hospitalSelect;
         private List<GroupUser> _groupSelect;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
+
             HospitalDA _hospitalDA = new HospitalDA(_db);
+            _SysLogDA = new SysLogDA(_db);
             _userDA = new UserDA(_db);
             _hospitalSelect = _hospitalDA.GetQuery().ToList();
             GroupDA groupDA = new GroupDA(_db);
@@ -75,9 +77,9 @@ namespace NHRIDB.Controllers
         [MvcAdminRightAuthorizeFilter(param = 'w')]
         public ActionResult Create(UserCreate model)
         {
-
             model.msSelect = new SelectList(_groupSelect, "groupId", "gName");
             model.hospitalSelect = new SelectList(_hospitalSelect, "id", "name_tw");
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -101,7 +103,8 @@ namespace NHRIDB.Controllers
                 return View(model);
             }
 
-            _userDA.Create(model.username, model.password,model.hospitalId,model.groupId, model.email,model.name);
+            _SysLogDA.Create(evettype: "新增使用者帳號:" + model.username, ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+            _userDA.Create(model.username, model.password,model.hospitalId,model.groupId, model.email,model.name, isstart:model.isstart);
             return RedirectToAction("Index");
         }
 
@@ -111,6 +114,7 @@ namespace NHRIDB.Controllers
         {
             User user = _userDA.GetUser(id);
             UserEdit model = new UserEdit();
+
             if (user == null) {
             
                 ModelState.AddModelError(string.Empty, "查無此資料");
@@ -125,19 +129,24 @@ namespace NHRIDB.Controllers
             model.username = user.userName;
             model.email = user.email;
             model.name = user.name;
+            model.isstart = user.isstart.HasValue? user.isstart.Value:false;
+
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [MvcAdminRightAuthorizeFilter(param = 'w')]
-        public ActionResult Edit(UserEdit model) {
+        public ActionResult Edit(UserEdit model) 
+        {
             model.hospitalSelect = new SelectList(_hospitalSelect, "id", "name_tw", model.hospitalId);
             model.msSelect = new SelectList(_groupSelect, "groupId", "gName", model.groupId);
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
             User user = _userDA.GetUser(model.uid);
          
             if (user == null)
@@ -148,17 +157,18 @@ namespace NHRIDB.Controllers
             }
            
             int count = _userDA.GetQuery(userName: model.username,noID:model.uid).Count();
+
             if (count > 0)
             {
                 
                 ModelState.AddModelError(string.Empty, "此帳號已被使用");
                 return View(model);
             }
-            
-             
-            _userDA.Edit(model.uid,model.username, model.hospitalId,  model.groupId, model.email,model.name);
-            return RedirectToAction("Index");
 
+            _SysLogDA.Create(evettype: "修改使用者:" + model.username+",啟用狀態:"+ model.isstart, ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+            _userDA.Edit(model.uid,model.username, model.hospitalId,  model.groupId, model.email,model.name, isstart:model.isstart);
+
+            return RedirectToAction("Index");
         }
 
 
@@ -187,10 +197,11 @@ namespace NHRIDB.Controllers
                 return RedirectToAction("Edit", new { id = uid });
             }
 
+            _SysLogDA.Create(evettype: "修改使用者密碼", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
             _userDA.ChagePasswd(uid, model.newpasswd);
             TempData["msg"] = "修改完畢";
-            return RedirectToAction("Edit",new { id= uid });
 
+            return RedirectToAction("Edit",new { id= uid });
         }
 
         [AjaxValidateAntiForgeryToken]
@@ -200,14 +211,17 @@ namespace NHRIDB.Controllers
             Rs rs = new Rs();
             rs.isSuccess = false;
             User hos = _userDA.GetUser(id);
+
             if (hos == null)
             {
                 rs.message = "查無此資料";
                 return Json(rs);
             }
 
+            _SysLogDA.Create(evettype: "刪除使用者", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
             _userDA.Delete(id);
             rs.isSuccess = true;
+
             return Json(rs);
         }
 
@@ -223,6 +237,5 @@ namespace NHRIDB.Controllers
 
             return true;
         }
-
     }
 }

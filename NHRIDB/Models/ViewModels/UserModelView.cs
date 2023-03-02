@@ -55,13 +55,12 @@ namespace NHRIDB.Models.ViewModels
 
         public SelectList msSelect { get; set; }
 
-        public Guid groupId { get; set; }
-
-      
+        public Guid groupId { get; set; }      
 
         [Required]
         public string name { get; set; }
 
+        public bool isstart { get; set; }
     }
     public class UserEdit
     {
@@ -77,29 +76,21 @@ namespace NHRIDB.Models.ViewModels
 
         public SelectList hospitalSelect { get; set; }
 
-
         public Guid hospitalId { get; set; }
 
         [Required]
         [EmailAddress]
         public string email { get; set; }
-        [Required]
-        public string name { get; set; }
 
-        
+        [Required]
+        public string name { get; set; }        
         
         public string passwd { get; set; }
-       
-  
 
         public string newpasswd { get; set; }
-
         
         public string repasswd { get; set; }
 
+        public bool isstart { get; set; }
     }
-
-
-
-   
 }

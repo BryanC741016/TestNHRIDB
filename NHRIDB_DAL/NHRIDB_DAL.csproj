@@ -62,6 +62,7 @@
     <Compile Include="DAL\MenuDA.cs" />
     <Compile Include="DAL\PermissionsDA.cs" />
     <Compile Include="DAL\GroupDA.cs" />
+    <Compile Include="DAL\SysLogDA.cs" />
     <Compile Include="DAL\TemplateExcelUpDataRecordDA.cs" />
     <Compile Include="DAL\TubeDataTotalDA.cs" />
     <Compile Include="DAL\UserDA.cs" />
@@ -112,6 +113,9 @@
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\RLinkD.cs">
+      <DependentUpon>ModelDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DbModel\SysLog.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
     <Compile Include="DbModel\TemplateExcelUpDataRecord.cs">

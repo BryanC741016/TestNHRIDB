@@ -50,7 +50,7 @@ namespace NHRIDB_DAL.DAL
                    .SingleOrDefault();
         }
 
-        public void Create(string userName, string password,Guid hosId,Guid groupId,string email,string name) {
+        public void Create(string userName, string password,Guid hosId,Guid groupId,string email,string name,bool isstart=true) {
             CryptoSHA512 crypto = new CryptoSHA512();
 
             string passwd = crypto.CryptoString(password);
@@ -63,27 +63,28 @@ namespace NHRIDB_DAL.DAL
             create.email = email;
             create.name = name;
             create.userId = Guid.NewGuid();
+            create.isstart = isstart;
             _db.User.Add(create);
             _db.SaveChanges();
         }
 
-        public void Edit(Guid id,string userName="", Guid? hosId=null, Guid? groupId=null, string email="",string name="") {
+        public void Edit(Guid id,string userName="", Guid? hosId=null, Guid? groupId=null, string email="",string name="", bool isstart = false) 
+        {
             User user = GetUser(id);
+
             if(!string.IsNullOrEmpty(userName))
              user.userName = userName;
 
-           
-           
-
             if (hosId.HasValue)
-            user.id_Hospital = hosId.Value;
+                user.id_Hospital = hosId.Value;
 
             if(groupId.HasValue)
-            user.groupId = groupId.Value;
-
+                user.groupId = groupId.Value;
 
             user.email = email;
             user.name = name;
+            user.isstart = isstart;
+
             _db.SaveChanges();
         }
 
