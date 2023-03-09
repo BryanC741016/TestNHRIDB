@@ -149,6 +149,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BarController.cs" />
     <Compile Include="Controllers\BasicController.cs" />
+    <Compile Include="Controllers\ChangePasswdController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -308,6 +309,7 @@
     <Content Include="Views\Plan\Index.cshtml" />
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\Edit.cshtml" />
+    <Content Include="Views\ChangePasswd\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -50,7 +50,7 @@ namespace NHRIDB_DAL.DAL
                    .SingleOrDefault();
         }
 
-        public void Create(string userName, string password,Guid hosId,Guid groupId,string email,string name,bool isstart=true) {
+        public void Create(Guid userId, string userName, string password,Guid hosId,Guid groupId,string email,string name,bool isstart=true) {
             CryptoSHA512 crypto = new CryptoSHA512();
 
             string passwd = crypto.CryptoString(password);
@@ -62,8 +62,9 @@ namespace NHRIDB_DAL.DAL
             create.groupId = groupId;
             create.email = email;
             create.name = name;
-            create.userId = Guid.NewGuid();
+            create.userId = userId;
             create.isstart = isstart;
+
             _db.User.Add(create);
             _db.SaveChanges();
         }

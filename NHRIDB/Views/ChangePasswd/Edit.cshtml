@@ -1,0 +1,29 @@
+﻿@model NHRIDB.Models.ViewModels.UserEdit
+
+@{
+    ViewBag.Title = "修改使用者";
+}
+
+@using (Html.BeginForm("Edit", "ChangePasswd", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(e => e.uid)
+
+<div class="text-danger">
+    第一次登入或半年變更一次密碼
+    <br />
+    @TempData["msg"]
+</div>
+
+    <div class="formPanel">
+        <label>使用者新密碼</label>
+        @Html.PasswordFor(e => e.newpasswd, new { @class = "form-control" })
+
+        <label>使用者確認密碼</label>
+        @Html.PasswordFor(e => e.repasswd, new { @class = "form-control" })
+    </div>
+
+    <button class="btn" type="submit">變更密碼</button>
+}
+

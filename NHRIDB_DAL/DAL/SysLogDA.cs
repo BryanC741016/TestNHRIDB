@@ -27,5 +27,18 @@ namespace NHRIDB_DAL.DAL
             _db.SysLog.Add(_SysLog);
             _db.SaveChanges();
         }
+
+        public void DeleteSixMonths()
+        {
+            DateTime _DateTime = DateTime.Now.AddMonths(-6);
+            IQueryable<SysLog> _IQSysLog = _db.SysLog.Where(m=>m.createtime.HasValue.Equals(false) || m.createtime<= _DateTime);
+
+            foreach (SysLog _SysLog in _IQSysLog)
+            {
+                _db.SysLog.Remove(_SysLog);
+            }
+
+            _db.SaveChanges();
+        }
     }
 }

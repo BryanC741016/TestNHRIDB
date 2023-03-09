@@ -1,8 +1,9 @@
-﻿ using MakeHTML.Models;
+﻿using MakeHTML.Models;
 using NHRIDB.Filter;
 using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
 using NHRIDB_DAL.DbModel;
+using NHRIDBLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,18 @@ namespace NHRIDB.Controllers
     public class UserController : BasicController
     {
         private SysLogDA _SysLogDA;
+        private UserLogDA _UserLogDA;
         private UserDA _userDA;
         private List<Hospital> _hospitalSelect;
         private List<GroupUser> _groupSelect;
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
 
             HospitalDA _hospitalDA = new HospitalDA(_db);
             _SysLogDA = new SysLogDA(_db);
+            _UserLogDA = new UserLogDA(_db);
             _userDA = new UserDA(_db);
             _hospitalSelect = _hospitalDA.GetQuery().ToList();
             GroupDA groupDA = new GroupDA(_db);
@@ -96,7 +100,8 @@ namespace NHRIDB.Controllers
                 ModelState.AddModelError(string.Empty, "密碼與確認密碼不相同");
                 return View(model);
             }
-           int count=   _userDA.GetQuery(userName: model.username).Count();
+
+            int count=   _userDA.GetQuery(userName: model.username).Count();
             if (count > 0) {
 
                 ModelState.AddModelError(string.Empty, "此帳號已被使用");
@@ -104,7 +109,10 @@ namespace NHRIDB.Controllers
             }
 
             _SysLogDA.Create(evettype: "新增使用者帳號:" + model.username, ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
-            _userDA.Create(model.username, model.password,model.hospitalId,model.groupId, model.email,model.name, isstart:model.isstart);
+            Guid userId = Guid.NewGuid();
+            _userDA.Create(userId, model.username, model.password,model.hospitalId,model.groupId, model.email,model.name, isstart:model.isstart);
+            _UserLogDA.Create(userId: userId,userName: model.username,password: model.password);
+
             return RedirectToAction("Index");
         }
 
@@ -171,7 +179,6 @@ namespace NHRIDB.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [MvcAdminRightAuthorizeFilter(param = 'w')]
@@ -197,8 +204,16 @@ namespace NHRIDB.Controllers
                 return RedirectToAction("Edit", new { id = uid });
             }
 
+            if (!Regex3TimePasswd(uid, model.newpasswd))
+            {
+                TempData["msg"] = "不可以與前三次使用過之密碼相同。";
+
+                return RedirectToAction("Edit", new { id = uid });
+            }
+
             _SysLogDA.Create(evettype: "修改使用者密碼", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
             _userDA.ChagePasswd(uid, model.newpasswd);
+            _UserLogDA.Create(userId: uid, userName: Convert.ToString(Session["name"]), password: model.newpasswd);
             TempData["msg"] = "修改完畢";
 
             return RedirectToAction("Edit",new { id= uid });
@@ -225,17 +240,63 @@ namespace NHRIDB.Controllers
             return Json(rs);
         }
 
-        private bool RegexPasswd(string passwd, out string msg) {
-            msg = "";
-            
+        private bool RegexPasswd(string passwd, out string msg) 
+        {
+            msg = "";            
             Regex reg = new Regex(@_set.regex);
+            //reg = new Regex(@"^(?=.*\d)(?=.*[A-Za-z]).{10,30}$");
+
             if (!reg.IsMatch(passwd))
             {
-                 msg = string.IsNullOrEmpty(_set.regexMsg) ? "密碼強度不夠，請重新輸入" : _set.regexMsg;
+                msg = "密碼強度不夠，請重新輸入，長度至少為10字元以上應包含英文、數字";
+
                 return false;
             }
 
+            //if (!reg.IsMatch(passwd))
+            //{
+            //    msg = string.IsNullOrEmpty(_set.regexMsg) ? "密碼強度不夠，請重新輸入" : _set.regexMsg;
+
+            //    return false;
+            //}
+
+            //if (passwd.Length<10)
+            //{
+            //    msg = "長度至少為10字元";
+
+            //    return false;
+            //}
+
             return true;
+        }
+
+        private bool Regex3TimePasswd(Guid userId,string passwd)
+        {
+            IQueryable <UserLog> _IQUserLog = _UserLogDA.GetUserLog(userId: userId);
+            int IntCount = 0;
+            bool isRegex3TimePasswd = true;
+            CryptoSHA512 crypto = new CryptoSHA512();
+            string SHA512_passwd = crypto.CryptoString(passwd);
+            _IQUserLog = _IQUserLog.OrderByDescending(m=>m.createtime);
+
+            foreach (UserLog _UserLog in _IQUserLog)
+            {
+                IntCount++;
+
+                if(IntCount>3)
+                {
+                    return isRegex3TimePasswd;
+                }
+
+                if(SHA512_passwd.Equals(_UserLog.password))
+                {
+                    isRegex3TimePasswd = false;
+
+                    return isRegex3TimePasswd;
+                }
+            }
+
+            return isRegex3TimePasswd;
         }
     }
 }

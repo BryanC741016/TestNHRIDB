@@ -118,9 +118,21 @@ namespace NHRIDB.Controllers
                     return View(model);
                 }
 
-                Session["uid"] = user.userId;
-                Session["hos"] = user.id_Hospital;
+                List<LogLogin> _LitLogLogin = logLoginDA.Query(userName:model.userName);
+                _LitLogLogin = _LitLogLogin.Where(m=>m.isLogin.Equals(true)).ToList();
+                _LitLogLogin = _LitLogLogin.OrderByDescending(m=>m.lognDate).ToList();
                 Session["name"] = user.userName;
+                Session["uid"] = user.userId;
+
+                if (_LitLogLogin.Count<2 || _LitLogLogin[0].lognDate<=DateTime.Now.AddMonths(-6))
+                {
+                    if (_LitLogLogin.Count < 2)
+                        logLoginDA.Delete(userName: user.userName, isLogin:true, lognDate: _LitLogLogin[0].lognDate);
+
+                    return RedirectToAction("Edit", "ChangePasswd",new { id = user.userId });
+                }
+                
+                Session["hos"] = user.id_Hospital;                
                 Session["ex"] = user.Hospital.fileExtension;
                 Session["leapProject"] = user.GroupUser.leapProject;
 
@@ -159,6 +171,7 @@ namespace NHRIDB.Controllers
 
                 if (user.GroupUser.alwaysOpen || (now >= model.startDate && now <= model.endDate))
                 {
+                    _SysLogDA.DeleteSixMonths();
                     _SysLogDA.Create(evettype: "使用者登入", ip: _ip, userName: Convert.ToString(Session["name"]));
 
                     FormsAuthentication.RedirectFromLoginPage(user.userId.ToString(), false);

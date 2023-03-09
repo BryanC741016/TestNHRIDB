@@ -228,6 +228,16 @@
           <Property Name="groupId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="isstart" Type="bit" />
         </EntityType>
+        <EntityType Name="UserLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="userId" Type="uniqueidentifier" />
+          <Property Name="userName" Type="varchar" MaxLength="50" />
+          <Property Name="password" Type="varchar(max)" />
+          <Property Name="createtime" Type="datetime" />
+        </EntityType>
         <Association Name="FK_Permissions_GroupUser">
           <End Role="GroupUser" Type="Self.GroupUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -340,6 +350,7 @@
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLog" EntityType="Self.UserLog" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Permissions_GroupUser" Association="Self.FK_Permissions_GroupUser">
             <End Role="GroupUser" EntitySet="GroupUser" />
             <End Role="Permissions" EntitySet="Permissions" />
@@ -425,6 +436,7 @@
             <End Role="Hospital" EntitySet="Hospital" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
+          <EntitySet Name="UserLog" EntityType="NHRIDBModel.UserLog" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -830,6 +842,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="UserLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="userId" Type="Guid" />
+          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createtime" Type="DateTime" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1215,6 +1237,17 @@
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="userName" ColumnName="userName" />
                 <ScalarProperty Name="userId" ColumnName="userId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserLog">
+            <EntityTypeMapping TypeName="NHRIDBModel.UserLog">
+              <MappingFragment StoreEntitySet="UserLog">
+                <ScalarProperty Name="createtime" ColumnName="createtime" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

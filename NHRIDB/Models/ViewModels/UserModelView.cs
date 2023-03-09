@@ -18,6 +18,7 @@ namespace NHRIDB.Models.ViewModels
 
         public List<UserItem> items { get; set; }
     }
+
     public class UserItem
     {
         public Guid id { get; set; }
@@ -36,7 +37,7 @@ namespace NHRIDB.Models.ViewModels
         [Required]
         [Display(Name = "密碼")]
         [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "密碼最少6個字")]
+        //[MinLength(10, ErrorMessage = "密碼最少10個字")] ,已用 RegexPasswd(string passwd, out string msg) 取代
         public string password { get; set; }
 
         [Required]
@@ -62,6 +63,7 @@ namespace NHRIDB.Models.ViewModels
 
         public bool isstart { get; set; }
     }
+
     public class UserEdit
     {
         public Guid uid { get; set; }
