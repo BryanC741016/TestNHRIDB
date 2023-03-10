@@ -26,8 +26,6 @@
             background-color: #ccc;
         }
 
-
-
         .logout {
             position: absolute;
             bottom: 100px;
@@ -35,8 +33,6 @@
             right: 100px;
             visibility: hidden;
         }
-
-
 
         .panel-body {
             padding: 20px;
@@ -46,7 +42,6 @@
                 margin-top: 15px;
                 margin-bottom: 10px;
             }
-
 
         .btn {
             color: #ffffff;
@@ -88,9 +83,6 @@
                 color: #333333;
                 content: "\f003";
             }
-
-
-
 
         input {
             padding-left: 30px !important;
@@ -142,33 +134,25 @@
 
     <script type="text/javascript">
         function _body_onunload() {
-
             $(".loading").css("visibility", "visible");
         }
     </script>
-
 
 </head>
 <body onbeforeunload="_body_onunload();">
     <div class="loading"></div>
     
-    <div class="login-panel">
-       
+    <div class="login-panel">       
 
         <div class="panel-body">
             <div id="photo">
 
             </div>
             <img class="logo-icon" src="~/images/logo.png" />
-            @RenderBody()
-     
+            @RenderBody()  
           
         </div>
-           
-        
-      
     </div>
-
 
     @RenderSection("scripts", required: false)
 </body>

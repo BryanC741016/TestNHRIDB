@@ -17,7 +17,6 @@
         imgs.Add(paurl);
     }
 }
-
  
  <div class="errorMsg" style="font-size:22px"> @Model.message</div>
 @if (!Model.isLock)
@@ -26,13 +25,11 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post))
 {
         @Html.AntiForgeryToken()
 
-
         <span>開放填寫時間：</span>
         @Model.startDate.ToString("yyyy/MM/dd");
 
         <span>~</span>
         @Model.endDate.ToString("yyyy/MM/dd");
-
 
         @Html.HiddenFor(e => e.startDate)
         @Html.HiddenFor(e => e.endDate)
@@ -49,33 +46,26 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post))
         </div>
 
         <div id="showCode">
-
         </div>
-
 
         <button type="button" class="btn" id="btn_login">登入</button>
 
         <div id="hospital-icon">
-
-
             @foreach (var item in imgs)
             {
-
                 <img src="@item" />
-
             }
-
-
         </div>
     }
 } 
 
-
 <script>
     $(function () {
+        // _LoginPartial.cshtml->sitjs.js
         $("#showCode").numcode({
             hideInputId: 'tonken',
         });
+
         $("#btn_login").on("click", function () {
             let commit = $("#showCode").numcode("CheckCode");
             if (commit) {
@@ -85,5 +75,4 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post))
             }
         });
     });
-
 </script>
