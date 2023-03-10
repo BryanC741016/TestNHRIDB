@@ -6,16 +6,16 @@
 
     List<string> imgs = new List<string>();
     string[] allow = new string[] { ".jpg", ".png", ".gif" };
-    //foreach (string url in System.IO.Directory.GetFiles(Server.MapPath("~/images/HospitalLog")))
-    //{
-    //    string ex = Path.GetExtension(url);
-    //    if (!allow.Contains(ex))
-    //    {
-    //        continue;
-    //    }
-    //    string paurl = url.Replace((Server.MapPath("~/")), "/").Replace("\\", "/");
-    //    imgs.Add(paurl);
-    //}
+    foreach (string url in System.IO.Directory.GetFiles(Server.MapPath("~/images/HospitalLog")))
+    {
+        string ex = Path.GetExtension(url);
+        if (!allow.Contains(ex))
+        {
+            continue;
+        }
+        string paurl = url.Replace((Server.MapPath("~/")), "/").Replace("\\", "/");
+        imgs.Add(paurl);
+    }
 }
  
  <div class="errorMsg" style="font-size:22px"> @Model.message</div>
