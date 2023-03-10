@@ -103,5 +103,33 @@ namespace NHRIDB_DAL.DAL
 
             return isSuccess;
         }
+        public bool CheckPlan(DataTable table, ref List<DataRow> row)
+        {
+            bool isSuccess = true;
+            var datas = table.AsEnumerable().Where(e => e["計畫代碼"] != DBNull.Value && !e.Field<string>("計畫代碼").Equals(""));
+            bool commit = true;
+            IQueryable<Plan> qu = _db.Plan;
+            List<Plan> _LitPlan = qu.ToList<Plan>();
+            string[] StrArry = new string[_LitPlan.Count()];
+
+            for (int i = 0; i < StrArry.Length; i++)
+            {
+                StrArry[i] = _LitPlan[i].planKey;
+            }
+
+            commit = !datas.Where(e => !string.IsNullOrEmpty(e.Field<string>("計畫代碼")) && !StrArry.Contains(e.Field<string>("計畫代碼"))).Any();
+
+            if (!commit)
+            {
+                row.AddRange(
+                    row.Except(
+                        datas.Where(e => !string.IsNullOrEmpty(e.Field<string>("計畫代碼")) && !StrArry.Contains(e.Field<string>("計畫代碼"))).ToList()
+                    ).ToList()
+                    );
+                isSuccess = false;
+            }
+
+            return isSuccess;
+        }
     }
 }

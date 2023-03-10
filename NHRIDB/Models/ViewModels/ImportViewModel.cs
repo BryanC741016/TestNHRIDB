@@ -15,6 +15,7 @@ namespace NHRIDB.Models.ViewModels
         public string msg { get; set; }
 
         public string templateTime { get; set; }
+        public System.Data.DataTable dataErr { get; set; }
     }
     public class ViewDatasViewModel
     {
