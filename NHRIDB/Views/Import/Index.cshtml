@@ -12,6 +12,21 @@
         {
         <label>@StrArry[i]</label><br />
         }
+        if (Model.dataErr != null && Model.dataErr.Rows.Count > 0)
+        {
+            TempData["dataErr"] = Model;
+        <script>
+            $(function () {
+                let result = new Promise((resolve) => {
+                    resolve(window.location.href = "@Url.Action("ExportDataFromDataTable")");
+                }).then((data) => {
+                        setTimeout(() => {
+                            window.location.href = "@Url.Action("Index")";
+                        }, 3000);
+                });
+            });
+        </script>
+        }
     }
 </div>
 
@@ -22,14 +37,17 @@
 <form action="@Url.Action("Index")" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
-    @if (bool.Parse(Session["leapProject"].ToString()))
+    @if(Model.dataErr == null)
     {
-        <label>醫院：</label>
-        @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>)
-    }
-    else
-    {
-        @Html.Hidden("hosId", Session["hos"])
+        if (bool.Parse(Session["leapProject"].ToString()))
+        {
+            <label>醫院：</label>
+            @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>)
+        }
+        else
+        {
+            @Html.Hidden("hosId", Session["hos"])
+        }
     }
     <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
     <input type="hidden" id="id" name="id" />

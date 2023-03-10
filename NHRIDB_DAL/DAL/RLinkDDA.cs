@@ -166,5 +166,36 @@ namespace NHRIDB_DAL.DAL
 
             return isSuccess;
         }
+
+        public bool CheckDLinkR(DataTable table, ref List<DataRow> row)
+        {
+            //msg = string.Empty;
+            bool isSuccess = true;
+            var datas = table.AsEnumerable().Select(e => new { regionKey = e.Field<string>("器官/部位代碼"), diagnosisKey = e.Field<string>("診斷代碼") })
+                 .Distinct().ToList();
+            IQueryable<RLinkD> qu = GetQuery();
+
+            foreach (var data in datas)
+            {
+                bool commit = qu.Where(e => e.diagnosisKey.Equals(data.diagnosisKey) && e.regionKey.Equals(data.regionKey))
+                      .Any();
+
+                if (!commit)
+                {
+                    row.AddRange(
+                                row.Except(
+                                table.AsEnumerable()
+                                    .Where(e =>
+                                        (e["器官/部位代碼"] != DBNull.Value && e.Field<string>("器官/部位代碼").Equals(data.diagnosisKey)) &&
+                                        (e["器官/部位代碼"] != DBNull.Value && e.Field<string>("診斷代碼").Equals(data.regionKey)))
+                                    .ToList()
+                            ).ToList()
+                        );                    //msg = msg + data.diagnosisKey + "(診斷代碼)與" + data.regionKey + "(部位編號)查無相關資料" + Environment.NewLine;
+                    isSuccess = false;
+                }
+            }
+
+            return isSuccess;
+        }
     }
 }

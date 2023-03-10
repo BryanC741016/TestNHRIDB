@@ -36,7 +36,7 @@ namespace NHRIDB_DAL.DAL
            * 主key重複
            * 資料型別(f:m , 數字 , 0:1)
            * **/
-        public bool ImportCheck(DataTable table, out string msg) 
+        public bool ImportCheck(DataTable table, out string msg)
         {
             msg = string.Empty;
 
@@ -73,6 +73,66 @@ namespace NHRIDB_DAL.DAL
 
             return true;
         }
+        /***
+           * 1.欄位名稱是否相符
+           * 必填欄位沒有填
+           * 2.性別是否統一
+           * 3.年齡是否統一
+           * 主key重複
+           * 資料型別(f:m , 數字 , 0:1)
+           * **/
+        public bool ImportCheck(DataTable table, ref List<DataRow> rowNow, string fileex) 
+        {
+            bool result = true;
+            string msg = string.Empty;
+
+            //1.欄位名稱是否相符
+            //if (!HasColumns(table))
+            if (!HasColumns(table, out msg))
+                {
+                msg = msg + "欄位名稱不符合，請參照範本" + Environment.NewLine;
+                var err = table.NewRow();
+                err[0] = msg;
+                rowNow.Add(err);
+                result = false;
+                //return false;
+            }
+
+            //必填欄位沒有填
+            //if (!CheckRequired(table, out msg))
+            if (!CheckRequired(table, ref rowNow))
+            {
+                result = false;
+                //return false;
+            }
+
+            //主key重複
+            //if (!MatchKey(table, out msg))
+            if (!MatchKey(table, ref rowNow))
+            {
+                result = false;
+                //return false;
+            }
+
+            //各欄位的資料型別 f:m , 數字 , 0:1)  ,此判斷是否放在更前面點 ???????????????????
+            //if (!CheckType(table, out msg))
+            if (!CheckType(table, ref rowNow))
+
+            {
+                result = false;
+                //return false;
+            }
+
+            //性別是否統一、年齡是否統一
+            //if (!RepleData(table, out msg))
+            if (!RepleData(table, ref rowNow, fileex))
+            {
+                result = false;
+                //return false;
+            }
+
+            return result;
+        }
 
         public bool HasColumns(DataTable dataTable)
         {
@@ -81,6 +141,20 @@ namespace NHRIDB_DAL.DAL
                                     .ToArray();
             string[] format = _columns.Select(e => e.DisplayName).ToArray();
 
+            var diff = columnNames.Except(format).ToArray().Aggregate("", (current, s) => current + (s + ",")).Replace(" ", string.Empty).TrimEnd(',');
+            // Bryan 需取消新增的11欄位 ,批次也是 ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+            return ((from item in format
+                     where columnNames.Contains(item)
+                     select item).Count() == format.Length);
+        }
+        public bool HasColumns(DataTable dataTable, out string msg)
+        {
+            string[] columnNames = dataTable.Columns.Cast<DataColumn>()
+                                    .Select(x => x.ColumnName)
+                                    .ToArray();
+            string[] format = _columns.Select(e => e.DisplayName).ToArray();
+
+            msg = columnNames.Except(format).ToArray().Aggregate("", (current, s) => current + (s + ",")).Replace(" ", string.Empty).TrimEnd(',');
             // Bryan 需取消新增的11欄位 ,批次也是 ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
             return ((from item in format
                      where columnNames.Contains(item)
@@ -109,6 +183,36 @@ namespace NHRIDB_DAL.DAL
 
             return isSuccess;
         }
+        public bool CheckRequired(DataTable table, ref List<DataRow> row)
+        {
+            // Bryan 需取消 '計畫代碼' ,批次也是 ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+            var info = _columns
+                        .Where(e => e.Required == true)
+                      .ToList();
+
+            bool isSuccess = true;
+
+            foreach (var column in info)
+            {
+                var rowCurrent = table.AsEnumerable()
+                     .Where(p => p[column.DisplayName] == DBNull.Value || string.IsNullOrEmpty(p[column.DisplayName].ToString()))
+                     .ToList();
+
+                if (rowCurrent.Count() > 0)
+                {
+                    DataRow drNew = table.NewRow();
+                    drNew[0] = "必要欄位「" + column.DisplayName + "」未填寫";
+
+                    row.Add(drNew);
+                    row.AddRange(
+                        rowCurrent
+                        );
+                    isSuccess = false;
+                }
+            }
+
+            return isSuccess;
+        }
 
         public bool MatchKey(DataTable table, out string msg)
         {
@@ -130,6 +234,31 @@ namespace NHRIDB_DAL.DAL
                         + Environment.NewLine;
                 }
 
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool MatchKey(DataTable table, ref List<DataRow> row)
+        {
+            var data = table.AsEnumerable().GroupBy(e => new { key1 = e["個案代碼"], key2 = e["器官/部位代碼"], key3 = e["診斷代碼"], key4 = e["收案年份 (西元年)"], key5 = e["年齡 (歲)"] })
+                            .Where(e => e.Count() > 1)
+                            .Select(x => x.Key.key1)
+                            .ToList();
+
+
+            if (data.Count() > 0)
+            {
+                var rowCurrent = table.AsEnumerable().Where(x => data.Any(y=>y == x["個案代碼"])).ToList();
+
+                DataRow drNew = table.NewRow();
+                drNew[0] = data.ToArray().Aggregate("", (current, s) => current + (s + ",")).Replace(" ", string.Empty).TrimEnd(',') + "資料重複";
+
+                row.Add(drNew);
+                row.AddRange(
+                    rowCurrent
+                    );
                 return false;
             }
 
@@ -178,6 +307,67 @@ namespace NHRIDB_DAL.DAL
             return isSuccess;
         }
 
+        public bool CheckType(DataTable table, ref List<DataRow> row)
+        {
+            bool isSuccess = true;
+
+            foreach (var column in _columns)
+            {
+                if(table.Columns[column.DisplayName] == null)
+                {
+                    continue;
+                }
+                var datas = table.AsEnumerable()
+                    .Where(p => p[column.DisplayName] != DBNull.Value || !string.IsNullOrEmpty(p[column.DisplayName].ToString()));
+                List<DataRow> datas1 = new List<DataRow>();
+                decimal age;
+                int endYear;
+                bool commit = true;
+                switch (column.Name)
+                {
+                    case "planKey":
+                    case "patientKey":
+                    case "regionKey":
+                    case "diagnosisKey":
+                        break;
+                    case "endYear":
+                        datas1 = datas.Where(p => p[column.DisplayName].ToString().Length != 4 || !int.TryParse(p[column.DisplayName].ToString(), out endYear)).ToList();
+                        commit = !datas1.Any();
+                        break;
+                    case "age":
+                        datas1 = datas.Where(p => !decimal.TryParse(p[column.DisplayName].ToString(), out age) || age < 0).ToList();
+                        commit = !datas1.Any();
+                        break;
+                    case "gender":
+                        datas1 = datas.Where(p => !p[column.DisplayName].ToString().Equals("F") && !p[column.DisplayName].ToString().Equals("M")).ToList();
+                        commit = !datas1.Any();
+                        break;
+                    default:
+                        datas1 = datas.Where(p => !p[column.DisplayName].ToString().Equals("0") && !p[column.DisplayName].ToString().Equals("1")).ToList();
+                        commit = !datas1.Any();
+                        break;
+                }
+
+                if (!commit)
+                {
+                    var exRow = row.Except(datas1).Where(e=> e["個案代碼"] != DBNull.Value && string.IsNullOrEmpty(e.Field<string>("個案代碼"))).ToList();
+                    if(exRow.Count() > 0)
+                    {
+                        DataRow drNew = table.NewRow();
+                        drNew[0] = "「" + column.DisplayName + "」型別不正確";
+
+                        row.Add(drNew);
+                        row.AddRange(
+                            datas1
+                            );
+                        isSuccess = false;
+                    }
+                }
+            }
+
+            return isSuccess;
+        }
+
         public bool RepleData(DataTable table,out string msg) 
         {
             msg = string.Empty;
@@ -207,6 +397,117 @@ namespace NHRIDB_DAL.DAL
                     }
                 }
             }//end foreach key
+
+            return isSuccess;
+        }
+
+        public bool RepleData(DataTable table, ref List<DataRow> row, string fileex)
+        {
+            //msg = string.Empty;
+            //List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
+            //        .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1)
+            //        .Select(e => e.Key)
+            //        .ToList();
+            bool isSuccess = true;
+
+            List<string> keys1 =
+            table.AsEnumerable()
+                    .Where(e => e.Field<string>("個案代碼") != null && !string.IsNullOrEmpty(e.Field<string>("個案代碼")))
+                    .GroupBy(e => e.Field<string>("個案代碼"))
+                    .Where(e => e.Count() > 1 && e.GroupBy(f => f.Field<string>("性別")).Count() > 1)
+                    .Select(e => e.Key)
+                    .ToList();
+            //table.AsEnumerable().GroupBy(e => new { Key1 = e.Field<string>("個案代碼"), Key2 = e.Field<string>("性別") })
+            //        .Where(e => e.Count() > 1)
+            //    .Select(e => e.Key.Key1)
+            //    .Where(e => e != null && !string.IsNullOrEmpty(e))
+            //    .ToList();
+            //var resultRow = table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).ToList();
+            //var resultRow = table.AsEnumerable()
+            //    .Join(keys1, c=>c.Field<string>)
+            row.AddRange(
+                table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).ToList()
+                //resultRow
+                );
+
+            List<string> keys2;
+            //if(fileex == "csv")
+            //{
+            //    keys2 = 
+            //    table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
+            //            .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
+            //                && (
+            //                    (e.Max(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
+            //                     e.Min(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
+            //                    ) > 1.5 ||
+            //                    (e.Max(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
+            //                     e.Min(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
+            //                    ) < -1.5
+            //                   ))
+            //            .Select(e => e.Key)
+            //            .ToList();
+            //}
+            //else
+            //{
+            //    keys2 = 
+            //    table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
+            //            .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
+            //                && (
+            //                    (e.Max(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
+            //                     e.Min(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
+            //                    ) > 1.5 ||
+            //                    (e.Max(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
+            //                     e.Min(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
+            //                    ) < -1.5
+            //                   ))
+            //            .Select(e => e.Key)
+            //            .ToList();
+            //}
+            keys2 =
+            table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
+                    .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
+                        && (
+                            (e.Max(f => double.Parse(f.Field<string>("收案年份 (西元年)")) - double.Parse(f.Field<string>("年齡 (歲)"))) -
+                             e.Min(f => double.Parse(f.Field<string>("收案年份 (西元年)")) - double.Parse(f.Field<string>("年齡 (歲)")))
+                            ) > 1.5 ||
+                            (e.Max(f => double.Parse(f.Field<string>("收案年份 (西元年)")) - double.Parse(f.Field<string>("年齡 (歲)"))) -
+                             e.Min(f => double.Parse(f.Field<string>("收案年份 (西元年)")) - double.Parse(f.Field<string>("年齡 (歲)")))
+                            ) < -1.5
+                            ))
+                    .Select(e => e.Key)
+                    .ToList();
+
+            row.AddRange(
+                table.AsEnumerable().Where(e => keys2.Contains(e.Field<string>("個案代碼"))).ToList()
+                );
+
+            //foreach (string key in keys)
+            //{
+            //    var datas = table.AsEnumerable().Where(e => e["個案代碼"].ToString().Trim().Equals(key.Trim()));
+            //    int sexCount = datas.GroupBy(e => e["性別"]).Count();
+
+            //    if (sexCount > 1)
+            //    {
+            //        //msg = msg + "個案代碼:" + key + "性別欄位輸入錯誤" + Environment.NewLine;
+            //        isSuccess = false;
+            //    }
+
+            //    double sings = 0;
+            //    foreach (var item in datas)
+            //    {
+            //        double sing = double.Parse(item["收案年份 (西元年)"].ToString()) - double.Parse(item["年齡 (歲)"].ToString());
+            //        if (sings == 0)
+            //        {
+            //            sings = sing;
+            //        }
+
+            //        if ((sings - sing) > 1.5 || (sings - sing) < -1.5)
+            //        {
+            //            //msg = msg + "個案代碼:" + key + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
+            //            isSuccess = false;
+            //        }
+            //    }
+            //}//end foreach key
 
             return isSuccess;
         }
@@ -302,7 +603,10 @@ namespace NHRIDB_DAL.DAL
                             data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(bo, info.PropertyType), null);
                         }
                         else {
-                            data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(dr[info.DisplayName], info.PropertyType), null);
+                            if(dr[info.DisplayName] != DBNull.Value)
+                            {
+                                data.GetType().GetProperty(info.Name).SetValue(data, Convert.ChangeType(dr[info.DisplayName], info.PropertyType), null);
+                            }
                         }
                    
                    

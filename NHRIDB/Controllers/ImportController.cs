@@ -21,6 +21,7 @@ namespace NHRIDB.Controllers
         private TubeDataTotalDA _TubeDataTotalDA;
         private HospitalDA _hospitalDA;
         private PlanDA _PlanDA;
+        private SysLogDA _SysLogDA;
         private string _cPath;
         private string _dateFormat="yyyyMMddHHmmss";
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -29,7 +30,8 @@ namespace NHRIDB.Controllers
             _rLinkDDA = new RLinkDDA();
             _dataTubeDA= new DataTubeDA();
             _TubeDataTotalDA = new TubeDataTotalDA();
-         //   _dPath = Server.MapPath("~/Upload/" + _hos.ToString());
+            //   _dPath = Server.MapPath("~/Upload/" + _hos.ToString());
+            _SysLogDA = new SysLogDA(_db);
             _cPath = Server.MapPath("~/Upload/Cache");
             _hospitalDA = new HospitalDA(_db);
             _PlanDA = new PlanDA();
@@ -71,6 +73,15 @@ namespace NHRIDB.Controllers
             model.templateTime = templateTime;
 
             model.template = _template;
+            model.msg = msg;
+            return View(model);
+        }
+
+        public ActionResult Index(string msg = "", ImportViewModel model = null)
+        {
+            _SysLogDA.Create(evettype: "錯誤檢查匯出", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+
+            setRemoveSession();
             model.msg = msg;
             return View(model);
         }
@@ -145,6 +156,7 @@ namespace NHRIDB.Controllers
              * 資料型別(f:m , 數字 , 0:1)
              * **/
             string msg = string.Empty;
+            List<DataRow> msgRow = new List<DataRow>();
             string StrAllMsg = string.Empty;
             bool isSuccess = true;
             EPPlusExcel epp = new EPPlusExcel();
@@ -152,6 +164,8 @@ namespace NHRIDB.Controllers
 
             try
             {
+                _SysLogDA.Create(evettype: "匯入檔載入", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+
                 table = epp.GetDataTable(path, upload.InputStream);
 
                 // Bryan 2022/5/10
@@ -159,24 +173,24 @@ namespace NHRIDB.Controllers
                 foreach (DataRow row in table.Rows)
                 {
                     row[col] = Convert.ToString(row[col]).Trim().ToUpper();
-                }                
+                }
 
                 List<TubeData> _LitTubeData = _dataTubeDA.getTubeData(hosId);
                 Session["OldTubeDataCount"] = _LitTubeData != null ? _LitTubeData.Count : 0;
 
-                if (table.Rows.Count >20000)
-                {
-                    Session["BatchTable"] = table;
-                    Session["BatchTablePath"] = path;
-                    Session["BatchType"] = 0;
-                    Session["hosId"] = hosId.ToString();
-                    Session["intBatchStartIndex"] =0;
-                    Session["isBatchError"] = false;
-                    Session["fileName"] = model.fileName;
-                    BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
+                //if (table.Rows.Count >20000)
+                //{
+                //    Session["BatchTable"] = table;
+                //    Session["BatchTablePath"] = path;
+                //    Session["BatchType"] = 0;
+                //    Session["hosId"] = hosId.ToString();
+                //    Session["intBatchStartIndex"] =0;
+                //    Session["isBatchError"] = false;
+                //    Session["fileName"] = model.fileName;
+                //    BatchTableViewModel _BatchTableViewModel = new BatchTableViewModel();
 
-                    return BatchTable(_BatchTableViewModel);
-                }
+                //    return BatchTable(_BatchTableViewModel);
+                //}
             }
             catch (Exception e)
             {
@@ -187,17 +201,21 @@ namespace NHRIDB.Controllers
                 return Index(StrAllMsg, hosId);
             }
 
-            if (!_dataTubeDA.ImportCheck(table, out msg))
+            _SysLogDA.Create(evettype: "條件檢查", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+            //if (!_dataTubeDA.ImportCheck(table, out msg))
+            if (!_dataTubeDA.ImportCheck(table, ref msgRow, ex))
             {
                 StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
             }
-            else if(!_PlanDA.CheckPlan(table, out msg))
+            //else if (!_PlanDA.CheckPlan(table, out msg))
+            if(!_PlanDA.CheckPlan(table, ref msgRow))
             {
                 StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
             }
-            else if (!_rLinkDDA.CheckDLinkR(table, out msg)) //部位與診斷代碼(dlinkR)代碼比對
+            //if (!_rLinkDDA.CheckDLinkR(table, out msg)) //部位與診斷代碼(dlinkR)代碼比對
+            if (!_rLinkDDA.CheckDLinkR(table, ref msgRow)) //部位與診斷代碼(dlinkR)代碼比對
             {
                 StrAllMsg = StrAllMsg + msg;
                 isSuccess = false;
@@ -206,7 +224,29 @@ namespace NHRIDB.Controllers
             if (!isSuccess)
             {
                 System.IO.File.Delete(path);
-                return Index(StrAllMsg, hosId);
+                ImportViewModel modelErr = new ImportViewModel();
+                DataTable dtTemp = table.Clone();
+                dtTemp.Rows.Clear();
+                msgRow.ForEach(e =>
+                {
+                    if (e.RowState == DataRowState.Detached)
+                    {
+                        //e.RowState = DataRowState.Modified;
+                        DataRow drTemp = dtTemp.NewRow();
+                        foreach (var item in e.Table.Columns)
+                        {
+                            drTemp[(item as DataColumn).ColumnName] = e[(item as DataColumn).ColumnName];
+                        }
+                        dtTemp.Rows.Add(drTemp);
+                    }
+                    else
+                    {
+                        dtTemp.ImportRow(e);
+                    }
+                });
+                modelErr.dataErr = dtTemp;
+                return Index(StrAllMsg, modelErr);
+                //return Index(StrAllMsg, hosId);
             }
 
             model.datas = _dataTubeDA.GetDatasByDataTable(table);
@@ -231,6 +271,8 @@ namespace NHRIDB.Controllers
             List< TubeDataType > _LitTubeDataType = Session["SaveModelDatas"] as List<TubeDataType>;
             DataSaveAns _DataSaveAns = _dataTubeDA.Create(_LitTubeDataType, model.hId,_uid);
             string path = Path.Combine(_cPath, model.fileName);
+            _SysLogDA.Create(evettype: "匯入檔寫入", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+
             //移動至正式目錄
             string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
             System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));          
@@ -344,6 +386,34 @@ namespace NHRIDB.Controllers
             stream.Position = 0;
 
             return File(stream, contentType, fileName);             
+        }
+
+        public ActionResult ExportDataFromDataTable()
+        {
+            EPPlusExcel epp = new EPPlusExcel();
+            List<DataTable> table = new List<DataTable>();
+            //DataTable tb = _dataTubeDA.GetEmptyDataTable();
+            if(TempData["dataErr"]!= null)
+            {
+                ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
+                table.Add(importView.dataErr);
+
+                //DataTable tb2 = _rLinkDDA.GetDataTable();
+                //table.Add(tb2);
+
+                string[] names = new string[] { "錯誤資料" };
+
+                MemoryStream stream = epp.ExportSample(names, table);
+
+                string fileName = "ErrorData" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                TempData["dataErr"] = null;
+
+                return File(stream, contentType, fileName);
+            }
+            return View();
         }
 
         /// <summary>
