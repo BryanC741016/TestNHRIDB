@@ -21,10 +21,10 @@
         <EntityTypeShape EntityType="NHRIDBModel.TubeDataLog" Width="1.5" PointX="7.375" PointY="7.75" />
         <EntityTypeShape EntityType="NHRIDBModel.ErrorLog" Width="1.5" PointX="3.375" PointY="3.75" />
         <EntityTypeShape EntityType="NHRIDBModel.SysLog" Width="1.5" PointX="9.375" PointY="7.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.UserLog" Width="1.5" PointX="3.375" PointY="10.75" />
         <EntityTypeShape EntityType="NHRIDBModel.User" Width="1.5" PointX="9.125" PointY="0.75" />
         <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
-        <EntityTypeShape EntityType="NHRIDBModel.UserLog" Width="1.5" PointX="3.375" PointY="10.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

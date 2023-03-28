@@ -124,7 +124,7 @@ namespace NHRIDB.Controllers
                 Session["name"] = user.userName;
                 Session["uid"] = user.userId;
 
-                if (_LitLogLogin.Count<2 || _LitLogLogin[0].lognDate<=DateTime.Now.AddMonths(-6))
+                if (_LitLogLogin.Count<2 || _LitLogLogin[0].lognDate<=DateTime.Now.AddMonths(-6) || user.passwordtime.Value<= DateTime.Now.AddMonths(-6))
                 {
                     if (_LitLogLogin.Count < 2)
                         logLoginDA.Delete(userName: user.userName, isLogin:true, lognDate: _LitLogLogin[0].lognDate);

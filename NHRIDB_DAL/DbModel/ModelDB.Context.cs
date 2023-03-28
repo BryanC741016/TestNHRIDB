@@ -39,8 +39,8 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
         public virtual DbSet<ErrorLog> ErrorLog { get; set; }
         public virtual DbSet<SysLog> SysLog { get; set; }
-        public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserLog> UserLog { get; set; }
+        public virtual DbSet<User> User { get; set; }
     
         public virtual int SetUnLockUser(string userName)
         {

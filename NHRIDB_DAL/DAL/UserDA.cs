@@ -64,6 +64,7 @@ namespace NHRIDB_DAL.DAL
             create.name = name;
             create.userId = userId;
             create.isstart = isstart;
+            create.passwordtime = DateTime.Now;
 
             _db.User.Add(create);
             _db.SaveChanges();
@@ -104,6 +105,7 @@ namespace NHRIDB_DAL.DAL
                 CryptoSHA512 crypto = new CryptoSHA512();
                 string passwd = crypto.CryptoString(password);
                 user.password = passwd;
+                user.passwordtime = DateTime.Now;
             }
             _db.SaveChanges();
         }

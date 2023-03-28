@@ -23,6 +23,7 @@ namespace NHRIDB_DAL.DbModel
         public string name { get; set; }
         public System.Guid groupId { get; set; }
         public Nullable<bool> isstart { get; set; }
+        public Nullable<System.DateTime> passwordtime { get; set; }
     
         public virtual GroupUser GroupUser { get; set; }
         public virtual Hospital Hospital { get; set; }
