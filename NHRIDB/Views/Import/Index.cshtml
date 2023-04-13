@@ -3,19 +3,19 @@
     ViewBag.Title = "上傳檢體";
 }
 
-<div class="msg">
-   @*@Model.msg*@
-    @{ 
-        string[] StrArry = Model.msg.Replace("\r\n", ";").Split(';');
+    <div class="msg">
+        @*@Model.msg*@
+        @{
+            string[] StrArry = Model.msg.Replace("\r\n", ";").Split(';');
 
-        for(int i=0;i< StrArry.Length;i++)
-        {
-        <label>@StrArry[i]</label><br />
-        }
-        if (Model.dataErr != null && Model.dataErr.Rows.Count > 0)
-        {
-            TempData["dataErr"] = Model;
-        <script>
+            for (int i = 0; i < StrArry.Length; i++)
+            {
+                <label>@StrArry[i]</label><br />
+            }
+            if (Model.dataErr != null && Model.dataErr.Rows.Count > 0)
+            {
+                TempData["dataErr"] = Model;
+                <script>
             $(function () {
                 let result = new Promise((resolve) => {
                     resolve(window.location.href = "@Url.Action("ExportDataFromDataTable")");
@@ -25,10 +25,19 @@
                         }, 3000);
                 });
             });
-        </script>
+                </script>
+            }
         }
-    }
-</div>
+        <script type="text/javascript">
+
+            function _btn_sure() {
+
+                $(".loading").css("visibility", "visible");
+            }
+
+        </script>
+
+    </div>
 
 <label style="color:red">下載範本最後更新時間: @Model.templateTime</label>
 <br />
@@ -51,7 +60,7 @@
     }
     <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
     <input type="hidden" id="id" name="id" />
-    <button class="btn sure" type="submit">確認上傳</button>
+    <button class="btn sure" type="submit" onclick="_btn_sure();">確認上傳</button>
 
 </form>
 
