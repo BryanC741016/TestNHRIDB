@@ -39,4 +39,28 @@ namespace NHRIDB.Models.ViewModels
 
         public string imgUrl { get; set; }
     }
+    public class HospitalUploadViewModel
+    {
+        public List<HospitalUploadlist> items { get; set; }
+    }
+        public class HospitalUploadlist
+    {
+        [Required]
+        [Display(Name = "醫療機構代號")]
+        public Guid HospitalId { get; set; }
+
+        [Required]
+        [Display(Name = "英文名稱")]
+        public string name_en { get; set; }
+
+        [Required]
+        [Display(Name = "中文名稱")]
+        public string name_tw { get; set; }
+        [Display(Name = "筆數")]
+        public decimal Count { get; set; }
+        [Display(Name = "是否有筆數")]
+        public bool HasRow { get; set; }
+        [Display(Name = "最後上傳時間")]
+        public DateTime? LastDate { get; set; }
+    }
 }

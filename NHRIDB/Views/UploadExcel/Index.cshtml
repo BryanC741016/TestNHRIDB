@@ -3,9 +3,17 @@
     ViewBag.Title = "檔案上傳";
 }
 
-<div class="msg">
-    @Model.msg
-</div>
+    <div class="msg">
+        @Model.msg
+        <script type="text/javascript">
+
+            function _btn_sure() {
+
+                $(".loading").css("visibility", "visible");
+            }
+
+        </script>
+    </div>
 
 <label style="color:red">下載範本最後更新時間: @Model.templateTime</label>
 <br />
@@ -15,7 +23,7 @@
     @Html.AntiForgeryToken()
     <input type="file" id="upload" name="upload" accept=".xlsx,.csv">
     <input type="hidden" id="id" name="id" />
-    <button class="btn sure" type="submit">確認上傳</button>
+    <button class="btn sure" type="submit" onclick="_btn_sure();">確認上傳</button>
 </form>
 
 

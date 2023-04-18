@@ -1,0 +1,47 @@
+﻿@model  NHRIDB.Models.ViewModels.HospitalUploadViewModel
+
+@{
+    ViewBag.Title = "當月已/未上傳之機構";
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>機構中文名稱</th>
+            <th>機構英文名稱</th>
+            <th>筆數</th>
+            <th>已上傳</th>
+            <th>上傳日期</th>
+        </tr>
+    </thead>
+    @foreach (var item in Model.items)
+    {
+        <tr>
+            <td>
+                @item.name_tw
+            </td>
+            <td>
+                @item.name_en
+            </td>
+            <td>
+                @item.Count
+            </td>
+            <td>
+                @(item.HasRow ? "是" : "否")
+            </td>
+            @if (item.LastDate != null & DateTime.Parse(item.LastDate.ToString()).Year > 2000)
+            {
+                <td>
+                    @string.Format("{0:yyyy/MM/dd}", item.LastDate)
+                </td>
+            }
+            else
+            {
+                <td>
+
+                </td>
+            }
+    </tr>
+    }
+
+</table>

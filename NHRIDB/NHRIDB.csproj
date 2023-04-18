@@ -160,6 +160,7 @@
     <Compile Include="Controllers\TemplateExcelController.cs" />
     <Compile Include="Controllers\UnLockController.cs" />
     <Compile Include="Controllers\UploadExcelController.cs" />
+    <Compile Include="Controllers\UploadListController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AjaxValidateAntiForgeryTokenAttribute .cs" />
     <Compile Include="Filter\LogonAuthorizeFilter.cs" />
@@ -310,6 +311,7 @@
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\Edit.cshtml" />
     <Content Include="Views\ChangePasswd\Edit.cshtml" />
+    <Content Include="Views\UploadList\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
