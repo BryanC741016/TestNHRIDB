@@ -21,17 +21,17 @@ namespace NHRIDB.Models.ViewModels
     public class ChangePasswd
     {
         [Required]
-        [DataType(DataType.Password)]
+        //[DataType(DataType.Password)]
         public string passwd { get; set; }
 
         [Required]
         [Display(Name = "密碼")]
-        [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "密碼最少6個字")]
+        //[DataType(DataType.Password)]
+        //[MinLength(6, ErrorMessage = "密碼最少6個字")]
         public string newpasswd { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
+        //[DataType(DataType.Password)]
         public string repasswd { get; set; }
 
     }
