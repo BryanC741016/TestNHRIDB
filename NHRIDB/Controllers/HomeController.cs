@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -46,21 +47,46 @@ namespace NHRIDB.Controllers
         // GET: Account
         public ActionResult Index()
         {
+            //MailData mailData = new MailData();
+            //mailData.Set_StrSubject("Test");
+            //mailData.Set_StrBody("TestA");
+            //mailData.Set_StrMail("Bryanc@e-tec.com.tw");// 被寄的Email,email
+            //mailData.Set_StrUsr("Bryanc");// 被寄的人員
+            ////mailData.Set_StrFromMail("Bryanc@e-tec.com.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
+            //mailData.Set_StrFromMail("noreply@nhri.edu.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
+            //mailData.Set_StrFromUsr("");// 寄的人員,""
+
+            //SendMailer sendMailer = new SendMailer();
+            //sendMailer.Set_MailData(mailData);
+            ////sendMailer.MailSender("abba.e-tec.com.tw", "Bryanc@e-tec.com.tw", "Hfi6@1016", 25);
+            //sendMailer.MailSender("sender.nhri.edu.tw", "noreply@nhri.edu.tw", string.Empty, 25);
+            //// mailHost:RTE置換排程 發送E-MAIL主機IP abba.e-tec.com.tw
+            //// emailUserName:RTE置換排程 發送E-MAIL主機帳號 sdservice
+            //// emailPassword:RTE置換排程 發送E-MAIL主機帳號密碼 Rh#T53f
+            //// port:25 RTE置換排程 發送E-MAIL主機port 25
+
+
+
+
+
+
+
             LoginViewModel model = new LoginViewModel();
             model.imgUrl = new List<string>();
-             
+
             model.endDate = _set.endDate;
             model.startDate = _set.startDate;
 
-            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs"))){
+            if (!System.IO.Directory.Exists(Server.MapPath("~/Logs")))
+            {
                 System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs"));
             }
-           
+
             if (!System.IO.Directory.Exists(Server.MapPath("~/Logs/ActionLog")))
             {
                 System.IO.Directory.CreateDirectory(Server.MapPath("~/Logs/ActionLog"));
             }
-             
+
             return View(model);
         }
 
@@ -94,6 +120,27 @@ namespace NHRIDB.Controllers
 
             if (logLoginDA.HasLock(_set.errorOutCount,model.userName))
             {
+
+
+
+                //MailData mailData = new MailData();
+                //mailData.Set_StrSubject(subject);
+                //mailData.Set_StrBody(EmailTemplate);
+                //mailData.Set_StrMail(email);// 被寄的Email,email
+                //mailData.Set_StrUsr(username);// 被寄的人員
+                //mailData.Set_StrFromMail(EmailFromAddr);// 寄的Email,emailUserName->參數多"EmailFromAddr"
+                //mailData.Set_StrFromUsr("");// 寄的人員,""
+
+                //SendMailer sendMailer = new SendMailer();
+                //sendMailer.Set_MailData(mailData);
+                //sendMailer.MailSender(mailHost, emailUserName, emailPassword, port);
+                ////mailHost:RTE置換排程 發送E-MAIL主機IP abba.e-tec.com.tw
+                ////emailUserName:RTE置換排程 發送E-MAIL主機帳號 sdservice
+                ////emailPassword:RTE置換排程 發送E-MAIL主機 Rh#T53f
+                ////port:25 RTE置換排程 發送E-MAIL主機port 25
+
+
+
                 model.message = "錯誤次數過多，已被鎖住";
                 model.isLock = true;
                 return View(model);
@@ -128,6 +175,11 @@ namespace NHRIDB.Controllers
                 {
                     if (_LitLogLogin.Count < 2)
                         logLoginDA.Delete(userName: user.userName, isLogin:true, lognDate: _LitLogLogin[0].lognDate);
+
+                    Session.Remove("hos");
+                    Session.Remove("ex");
+                    Session.Remove("leapProject");
+                    Session.Remove("funcList");
 
                     return RedirectToAction("Edit", "ChangePasswd",new { id = user.userId });
                 }
@@ -197,6 +249,140 @@ namespace NHRIDB.Controllers
                 ip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
             }
             return ip;
+        }
+    }
+
+    public class MailData
+    {
+        private string _strFromUsr = "";
+        private string _strFromMail = "";
+        private string _strUsr = "";
+        private string _strMail = "";
+        private string _strBody = "";
+        private string _strSubject = "";
+        private string _strCC = "";
+
+        // PURPOSE :設定變數值
+        // PARAM1 : STRING 要設定的變數之值
+        public void Set_StrFromUsr(string strVal)
+        {
+            _strFromUsr = strVal;
+        }
+        public void Set_StrFromMail(string strVal)
+        {
+            _strFromMail = strVal;
+        }
+        public void Set_StrUsr(string strVal)
+        {
+            _strUsr = strVal;
+        }
+        public void Set_StrMail(string strVal)
+        {
+            _strMail = strVal;
+        }
+        public void Set_StrBody(string strVal)
+        {
+            _strBody = strVal;
+        }
+        public void Set_StrSubject(string strVal)
+        {
+            _strSubject = strVal;
+        }
+        public void Set_StrCC(string strVal)
+        {
+            _strCC = strVal;
+        }
+
+
+        // PURPOSE :取得變數值
+        // RETURN : STRING
+        public string Get_StrFromUsr()
+        {
+            return _strFromUsr;
+        }
+        public string Get_StrFromMail()
+        {
+            return _strFromMail;
+        }
+        public string Get_StrUsr()
+        {
+            return _strUsr;
+        }
+        public string Get_StrMail()
+        {
+            return _strMail;
+        }
+        public string Get_StrBody()
+        {
+            return _strBody;
+        }
+        public string Get_StrSubject()
+        {
+            return _strSubject;
+        }
+        public string Get_StrCC()
+        {
+            return _strCC;
+        }
+    }
+
+    public class SendMailer
+    {
+        private MailData _maildata = new MailData();
+
+        // PURPOSE :設定變數值
+        public void Set_MailData(MailData MailData)
+        {
+            _maildata = MailData;
+        }
+
+        // PURPOSE :email 處理
+        public void MailSender(string mailServer, string account, string password, int port)
+        {
+            SmtpClient smtp = new SmtpClient(mailServer, port);
+
+            if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(password))
+            {
+                smtp.Credentials = new NetworkCredential(account, password);
+            }
+            smtp.Port = port;
+            MailMessage Msg = new MailMessage();
+            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+            System.Text.Encoding headerEncoding = System.Text.Encoding.BigEndianUnicode;
+
+            MailAddress mailFrom = new MailAddress(this._maildata.Get_StrFromMail(), this._maildata.Get_StrFromUsr(), encoding);
+
+            Msg.From = mailFrom;
+
+            try
+            {
+                MailAddress mailTo = new MailAddress(this._maildata.Get_StrMail(), this._maildata.Get_StrUsr(), headerEncoding);
+
+                // 內容使用html
+                Msg.IsBodyHtml = true;
+                Msg.BodyEncoding = System.Text.Encoding.UTF8;
+                // 前面是發信email後面是顯示的名稱
+                // Msg.From = New MailAddress("system@mail.com", "system")
+                // 收信者email 
+                Msg.To.Add(mailTo);
+
+                // CC
+                if (_maildata.Get_StrCC().Length > 0)
+                    Msg.CC.Add(_maildata.Get_StrCC());
+                // 設定優先權
+                Msg.Priority = MailPriority.Normal;
+                // 標題
+                Msg.Subject = _maildata.Get_StrSubject();
+                // 內容
+                Msg.Body = _maildata.Get_StrBody();
+                smtp.EnableSsl = false;
+                smtp.Send(Msg);
+                Msg.Dispose();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }
