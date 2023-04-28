@@ -38,9 +38,9 @@ namespace NHRIDB_DAL.DbModel
         public virtual DbSet<TubeData> TubeData { get; set; }
         public virtual DbSet<TubeDataLog> TubeDataLog { get; set; }
         public virtual DbSet<ErrorLog> ErrorLog { get; set; }
-        public virtual DbSet<SysLog> SysLog { get; set; }
         public virtual DbSet<UserLog> UserLog { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<SysLog> SysLog { get; set; }
     
         public virtual int SetUnLockUser(string userName)
         {
@@ -69,22 +69,158 @@ namespace NHRIDB_DAL.DbModel
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDifferentTotal_Result>("GetDifferentTotal", hospitalIdParameter);
         }
     
-        public virtual ObjectResult<GetTotal_Result> GetTotal(string hospitalId)
+        public virtual ObjectResult<GetTotal_Result> GetTotal(string hospId, string hospitalId, string regionKey, string diagnosisKey, string endYearSt, string endYearEd, string ageSt, string ageEd, string gender, Nullable<bool> blood, Nullable<bool> frozenTissue, Nullable<bool> paraffinSection, Nullable<bool> urine, Nullable<bool> pleuraleffusion, Nullable<bool> ascites, Nullable<bool> boneMarrow, Nullable<bool> cSF, Nullable<int> caseTimes)
         {
+            var hospIdParameter = hospId != null ?
+                new ObjectParameter("hospId", hospId) :
+                new ObjectParameter("hospId", typeof(string));
+    
             var hospitalIdParameter = hospitalId != null ?
                 new ObjectParameter("hospitalId", hospitalId) :
                 new ObjectParameter("hospitalId", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal", hospitalIdParameter);
+            var regionKeyParameter = regionKey != null ?
+                new ObjectParameter("regionKey", regionKey) :
+                new ObjectParameter("regionKey", typeof(string));
+    
+            var diagnosisKeyParameter = diagnosisKey != null ?
+                new ObjectParameter("diagnosisKey", diagnosisKey) :
+                new ObjectParameter("diagnosisKey", typeof(string));
+    
+            var endYearStParameter = endYearSt != null ?
+                new ObjectParameter("endYearSt", endYearSt) :
+                new ObjectParameter("endYearSt", typeof(string));
+    
+            var endYearEdParameter = endYearEd != null ?
+                new ObjectParameter("endYearEd", endYearEd) :
+                new ObjectParameter("endYearEd", typeof(string));
+    
+            var ageStParameter = ageSt != null ?
+                new ObjectParameter("ageSt", ageSt) :
+                new ObjectParameter("ageSt", typeof(string));
+    
+            var ageEdParameter = ageEd != null ?
+                new ObjectParameter("ageEd", ageEd) :
+                new ObjectParameter("ageEd", typeof(string));
+    
+            var genderParameter = gender != null ?
+                new ObjectParameter("gender", gender) :
+                new ObjectParameter("gender", typeof(string));
+    
+            var bloodParameter = blood.HasValue ?
+                new ObjectParameter("blood", blood) :
+                new ObjectParameter("blood", typeof(bool));
+    
+            var frozenTissueParameter = frozenTissue.HasValue ?
+                new ObjectParameter("frozenTissue", frozenTissue) :
+                new ObjectParameter("frozenTissue", typeof(bool));
+    
+            var paraffinSectionParameter = paraffinSection.HasValue ?
+                new ObjectParameter("paraffinSection", paraffinSection) :
+                new ObjectParameter("paraffinSection", typeof(bool));
+    
+            var urineParameter = urine.HasValue ?
+                new ObjectParameter("urine", urine) :
+                new ObjectParameter("urine", typeof(bool));
+    
+            var pleuraleffusionParameter = pleuraleffusion.HasValue ?
+                new ObjectParameter("pleuraleffusion", pleuraleffusion) :
+                new ObjectParameter("pleuraleffusion", typeof(bool));
+    
+            var ascitesParameter = ascites.HasValue ?
+                new ObjectParameter("ascites", ascites) :
+                new ObjectParameter("ascites", typeof(bool));
+    
+            var boneMarrowParameter = boneMarrow.HasValue ?
+                new ObjectParameter("boneMarrow", boneMarrow) :
+                new ObjectParameter("boneMarrow", typeof(bool));
+    
+            var cSFParameter = cSF.HasValue ?
+                new ObjectParameter("CSF", cSF) :
+                new ObjectParameter("CSF", typeof(bool));
+    
+            var caseTimesParameter = caseTimes.HasValue ?
+                new ObjectParameter("caseTimes", caseTimes) :
+                new ObjectParameter("caseTimes", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal", hospIdParameter, hospitalIdParameter, regionKeyParameter, diagnosisKeyParameter, endYearStParameter, endYearEdParameter, ageStParameter, ageEdParameter, genderParameter, bloodParameter, frozenTissueParameter, paraffinSectionParameter, urineParameter, pleuraleffusionParameter, ascitesParameter, boneMarrowParameter, cSFParameter, caseTimesParameter);
         }
     
-        public virtual ObjectResult<GetTotal_Result> GetTotal_Result(string hospitalId)
+        public virtual ObjectResult<GetTotal_Result> GetTotal_Result(string hospId, string hospitalId, string regionKey, string diagnosisKey, string endYearSt, string endYearEd, string ageSt, string ageEd, string gender, Nullable<bool> blood, Nullable<bool> frozenTissue, Nullable<bool> paraffinSection, Nullable<bool> urine, Nullable<bool> pleuraleffusion, Nullable<bool> ascites, Nullable<bool> boneMarrow, Nullable<bool> cSF, Nullable<int> caseTimes)
         {
+            var hospIdParameter = hospId != null ?
+                new ObjectParameter("hospId", hospId) :
+                new ObjectParameter("hospId", typeof(string));
+    
             var hospitalIdParameter = hospitalId != null ?
                 new ObjectParameter("hospitalId", hospitalId) :
                 new ObjectParameter("hospitalId", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal_Result", hospitalIdParameter);
+            var regionKeyParameter = regionKey != null ?
+                new ObjectParameter("regionKey", regionKey) :
+                new ObjectParameter("regionKey", typeof(string));
+    
+            var diagnosisKeyParameter = diagnosisKey != null ?
+                new ObjectParameter("diagnosisKey", diagnosisKey) :
+                new ObjectParameter("diagnosisKey", typeof(string));
+    
+            var endYearStParameter = endYearSt != null ?
+                new ObjectParameter("endYearSt", endYearSt) :
+                new ObjectParameter("endYearSt", typeof(string));
+    
+            var endYearEdParameter = endYearEd != null ?
+                new ObjectParameter("endYearEd", endYearEd) :
+                new ObjectParameter("endYearEd", typeof(string));
+    
+            var ageStParameter = ageSt != null ?
+                new ObjectParameter("ageSt", ageSt) :
+                new ObjectParameter("ageSt", typeof(string));
+    
+            var ageEdParameter = ageEd != null ?
+                new ObjectParameter("ageEd", ageEd) :
+                new ObjectParameter("ageEd", typeof(string));
+    
+            var genderParameter = gender != null ?
+                new ObjectParameter("gender", gender) :
+                new ObjectParameter("gender", typeof(string));
+    
+            var bloodParameter = blood.HasValue ?
+                new ObjectParameter("blood", blood) :
+                new ObjectParameter("blood", typeof(bool));
+    
+            var frozenTissueParameter = frozenTissue.HasValue ?
+                new ObjectParameter("frozenTissue", frozenTissue) :
+                new ObjectParameter("frozenTissue", typeof(bool));
+    
+            var paraffinSectionParameter = paraffinSection.HasValue ?
+                new ObjectParameter("paraffinSection", paraffinSection) :
+                new ObjectParameter("paraffinSection", typeof(bool));
+    
+            var urineParameter = urine.HasValue ?
+                new ObjectParameter("urine", urine) :
+                new ObjectParameter("urine", typeof(bool));
+    
+            var pleuraleffusionParameter = pleuraleffusion.HasValue ?
+                new ObjectParameter("pleuraleffusion", pleuraleffusion) :
+                new ObjectParameter("pleuraleffusion", typeof(bool));
+    
+            var ascitesParameter = ascites.HasValue ?
+                new ObjectParameter("ascites", ascites) :
+                new ObjectParameter("ascites", typeof(bool));
+    
+            var boneMarrowParameter = boneMarrow.HasValue ?
+                new ObjectParameter("boneMarrow", boneMarrow) :
+                new ObjectParameter("boneMarrow", typeof(bool));
+    
+            var cSFParameter = cSF.HasValue ?
+                new ObjectParameter("CSF", cSF) :
+                new ObjectParameter("CSF", typeof(bool));
+    
+            var caseTimesParameter = caseTimes.HasValue ?
+                new ObjectParameter("caseTimes", caseTimes) :
+                new ObjectParameter("caseTimes", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotal_Result>("GetTotal_Result", hospIdParameter, hospitalIdParameter, regionKeyParameter, diagnosisKeyParameter, endYearStParameter, endYearEdParameter, ageStParameter, ageEdParameter, genderParameter, bloodParameter, frozenTissueParameter, paraffinSectionParameter, urineParameter, pleuraleffusionParameter, ascitesParameter, boneMarrowParameter, cSFParameter, caseTimesParameter);
         }
     
         public virtual ObjectResult<GetDifferentTotal_Result> GetDifferentTotal_Result(Nullable<System.Guid> hospitalId)

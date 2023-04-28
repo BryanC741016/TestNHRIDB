@@ -25,7 +25,7 @@ namespace NHRIDB_DAL.DAL
             _SysLog.userName = userName;
 
             _db.SysLog.Add(_SysLog);
-            _db.SaveChanges();
+            _db.SaveChanges();            
         }
 
         public void DeleteSixMonths()

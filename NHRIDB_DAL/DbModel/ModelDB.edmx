@@ -90,7 +90,7 @@
           </Key>
           <Property Name="id" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="createtime" Type="datetime" />
-          <Property Name="evettype" Type="nvarchar" MaxLength="20" />
+          <Property Name="evettype" Type="nvarchar" MaxLength="50" />
           <Property Name="ip" Type="nvarchar" MaxLength="50" />
           <Property Name="userName" Type="nvarchar" MaxLength="50" />
         </EntityType>
@@ -332,7 +332,24 @@
           <Parameter Name="count" Type="int" Mode="In" />
         </Function>
         <Function Name="GetTotal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="hospId" Type="varchar(max)" Mode="In" />
           <Parameter Name="hospitalId" Type="varchar(max)" Mode="In" />
+          <Parameter Name="regionKey" Type="varchar(max)" Mode="In" />
+          <Parameter Name="diagnosisKey" Type="varchar(max)" Mode="In" />
+          <Parameter Name="endYearSt" Type="varchar(max)" Mode="In" />
+          <Parameter Name="endYearEd" Type="varchar(max)" Mode="In" />
+          <Parameter Name="ageSt" Type="varchar(max)" Mode="In" />
+          <Parameter Name="ageEd" Type="varchar(max)" Mode="In" />
+          <Parameter Name="gender" Type="varchar(max)" Mode="In" />
+          <Parameter Name="blood" Type="bit" Mode="In" />
+          <Parameter Name="frozenTissue" Type="bit" Mode="In" />
+          <Parameter Name="paraffinSection" Type="bit" Mode="In" />
+          <Parameter Name="urine" Type="bit" Mode="In" />
+          <Parameter Name="pleuraleffusion" Type="bit" Mode="In" />
+          <Parameter Name="ascites" Type="bit" Mode="In" />
+          <Parameter Name="boneMarrow" Type="bit" Mode="In" />
+          <Parameter Name="CSF" Type="bit" Mode="In" />
+          <Parameter Name="caseTimes" Type="int" Mode="In" />
         </Function>
         <Function Name="SetUnLockUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="userName" Type="varchar(max)" Mode="In" />
@@ -406,11 +423,45 @@
           <Parameter Name="hospitalId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-          <Parameter Name="hospitalId" Mode="In" Type="String" />
+          <Parameter Name="hospId" Mode="In" Type="String" />
+            <Parameter Name="hospitalId" Mode="In" Type="String" />
+            <Parameter Name="regionKey" Mode="In" Type="String" />
+            <Parameter Name="diagnosisKey" Mode="In" Type="String" />
+            <Parameter Name="endYearSt" Mode="In" Type="String" />
+            <Parameter Name="endYearEd" Mode="In" Type="String" />
+            <Parameter Name="ageSt" Mode="In" Type="String" />
+            <Parameter Name="ageEd" Mode="In" Type="String" />
+            <Parameter Name="gender" Mode="In" Type="String" />
+            <Parameter Name="blood" Mode="In" Type="Boolean" />
+            <Parameter Name="frozenTissue" Mode="In" Type="Boolean" />
+            <Parameter Name="paraffinSection" Mode="In" Type="Boolean" />
+            <Parameter Name="urine" Mode="In" Type="Boolean" />
+            <Parameter Name="pleuraleffusion" Mode="In" Type="Boolean" />
+            <Parameter Name="ascites" Mode="In" Type="Boolean" />
+            <Parameter Name="boneMarrow" Mode="In" Type="Boolean" />
+            <Parameter Name="CSF" Mode="In" Type="Boolean" />
+            <Parameter Name="caseTimes" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="TemplateExcelUpDataRecord" EntityType="NHRIDBModel.TemplateExcelUpDataRecord" />
           <FunctionImport Name="GetTotal_Result" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-          <Parameter Name="hospitalId" Mode="In" Type="String" />
+          <Parameter Name="hospId" Mode="In" Type="String" />
+            <Parameter Name="hospitalId" Mode="In" Type="String" />
+            <Parameter Name="regionKey" Mode="In" Type="String" />
+            <Parameter Name="diagnosisKey" Mode="In" Type="String" />
+            <Parameter Name="endYearSt" Mode="In" Type="String" />
+            <Parameter Name="endYearEd" Mode="In" Type="String" />
+            <Parameter Name="ageSt" Mode="In" Type="String" />
+            <Parameter Name="ageEd" Mode="In" Type="String" />
+            <Parameter Name="gender" Mode="In" Type="String" />
+            <Parameter Name="blood" Mode="In" Type="Boolean" />
+            <Parameter Name="frozenTissue" Mode="In" Type="Boolean" />
+            <Parameter Name="paraffinSection" Mode="In" Type="Boolean" />
+            <Parameter Name="urine" Mode="In" Type="Boolean" />
+            <Parameter Name="pleuraleffusion" Mode="In" Type="Boolean" />
+            <Parameter Name="ascites" Mode="In" Type="Boolean" />
+            <Parameter Name="boneMarrow" Mode="In" Type="Boolean" />
+            <Parameter Name="CSF" Mode="In" Type="Boolean" />
+            <Parameter Name="caseTimes" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetDifferentTotal_Result" ReturnType="Collection(NHRIDBModel.GetDifferentTotal_Result)">
           <Parameter Name="hospitalId" Mode="In" Type="Guid" />
@@ -427,7 +478,6 @@
           </AssociationSet>
           <EntitySet Name="TubeDataLog" EntityType="NHRIDBModel.TubeDataLog" />
           <EntitySet Name="ErrorLog" EntityType="NHRIDBModel.ErrorLog" />
-          <EntitySet Name="SysLog" EntityType="NHRIDBModel.SysLog" />
           <EntitySet Name="UserLog" EntityType="NHRIDBModel.UserLog" />
           <EntitySet Name="User" EntityType="NHRIDBModel.User" />
           <AssociationSet Name="FK_User_GroupUser" Association="NHRIDBModel.FK_User_GroupUser">
@@ -438,6 +488,7 @@
             <End Role="Hospital" EntitySet="Hospital" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
+          <EntitySet Name="SysLog" EntityType="NHRIDBModel.SysLog" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -789,16 +840,6 @@
           <Property Name="message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="stacktrace" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="SysLog">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="createtime" Type="DateTime" Precision="3" />
-          <Property Name="evettype" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="ip" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="Id" />
@@ -854,6 +895,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="SysLog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="createtime" Type="DateTime" Precision="3" />
+          <Property Name="evettype" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ip" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1216,17 +1267,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SysLog">
-            <EntityTypeMapping TypeName="NHRIDBModel.SysLog">
-              <MappingFragment StoreEntitySet="SysLog">
-                <ScalarProperty Name="userName" ColumnName="userName" />
-                <ScalarProperty Name="ip" ColumnName="ip" />
-                <ScalarProperty Name="evettype" ColumnName="evettype" />
-                <ScalarProperty Name="createtime" ColumnName="createtime" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="UserLog">
             <EntityTypeMapping TypeName="NHRIDBModel.UserLog">
               <MappingFragment StoreEntitySet="UserLog">
@@ -1251,6 +1291,17 @@
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="userName" ColumnName="userName" />
                 <ScalarProperty Name="userId" ColumnName="userId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SysLog">
+            <EntityTypeMapping TypeName="NHRIDBModel.SysLog">
+              <MappingFragment StoreEntitySet="SysLog">
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="evettype" ColumnName="evettype" />
+                <ScalarProperty Name="createtime" ColumnName="createtime" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
