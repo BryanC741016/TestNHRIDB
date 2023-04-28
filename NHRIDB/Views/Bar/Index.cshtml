@@ -11,16 +11,87 @@
         border: solid 1px #ccc;
     }
 </style>
- 
- 
-<label>醫院：</label>
-@if (Model.leapProject)
+
+<script src="~/Scripts/bootstrap.bundle.min.js"></script>
+
+@using (Html.BeginForm("Index", "Bar", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>, "全部")
-}
-else
-{
-    @Model.selfHos.name_tw
+    if (Model.leapProject)
+    {
+        <label>醫院：</label>
+        @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>, "全部")
+    }
+    <br />
+<a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">進階查詢</a>
+    <br />
+    <div class="row">
+        <div class="col">
+            <br />
+            <div class="collapse multi-collapse" id="multiCollapseExample1">
+                <div class="card card-body">
+                    @if (Model.leapProject)
+                    {
+                        <div class="formPanel">
+                            @Html.LabelFor(e => e.conditions.regionKey)
+                            @Html.TextBoxFor(e => e.conditions.regionKey)
+
+                            @Html.LabelFor(e => e.conditions.diagnosisKey)
+                            @Html.TextBoxFor(e => e.conditions.diagnosisKey)
+
+                            @Html.LabelFor(e => e.conditions.endYearSt)
+                            @Html.DropDownListFor(e => e.conditions.endYearSt, Model.endYearSelect)
+
+                            @Html.LabelFor(e => e.conditions.endYearEd)
+                            @Html.DropDownListFor(e => e.conditions.endYearEd, Model.endYearSelect.Select(f =>
+                                new SelectListItem
+                                     {
+                                    Text = f.Text,
+                                    Value = f.Value,
+                                    Selected = f.Value == DateTime.Now.Year.ToString() ? true : false
+                                }))
+
+                            @Html.LabelFor(e => e.conditions.ageSt)
+                            @Html.DropDownListFor(e => e.conditions.ageSt, Model.ageSelect)
+
+                            @Html.LabelFor(e => e.conditions.ageEt)
+                            @Html.DropDownListFor(e => e.conditions.ageEt, Model.ageSelect.Select(f =>
+                                new SelectListItem
+                                {
+                                    Text = f.Text,
+                                    Value = f.Value,
+                                    Selected = f.Value == Model.ageSelect.Max(f1 => int.Parse(f1.Value)).ToString() ? true : false
+                                }))
+
+                            @Html.LabelFor(e => e.conditions.gender)
+                            <div>
+                                @Html.DropDownListFor(e => e.conditions.gender, Model.genderSelect)
+                            </div>
+
+                            @Html.LabelFor(e => e.conditions.caseTimes)
+                            @Html.DropDownListFor(e => e.conditions.caseTimes, Model.caseTimesSelect.Select(f =>
+                       new SelectListItem
+                            {
+                                Text = f.Text,
+                                Value = f.Value,
+                                Selected = (f.Value == "3" ? true : false)
+                       }))
+
+                            @Html.Label("檢體種類")
+                            @Form.CheckBoxList("specimen", Model.specimenSelect)
+                        </div>
+                        @Html.HiddenFor(e => e.leapProject)
+                    }
+                    else
+                    {
+                        @Model.selfHos.name_tw
+                    }
+                    <button class="btn" type="submit">查詢</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
 }
 <table class="table table-hover">
     <thead>
@@ -38,39 +109,42 @@ else
 
         </tr>
     </thead>
-    <tbody>
-        @for (int i = 0; i < Model.datas.Count; i++)
-        {
-            var item = Model.datas[i];
-        <tr>
-            <td>
-                @item.rName
-            </td>
-            <td>
-                @item.dName
-            </td>
-            @foreach (var column in Model.columns)
+    @if (Model.datas != null && Model.datas.Count > 0)
+    {
+        <tbody>
+            @for (int i = 0; i < Model.datas.Count; i++)
             {
+                var item = Model.datas[i];
+                <tr>
+                    <td>
+                        @item.rName
+                    </td>
+                    <td>
+                        @item.dName
+                    </td>
+                    @foreach (var column in Model.columns)
+                    {
 
-                var value = item.GetType().GetProperty(column.Name).GetValue(item);
+                        var value = item.GetType().GetProperty(column.Name).GetValue(item);
 
 
-                <td>
-                    @value
+                        <td>
+                            @value
 
-                </td>
+                        </td>
 
 
 
+                    }
+                </tr>
             }
-        </tr>
-        }
-    </tbody>
+        </tbody>
+    }
 </table>
- 
+
 <script>
     $("#hosId").on("change", function (e) {
         window.location = "@Url.Action("Index")?hosId=" + $(this).val();
     });
-   
+
 </script>
