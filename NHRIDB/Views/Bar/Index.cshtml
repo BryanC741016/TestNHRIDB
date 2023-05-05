@@ -21,16 +21,18 @@
         <label>醫院：</label>
         @Html.DropDownList("hosId", Model.hospitalSelect as IEnumerable<SelectListItem>, "全部")
     }
+    else
+    {
+        @Model.selfHos.name_tw
+    }
     <br />
-<a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">進階查詢</a>
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">進階查詢</a>
     <br />
     <div class="row">
         <div class="col">
             <br />
             <div class="collapse multi-collapse" id="multiCollapseExample1">
                 <div class="card card-body">
-                    @if (Model.leapProject)
-                    {
                         <div class="formPanel">
                             @Html.LabelFor(e => e.conditions.regionKey)
                             @Html.TextBoxFor(e => e.conditions.regionKey)
@@ -80,11 +82,6 @@
                             @Form.CheckBoxList("specimen", Model.specimenSelect)
                         </div>
                         @Html.HiddenFor(e => e.leapProject)
-                    }
-                    else
-                    {
-                        @Model.selfHos.name_tw
-                    }
                     <button class="btn" type="submit">查詢</button>
                 </div>
             </div>
