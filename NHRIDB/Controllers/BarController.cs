@@ -30,12 +30,10 @@ namespace NHRIDB.Controllers
         {
             BarViewModel model = new BarViewModel();
 
-            model.conditions.hospitalId = hosId;
-            model.conditions.hosId = Guid.NewGuid();
-            //model.hosId = hosId;
             model.conditions.caseTimes = 1;
             model.leapProject = _leapProject;
             model.selfHos = _hospitalDA.GetHospital(_hos);
+            model.conditions.hosId = model.selfHos.id;
             model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
             model.genderSelect = new List<SelectListItem>
             {
@@ -79,12 +77,26 @@ namespace NHRIDB.Controllers
                 new SelectListItem { Text = "骨髓液" ,Value = "boneMarrow", Selected = Request.Form["specimen"] == null? false: Request.Form["specimen"].IndexOf("boneMarrow") >= 0?true:false},
                 new SelectListItem { Text = "腦脊髓液" , Value = "CSF", Selected = Request.Form["specimen"] == null? false: Request.Form["specimen"].IndexOf("CSF") >= 0?true:false}
             };
+
+            if(hosId != null)
+            //if (Request.Form["hosId"] != null && !string.IsNullOrEmpty(Request.Form["hosId"]))
+            {
+                //model.conditions.hospitalId = model.selfHos.id;
+                model.conditions.hospitalId = hosId;
+            }
+            else
+            {
+                //model.conditions.hospitalId = _hos;
+                model.conditions.hospitalId = model.selfHos.id;
+            }
+
             model.datas = _tubeTotal.GetTotal(model.conditions);
             model.columns = _tubeTotal.GetColummns();
 
             return View(model);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Index(BarViewModel model)
         {
             model.selfHos = _hospitalDA.GetHospital(_hos);
@@ -144,10 +156,10 @@ namespace NHRIDB.Controllers
             {
                 model.conditions.hospitalId = Guid.Parse(Request.Form["hosId"]);
             }
-            //else
-            //{
-            //    model.conditions.hospitalId = _hos;
-            //}
+            else
+            {
+                model.conditions.hospitalId = _hos;
+            }
             model.datas = _tubeTotal.GetTotal(model.conditions);
 
             model.columns = _tubeTotal.GetColummns();

@@ -197,7 +197,18 @@ namespace NHRIDB.Controllers
                 StrAllMsg = "檔案轉換失敗,請確定檔案格式是否正確";
                 isSuccess = false;
 
-                System.IO.File.Delete(path);
+                NHRIDBEntitiesDB _db;
+                ErrorLogDA _ErrorLogDA;
+                _db = new NHRIDBEntitiesDB();
+                _ErrorLogDA = new ErrorLogDA(_db);
+                string id = DateTime.Now.ToString("yyyyMMddHHmmss") + Convert.ToString(System.Web.HttpContext.Current.Session["name"]);
+                string message = string.Empty;
+                if (e.InnerException != null)
+                {
+                    message = e.Message + Environment.NewLine + e.InnerException.Message;
+                }
+                _ErrorLogDA.Create(id: id, controller: string.Empty, action: string.Empty, message: message, stacktrace: e.StackTrace);
+
                 return Index(StrAllMsg, hosId);
             }
 
@@ -274,9 +285,9 @@ namespace NHRIDB.Controllers
             _SysLogDA.Create(evettype: "匯入檔寫入", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
 
             //移動至正式目錄
-            string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
-            System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(),"")));          
-           
+            //string dpath = Server.MapPath("~/Upload/" + model.hId.ToString());
+            //System.IO.File.Move(path, Path.Combine(dpath, model.fileName.Replace(model.hId.ToString(), "")));
+
             return RedirectToAction("Different",new { hId=model.hId, isSuccess = _DataSaveAns.isSuccess, StrMesage = _DataSaveAns.StrMsg });
         }
 
@@ -395,8 +406,9 @@ namespace NHRIDB.Controllers
             //DataTable tb = _dataTubeDA.GetEmptyDataTable();
             if(TempData["dataErr"]!= null)
             {
-                ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
-                table.Add(importView.dataErr);
+                //ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
+                ViewDatasViewModel importView = (TempData["dataErr"] as ViewDatasViewModel);
+                //table.Add(importView.dataErr);
 
                 //DataTable tb2 = _rLinkDDA.GetDataTable();
                 //table.Add(tb2);

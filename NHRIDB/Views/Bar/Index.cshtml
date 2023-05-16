@@ -16,6 +16,7 @@
 
 @using (Html.BeginForm("Index", "Bar", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.AntiForgeryToken()
     if (Model.leapProject)
     {
         <label>醫院：</label>
@@ -33,55 +34,55 @@
             <br />
             <div class="collapse multi-collapse" id="multiCollapseExample1">
                 <div class="card card-body">
-                        <div class="formPanel">
-                            @Html.LabelFor(e => e.conditions.regionKey)
-                            @Html.TextBoxFor(e => e.conditions.regionKey)
+                    <div class="formPanel">
+                        @Html.LabelFor(e => e.conditions.regionKey)
+                        @Html.TextBoxFor(e => e.conditions.regionKey)
 
-                            @Html.LabelFor(e => e.conditions.diagnosisKey)
-                            @Html.TextBoxFor(e => e.conditions.diagnosisKey)
+                        @Html.LabelFor(e => e.conditions.diagnosisKey)
+                        @Html.TextBoxFor(e => e.conditions.diagnosisKey)
 
-                            @Html.LabelFor(e => e.conditions.endYearSt)
-                            @Html.DropDownListFor(e => e.conditions.endYearSt, Model.endYearSelect)
+                        @Html.LabelFor(e => e.conditions.endYearSt)
+                        @Html.DropDownListFor(e => e.conditions.endYearSt, Model.endYearSelect)
 
-                            @Html.LabelFor(e => e.conditions.endYearEd)
-                            @Html.DropDownListFor(e => e.conditions.endYearEd, Model.endYearSelect.Select(f =>
-                                new SelectListItem
-                                     {
-                                    Text = f.Text,
-                                    Value = f.Value,
-                                    Selected = f.Value == DateTime.Now.Year.ToString() ? true : false
-                                }))
+                        @Html.LabelFor(e => e.conditions.endYearEd)
+                        @Html.DropDownListFor(e => e.conditions.endYearEd, Model.endYearSelect.Select(f =>
+                            new SelectListItem
+                                 {
+                                Text = f.Text,
+                                Value = f.Value,
+                                Selected = f.Value == DateTime.Now.Year.ToString() ? true : false
+                            }))
 
-                            @Html.LabelFor(e => e.conditions.ageSt)
-                            @Html.DropDownListFor(e => e.conditions.ageSt, Model.ageSelect)
+                        @Html.LabelFor(e => e.conditions.ageSt)
+                        @Html.DropDownListFor(e => e.conditions.ageSt, Model.ageSelect)
 
-                            @Html.LabelFor(e => e.conditions.ageEt)
-                            @Html.DropDownListFor(e => e.conditions.ageEt, Model.ageSelect.Select(f =>
-                                new SelectListItem
-                                {
-                                    Text = f.Text,
-                                    Value = f.Value,
-                                    Selected = f.Value == Model.ageSelect.Max(f1 => int.Parse(f1.Value)).ToString() ? true : false
-                                }))
-
-                            @Html.LabelFor(e => e.conditions.gender)
-                            <div>
-                                @Html.DropDownListFor(e => e.conditions.gender, Model.genderSelect)
-                            </div>
-
-                            @Html.LabelFor(e => e.conditions.caseTimes)
-                            @Html.DropDownListFor(e => e.conditions.caseTimes, Model.caseTimesSelect.Select(f =>
-                       new SelectListItem
+                        @Html.LabelFor(e => e.conditions.ageEt)
+                        @Html.DropDownListFor(e => e.conditions.ageEt, Model.ageSelect.Select(f =>
+                            new SelectListItem
                             {
                                 Text = f.Text,
                                 Value = f.Value,
-                                Selected = (f.Value == "3" ? true : false)
-                       }))
+                                Selected = f.Value == Model.ageSelect.Max(f1 => int.Parse(f1.Value)).ToString() ? true : false
+                            }))
 
-                            @Html.Label("檢體種類")
-                            @Form.CheckBoxList("specimen", Model.specimenSelect)
+                        @Html.LabelFor(e => e.conditions.gender)
+                        <div>
+                            @Html.DropDownListFor(e => e.conditions.gender, Model.genderSelect)
                         </div>
-                        @Html.HiddenFor(e => e.leapProject)
+
+                        @Html.LabelFor(e => e.conditions.caseTimes)
+                        @Html.DropDownListFor(e => e.conditions.caseTimes, Model.caseTimesSelect.Select(f =>
+                   new SelectListItem
+                        {
+                            Text = f.Text,
+                            Value = f.Value,
+                            Selected = (f.Value == "3" ? true : false)
+                   }))
+
+                        @Html.Label("檢體種類")
+                        @Form.CheckBoxList("specimen", Model.specimenSelect)
+                    </div>
+                    @Html.HiddenFor(e => e.leapProject)
                     <button class="btn" type="submit">查詢</button>
                 </div>
             </div>

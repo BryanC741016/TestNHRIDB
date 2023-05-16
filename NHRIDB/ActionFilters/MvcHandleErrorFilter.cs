@@ -42,7 +42,7 @@ namespace NHRIDB.ActionFilters
 
             filterContext.Result = new ViewResult
             {
-                ViewName = "/Views/Shared/Error.cshtml",
+                ViewName = "~/Views/Shared/Error.cshtml",
                 //MasterName = this.Master,
                 ViewData = viewData,
                 TempData = filterContext.Controller.TempData
