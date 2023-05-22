@@ -17,7 +17,7 @@
         imgs.Add(paurl);
     }
 }
- 
+@ViewBag.headerInfo
  <div class="errorMsg" style="font-size:22px"> @Model.message</div>
 @if (!Model.isLock)
 {
@@ -57,9 +57,9 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post))
             }
         </div>
     }
-} 
+}
 
-<script>
+<script nonce="cm1vaw==">
     $(function () {
         // _LoginPartial.cshtml->sitjs.js
         $("#showCode").numcode({

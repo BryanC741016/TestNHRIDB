@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "總結數量";
 }
-<style>
+<style nonce="cm1vaw==">
     td {
         border: solid 1px #fff;
     }
@@ -12,7 +12,7 @@
     }
 </style>
 
-<script src="~/Scripts/bootstrap.bundle.min.js"></script>
+<script nonce="cm1vaw==" src="~/Scripts/bootstrap.bundle.min.js"></script>
 
 @using (Html.BeginForm("Index", "Bar", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -140,7 +140,7 @@
     }
 </table>
 
-<script>
+<script nonce="cm1vaw==">
     $("#hosId").on("change", function (e) {
         window.location = "@Url.Action("Index")?hosId=" + $(this).val();
     });
