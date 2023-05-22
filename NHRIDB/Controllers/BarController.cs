@@ -38,7 +38,8 @@ namespace NHRIDB.Controllers
             model.genderSelect = new List<SelectListItem>
             {
                 new SelectListItem { Text = "男" , Value = "M" },
-                new SelectListItem { Text = "女" , Value = "F" }
+                new SelectListItem { Text = "女" , Value = "F" },
+                new SelectListItem { Text = "不限" , Value = string.Empty, Selected = true }
             };
             model.ageSelect = new List<SelectListItem>();
             for (int i = 1; i <= 100; i++)
@@ -104,7 +105,8 @@ namespace NHRIDB.Controllers
             model.genderSelect = new List<SelectListItem>
             {
                 new SelectListItem { Text = "男" , Value = "M" },
-                new SelectListItem { Text = "女" , Value = "F" }
+                new SelectListItem { Text = "女" , Value = "F" },
+                new SelectListItem { Text = "不限" , Value = string.Empty, Selected = true }
             };
             model.ageSelect = new List<SelectListItem>();
             for (int i = 1; i <= 100; i++)
