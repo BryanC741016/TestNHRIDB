@@ -27,15 +27,19 @@ namespace NHRIDB_DAL.DAL
               .ToList();
         }
 
-        public List<GetTotal_Result> GetTotal(Nullable<Guid> hospitalId) {
+        public List<GetTotal_Result> GetTotal(Nullable<Guid> hospitalId)
+        {
             if (hospitalId.HasValue)
             {
-                return _db.GetTotal(hospitalId.Value.ToString()).ToList();
+                //return _db.GetTotal(hospitalId.Value.ToString()).ToList();
+                return new List<GetTotal_Result>();
             }
-            else {
-                return _db.GetTotal("").ToList();
+            else
+            {
+                //return _db.GetTotal("").ToList();
+                return new List<GetTotal_Result>();
             }
-          
+
         }
 
         public List<GetDifferentTotal_Result> GetDifferent(Guid hospitalId)
