@@ -238,6 +238,7 @@
     <Content Include="images\tree_upload.png" />
     <Content Include="images\user.png" />
     <Content Include="Scripts\ajax.js" />
+    <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="fonts\context-menu-icons.eot" />

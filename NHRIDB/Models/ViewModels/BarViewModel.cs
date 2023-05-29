@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace NHRIDB.Models.ViewModels
 {
@@ -21,9 +22,19 @@ namespace NHRIDB.Models.ViewModels
         public List<GetTotal_Result> datas { get; set; }
 
         public List<InfoColummns> columns { get; set; }
+        public List<SelectListItem> specimenSelect { get; set; }
+        public List<SelectListItem> genderSelect { get; set; }
+        public List<SelectListItem> ageSelect { get; set; }
+        public List<SelectListItem> ageStSelect { get; set; }
+        public List<SelectListItem> endYearSelect { get; set; }
+        public List<SelectListItem> caseTimesSelect { get; set; }
+        public NHRIDB_DAL.DAL.BarTubeDataType conditions { get; set; }
+        public BarViewModel()
+        {
+            conditions = new NHRIDB_DAL.DAL.BarTubeDataType();
+        }
     }
 
-    
 
 
 }

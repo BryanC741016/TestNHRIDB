@@ -154,7 +154,6 @@
           <Property Name="DNA_WES" Type="bit" Nullable="false" />
           <Property Name="DNA_pannel" Type="bit" Nullable="false" />
           <Property Name="RNA" Type="bit" Nullable="false" />
-          <Property Name="bloodRNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TubeDataLog">
           <Key>
@@ -212,7 +211,6 @@
           <Property Name="DNA_WES" Type="bit" Nullable="false" />
           <Property Name="DNA_pannel" Type="bit" Nullable="false" />
           <Property Name="RNA" Type="bit" Nullable="false" />
-          <Property Name="bloodRNA" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -423,7 +421,7 @@
           <Parameter Name="hospitalId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="GetTotal" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-          <Parameter Name="hospId" Mode="In" Type="String" />
+            <Parameter Name="hospId" Mode="In" Type="String" />
             <Parameter Name="hospitalId" Mode="In" Type="String" />
             <Parameter Name="regionKey" Mode="In" Type="String" />
             <Parameter Name="diagnosisKey" Mode="In" Type="String" />
@@ -444,7 +442,7 @@
           </FunctionImport>
           <EntitySet Name="TemplateExcelUpDataRecord" EntityType="NHRIDBModel.TemplateExcelUpDataRecord" />
           <FunctionImport Name="GetTotal_Result" ReturnType="Collection(NHRIDBModel.GetTotal_Result)">
-          <Parameter Name="hospId" Mode="In" Type="String" />
+            <Parameter Name="hospId" Mode="In" Type="String" />
             <Parameter Name="hospitalId" Mode="In" Type="String" />
             <Parameter Name="regionKey" Mode="In" Type="String" />
             <Parameter Name="diagnosisKey" Mode="In" Type="String" />
@@ -739,7 +737,7 @@
           <Property Name="RNA" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hospital" Relationship="NHRIDBModel.FK_TubeData_Hospital" FromRole="TubeData" ToRole="Hospital" />
           <NavigationProperty Name="RLinkD" Relationship="NHRIDBModel.FK_TubeData_RLinkD" FromRole="TubeData" ToRole="RLinkD" />
-          <Property Name="bloodRNA" Type="Boolean" Nullable="false" />
+          <!--<Property Name="bloodRNA" Type="Boolean" Nullable="false" />-->
         </EntityType>
         <Association Name="FK_TubeData_Hospital">
           <End Type="NHRIDBModel.Hospital" Role="Hospital" Multiplicity="1">
@@ -827,7 +825,7 @@
           <Property Name="DNA_WES" Type="Boolean" Nullable="false" />
           <Property Name="DNA_pannel" Type="Boolean" Nullable="false" />
           <Property Name="RNA" Type="Boolean" Nullable="false" />
-          <Property Name="bloodRNA" Type="Boolean" Nullable="false" />
+          <!--<Property Name="bloodRNA" Type="Boolean" Nullable="false" />-->
         </EntityType>
         <EntityType Name="ErrorLog">
           <Key>
@@ -1155,7 +1153,6 @@
           <EntitySetMapping Name="TubeData">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeData">
               <MappingFragment StoreEntitySet="TubeData">
-                <ScalarProperty Name="bloodRNA" ColumnName="bloodRNA" />
                 <ScalarProperty Name="RNA" ColumnName="RNA" />
                 <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
                 <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
@@ -1206,7 +1203,7 @@
           <EntitySetMapping Name="TubeDataLog">
             <EntityTypeMapping TypeName="NHRIDBModel.TubeDataLog">
               <MappingFragment StoreEntitySet="TubeDataLog">
-                <ScalarProperty Name="bloodRNA" ColumnName="bloodRNA" />
+                <!--<ScalarProperty Name="bloodRNA" ColumnName="bloodRNA" />-->
                 <ScalarProperty Name="RNA" ColumnName="RNA" />
                 <ScalarProperty Name="DNA_pannel" ColumnName="DNA_pannel" />
                 <ScalarProperty Name="DNA_WES" ColumnName="DNA_WES" />
