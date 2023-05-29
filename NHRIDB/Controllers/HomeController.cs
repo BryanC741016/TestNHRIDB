@@ -47,6 +47,7 @@ namespace NHRIDB.Controllers
         // GET: Account
         public ActionResult Index()
         {
+            #region Send Email Test
             //MailData mailData = new MailData();
             //mailData.Set_StrSubject("Test");
             //mailData.Set_StrBody("TestA");
@@ -64,12 +65,7 @@ namespace NHRIDB.Controllers
             //// emailUserName:RTE置換排程 發送E-MAIL主機帳號 sdservice
             //// emailPassword:RTE置換排程 發送E-MAIL主機帳號密碼 Rh#T53f
             //// port:25 RTE置換排程 發送E-MAIL主機port 25
-
-
-
-
-
-
+            #endregion
 
             LoginViewModel model = new LoginViewModel();
             model.imgUrl = new List<string>();
@@ -120,29 +116,52 @@ namespace NHRIDB.Controllers
 
             if (logLoginDA.HasLock(_set.errorOutCount,model.userName))
             {
+                /*
+                 * model.userName->找同醫院 + 等級為主管級 + 不是自已的->迴圈寄信
+                 */
+                #region Get Send Emails And Send Email
+                List<User> _LitSendUser = new List<User>();
+                List<User> _ListUsers = uda.GetQuery().ToList();
+                User userLock = uda.HasQuery(model.userName, model.passwd);
 
+                GroupDA _GroupDA = new GroupDA(db);
+                List<GroupUser> _LitGroupUser = _GroupDA.GetQuery(gName: "主管理者").ToList();
+                Guid groupId = _LitGroupUser.Count > 0 ? _LitGroupUser[0].groupId : new Guid();
 
+                if (userLock !=null)
+                {
+                    foreach(User _User in _ListUsers)
+                    {
+                        if(!userLock.userId.Equals(_User.userId) && userLock.id_Hospital.Equals(_User.id_Hospital) && userLock.groupId.Equals(groupId))
+                        {
+                            _LitSendUser.Add(_User);
+                        }
+                    }
+                }
 
-                //MailData mailData = new MailData();
-                //mailData.Set_StrSubject(subject);
-                //mailData.Set_StrBody(EmailTemplate);
-                //mailData.Set_StrMail(email);// 被寄的Email,email
-                //mailData.Set_StrUsr(username);// 被寄的人員
-                //mailData.Set_StrFromMail(EmailFromAddr);// 寄的Email,emailUserName->參數多"EmailFromAddr"
-                //mailData.Set_StrFromUsr("");// 寄的人員,""
+                MailData mailData = new MailData();
+                SendMailer sendMailer = new SendMailer();                             
 
-                //SendMailer sendMailer = new SendMailer();
-                //sendMailer.Set_MailData(mailData);
-                //sendMailer.MailSender(mailHost, emailUserName, emailPassword, port);
-                ////mailHost:RTE置換排程 發送E-MAIL主機IP abba.e-tec.com.tw
-                ////emailUserName:RTE置換排程 發送E-MAIL主機帳號 sdservice
-                ////emailPassword:RTE置換排程 發送E-MAIL主機 Rh#T53f
-                ////port:25 RTE置換排程 發送E-MAIL主機port 25
+                foreach (User _User in _LitSendUser)
+                {
+                    if(!string.IsNullOrEmpty(_User.email))
+                    {
+                        mailData.Set_StrSubject("國衛院登入帳號已被鎖住,帳號為:" + userLock.userName + ",醫院:" + userLock.Hospital.name_tw);
+                        mailData.Set_StrBody("國衛院登入帳號已被鎖住,帳號為:"+ userLock.userName+",醫院:"+ userLock.Hospital.name_tw);
+                        mailData.Set_StrMail(_User.email);// 被寄的Email,email
+                        mailData.Set_StrUsr(_User.userName);// 被寄的人員
+                        mailData.Set_StrFromMail("noreply@nhri.edu.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
+                        mailData.Set_StrFromUsr("noreply");// 寄的人員,""
 
-
+                        sendMailer.Set_MailData(mailData);
+                        sendMailer.MailSender("sender.nhri.edu.tw", "noreply@nhri.edu.tw", string.Empty, 25);
+                    }
+                }  
+                #endregion
 
                 model.message = "錯誤次數過多，已被鎖住";
                 model.isLock = true;
+
                 return View(model);
             }
            
