@@ -32,6 +32,15 @@ namespace NHRIDB.Controllers
                         HospitalId = e.id,
                         name_tw = e.name_tw,
                         name_en = e.name_en,
+                        fileUploadCount = _db.TubeFileUploadData
+                                .Where(f => f.hospitalId.Equals(e.id)).FirstOrDefault().count??0,
+                        fileUploadHasRow = _db.TubeFileUploadData
+                                .Where(f => f.hospitalId.Equals(e.id)).Count() > 0 ? true : false,
+                        fileUploadLastDate = _db.TubeFileUploadData
+                                .Where(f => f.hospitalId.Equals(e.id))
+                                .OrderByDescending(f => f.createDate)
+                                .Select(f => f.createDate)
+                                .FirstOrDefault(),
                         Count = _db.TubeData
                                 .Where(f => f.hospitalId.Equals(e.id)).Count(),
                         HasRow = _db.TubeData

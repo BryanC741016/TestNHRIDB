@@ -9,9 +9,12 @@
         <tr>
             <th>機構中文名稱</th>
             <th>機構英文名稱</th>
-            <th>筆數</th>
-            <th>已上傳</th>
-            <th>上傳日期</th>
+            <th>檔案筆數</th>
+            <th>檔案已上傳</th>
+            <th>檔案上傳日期</th>
+            <th>檢體筆數</th>
+            <th>檢體已上傳</th>
+            <th>檢體上傳日期</th>
         </tr>
     </thead>
     @foreach (var item in Model.items)
@@ -24,12 +27,30 @@
                 @item.name_en
             </td>
             <td>
+                @item.fileUploadCount
+            </td>
+            <td>
+                @(item.fileUploadHasRow ? "是" : "否")
+            </td>
+            @if (item.fileUploadLastDate != null && DateTime.Parse(item.fileUploadLastDate.ToString()).Year > 2000)
+            {
+                <td>
+                    @string.Format("{0:yyyy/MM/dd}", item.fileUploadLastDate)
+                </td>
+            }
+            else
+            {
+                <td>
+
+                </td>
+            }
+            <td>
                 @item.Count
             </td>
             <td>
                 @(item.HasRow ? "是" : "否")
             </td>
-            @if (item.LastDate != null & DateTime.Parse(item.LastDate.ToString()).Year > 2000)
+            @if (item.LastDate != null && DateTime.Parse(item.LastDate.ToString()).Year > 2000)
             {
                 <td>
                     @string.Format("{0:yyyy/MM/dd}", item.LastDate)

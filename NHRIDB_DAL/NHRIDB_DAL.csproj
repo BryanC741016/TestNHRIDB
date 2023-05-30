@@ -68,6 +68,7 @@
     <Compile Include="DAL\UserDA.cs" />
     <Compile Include="DAL\HospitalDA.cs" />
     <Compile Include="DAL\UserLogDA.cs" />
+    <Compile Include="DAL\_TubeFileUploadDataDA.cs" />
     <Compile Include="DbModel\ErrorLog.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
@@ -128,6 +129,7 @@
     <Compile Include="DbModel\TubeDataLog.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="DbModel\TubeFileUploadData.cs" />
     <Compile Include="DbModel\User.cs">
       <DependentUpon>ModelDB.tt</DependentUpon>
     </Compile>

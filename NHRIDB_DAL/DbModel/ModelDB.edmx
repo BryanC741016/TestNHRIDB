@@ -212,6 +212,15 @@
           <Property Name="DNA_pannel" Type="bit" Nullable="false" />
           <Property Name="RNA" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="TubeFileUploadData">
+          <Key>
+            <PropertyRef Name="hospitalId" />
+          </Key>
+          <Property Name="hospitalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="count" Type="int" />
+          <Property Name="createUser" Type="uniqueidentifier" />
+          <Property Name="createDate" Type="datetime2" Precision="7" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="userId" />
@@ -365,6 +374,7 @@
           <EntitySet Name="TemplateExcelUpDataRecord" EntityType="Self.TemplateExcelUpDataRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeData" EntityType="Self.TubeData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TubeDataLog" EntityType="Self.TubeDataLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TubeFileUploadData" EntityType="Self.TubeFileUploadData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserLog" EntityType="Self.UserLog" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Permissions_GroupUser" Association="Self.FK_Permissions_GroupUser">
@@ -487,6 +497,7 @@
             <End Role="User" EntitySet="User" />
           </AssociationSet>
           <EntitySet Name="SysLog" EntityType="NHRIDBModel.SysLog" />
+          <EntitySet Name="TubeFileUploadData" EntityType="NHRIDBModel.TubeFileUploadData" />
           </EntityContainer>
         <EntityType Name="GroupUser">
           <Key>
@@ -903,6 +914,15 @@
           <Property Name="ip" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="userName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="TubeFileUploadData">
+          <Key>
+            <PropertyRef Name="hospitalId" />
+          </Key>
+          <Property Name="hospitalId" Type="Guid" Nullable="false" />
+          <Property Name="count" Type="Int32" />
+          <Property Name="createUser" Type="Guid" />
+          <Property Name="createDate" Type="DateTime" Precision="7" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1299,6 +1319,16 @@
                 <ScalarProperty Name="evettype" ColumnName="evettype" />
                 <ScalarProperty Name="createtime" ColumnName="createtime" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TubeFileUploadData">
+            <EntityTypeMapping TypeName="NHRIDBModel.TubeFileUploadData">
+              <MappingFragment StoreEntitySet="TubeFileUploadData">
+                <ScalarProperty Name="createDate" ColumnName="createDate" />
+                <ScalarProperty Name="createUser" ColumnName="createUser" />
+                <ScalarProperty Name="count" ColumnName="count" />
+                <ScalarProperty Name="hospitalId" ColumnName="hospitalId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
