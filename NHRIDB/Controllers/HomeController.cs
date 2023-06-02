@@ -117,7 +117,7 @@ namespace NHRIDB.Controllers
             if (logLoginDA.HasLock(_set.errorOutCount,model.userName))
             {
                 /*
-                 * model.userName->找同醫院 + 等級為主管級 + 不是自已的->迴圈寄信
+                 * model.userName->找同醫院 + 等級為主管理者 + 不是自已的->迴圈寄信
                  */
                 #region Get Send Emails And Send Email
                 List<User> _LitSendUser = new List<User>();
@@ -126,7 +126,7 @@ namespace NHRIDB.Controllers
 
                 GroupDA _GroupDA = new GroupDA(db);
                 List<GroupUser> _LitGroupUser = _GroupDA.GetQuery(gName: "主管理者").ToList();
-                Guid groupId = _LitGroupUser.Count > 0 ? _LitGroupUser[0].groupId : new Guid();
+                Guid groupId = _LitGroupUser.Count > 0 ? _LitGroupUser[0].groupId : Guid.NewGuid();
 
                 if (userLock !=null)
                 {
@@ -134,12 +134,18 @@ namespace NHRIDB.Controllers
 
                     foreach (User _User in _ListUsers)
                     {
-                        if(!userLock.userId.Equals(_User.userId) && userLock.id_Hospital.Equals(_User.id_Hospital) && userLock.groupId.Equals(groupId))
+                        if(!userLock.userId.Equals(_User.userId) && userLock.id_Hospital.Equals(_User.id_Hospital) && _User.groupId.Equals(groupId))
                         {
                             _LitSendUser.Add(_User);
                         }
                     }
                 }
+
+                User _UserSys = new User();// 國衛院系統管理者mail
+                _UserSys.email = "Michael.sue@nhri.edu.tw";
+                _UserSys.userName = "Michael.sue";
+
+                _LitSendUser.Add(_UserSys);
 
                 MailData mailData = new MailData();
                 SendMailer sendMailer = new SendMailer();                             
