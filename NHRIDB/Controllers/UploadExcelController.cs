@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ClassLibrary;
+using System.Data;
 
 namespace NHRIDB.Controllers
 {
@@ -15,6 +17,7 @@ namespace NHRIDB.Controllers
     {
         private SysLogDA _SysLogDA;
         private HospitalDA _hospitalDA;
+        private TubeFileUploadDataDA _TubeFileUploadDataDA;
         private string _path = "";
         private string _dateFormat = "yyyyMMddHHmmss";
 
@@ -25,6 +28,7 @@ namespace NHRIDB.Controllers
             _path = Server.MapPath("~/Upload/Excel");
             _hospitalDA = new HospitalDA(_db);
             _SysLogDA = new SysLogDA(_db);
+            _TubeFileUploadDataDA = new TubeFileUploadDataDA(_db);
         }
 
         [HttpGet]
@@ -85,6 +89,44 @@ namespace NHRIDB.Controllers
             _SysLogDA.Create(evettype: "檔案上傳", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
 
             upload.SaveAs(path);//為了方便csv讀取
+
+            string StrAllMsg = string.Empty;
+            bool isSuccess = true;
+            EPPlusExcel epp = new EPPlusExcel();
+            DataTable table = new DataTable();
+
+            try
+            {
+                _SysLogDA.Create(evettype: "檔案上傳匯入檔載入", ip: this.GetIp(), userName: Convert.ToString(Session["name"]));
+
+                table = epp.GetDataTable(path, upload.InputStream);
+                _TubeFileUploadDataDA.Create(table, Session["hos"].ToString(), Session["uid"].ToString());
+
+            }
+            catch (Exception e)
+            {
+                StrAllMsg = "檔案轉換失敗,請確定檔案格式是否正確";
+                isSuccess = false;
+
+                //System.IO.File.Delete(path);
+                NHRIDBEntitiesDB _db;
+                ErrorLogDA _ErrorLogDA;
+                _db = new NHRIDBEntitiesDB();
+                _ErrorLogDA = new ErrorLogDA(_db);
+                string id = DateTime.Now.ToString("yyyyMMddHHmmss") + Convert.ToString(System.Web.HttpContext.Current.Session["name"]);
+                string message = string.Empty;
+                if (e.InnerException != null)
+                {
+                    message = e.Message + Environment.NewLine + e.InnerException.Message;
+                }
+                else
+                {
+                    message = e.Message;
+                }
+                _ErrorLogDA.Create(id: id, controller: string.Empty, action: string.Empty, message: message, stacktrace: e.StackTrace);
+
+                return Index(StrAllMsg);
+            }
 
             return Index("上傳完成，待管理者審核");
         }  

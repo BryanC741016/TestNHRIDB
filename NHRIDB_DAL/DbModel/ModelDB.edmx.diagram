@@ -25,6 +25,7 @@
         <AssociationConnector Association="NHRIDBModel.FK_User_GroupUser" />
         <AssociationConnector Association="NHRIDBModel.FK_User_Hospital" />
         <EntityTypeShape EntityType="NHRIDBModel.SysLog" Width="1.5" PointX="9.375" PointY="7.75" />
+        <EntityTypeShape EntityType="NHRIDBModel.TubeFileUploadData" Width="1.5" PointX="9.375" PointY="10.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

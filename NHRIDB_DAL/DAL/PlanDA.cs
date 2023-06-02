@@ -121,10 +121,13 @@ namespace NHRIDB_DAL.DAL
 
             if (!commit)
             {
+                DataRow drNew = table.NewRow();
+                drNew[0] = "計畫代碼" + "型別不正確" + Environment.NewLine;
+
+                row.Add(drNew);
+
                 row.AddRange(
-                    row.Except(
                         datas.Where(e => !string.IsNullOrEmpty(e.Field<string>("計畫代碼")) && !StrArry.Contains(e.Field<string>("計畫代碼"))).ToList()
-                    ).ToList()
                     );
                 isSuccess = false;
             }

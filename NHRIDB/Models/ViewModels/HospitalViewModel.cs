@@ -56,6 +56,12 @@ namespace NHRIDB.Models.ViewModels
         [Required]
         [Display(Name = "中文名稱")]
         public string name_tw { get; set; }
+        [Display(Name = "檔案筆數")]
+        public decimal fileUploadCount { get; set; }
+        [Display(Name = "是否有筆數")]
+        public bool fileUploadHasRow { get; set; }
+        [Display(Name = "最後上傳時間")]
+        public DateTime? fileUploadLastDate { get; set; }
         [Display(Name = "筆數")]
         public decimal Count { get; set; }
         [Display(Name = "是否有筆數")]

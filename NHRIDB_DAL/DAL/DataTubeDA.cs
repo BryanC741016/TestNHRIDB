@@ -87,7 +87,6 @@ namespace NHRIDB_DAL.DAL
             string msg = string.Empty;
 
             //1.欄位名稱是否相符
-            //if (!HasColumns(table))
             if (!HasColumns(table, out msg))
                 {
                 msg = msg + "欄位名稱不符合，請參照範本" + Environment.NewLine;
@@ -95,27 +94,21 @@ namespace NHRIDB_DAL.DAL
                 err[0] = msg;
                 rowNow.Add(err);
                 result = false;
-                //return false;
             }
 
             //必填欄位沒有填
-            //if (!CheckRequired(table, out msg))
             if (!CheckRequired(table, ref rowNow))
             {
                 result = false;
-                //return false;
             }
 
             //主key重複
-            //if (!MatchKey(table, out msg))
             if (!MatchKey(table, ref rowNow))
             {
                 result = false;
-                //return false;
             }
 
             //各欄位的資料型別 f:m , 數字 , 0:1)  ,此判斷是否放在更前面點 ???????????????????
-            //if (!CheckType(table, out msg))
             if (!CheckType(table, ref rowNow))
 
             {
@@ -124,11 +117,9 @@ namespace NHRIDB_DAL.DAL
             }
 
             //性別是否統一、年齡是否統一
-            //if (!RepleData(table, out msg))
             if (!RepleData(table, ref rowNow, fileex))
             {
                 result = false;
-                //return false;
             }
 
             return result;
@@ -403,11 +394,6 @@ namespace NHRIDB_DAL.DAL
 
         public bool RepleData(DataTable table, ref List<DataRow> row, string fileex)
         {
-            //msg = string.Empty;
-            //List<string> keys = table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
-            //        .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1)
-            //        .Select(e => e.Key)
-            //        .ToList();
             bool isSuccess = true;
 
             List<string> keys1 =
@@ -417,52 +403,20 @@ namespace NHRIDB_DAL.DAL
                     .Where(e => e.Count() > 1 && e.GroupBy(f => f.Field<string>("性別")).Count() > 1)
                     .Select(e => e.Key)
                     .ToList();
-            //table.AsEnumerable().GroupBy(e => new { Key1 = e.Field<string>("個案代碼"), Key2 = e.Field<string>("性別") })
-            //        .Where(e => e.Count() > 1)
-            //    .Select(e => e.Key.Key1)
-            //    .Where(e => e != null && !string.IsNullOrEmpty(e))
-            //    .ToList();
-            //var resultRow = table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).ToList();
-            //var resultRow = table.AsEnumerable()
-            //    .Join(keys1, c=>c.Field<string>)
+
+            if(keys1.Count > 0)
+            {
+                isSuccess = false;
+                DataRow drNew = table.NewRow();
+                drNew[0] = "性別不符";
+                row.Add(drNew);
+            }
+
             row.AddRange(
                 table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).ToList()
-                //resultRow
                 );
 
             List<string> keys2;
-            //if(fileex == "csv")
-            //{
-            //    keys2 = 
-            //    table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
-            //            .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
-            //                && (
-            //                    (e.Max(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
-            //                     e.Min(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
-            //                    ) > 1.5 ||
-            //                    (e.Max(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
-            //                     e.Min(f => f.Field<Int32>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
-            //                    ) < -1.5
-            //                   ))
-            //            .Select(e => e.Key)
-            //            .ToList();
-            //}
-            //else
-            //{
-            //    keys2 = 
-            //    table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
-            //            .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
-            //                && (
-            //                    (e.Max(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
-            //                     e.Min(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
-            //                    ) > 1.5 ||
-            //                    (e.Max(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)")) -
-            //                     e.Min(f => f.Field<double>("收案年份 (西元年)") - f.Field<double>("年齡 (歲)"))
-            //                    ) < -1.5
-            //                   ))
-            //            .Select(e => e.Key)
-            //            .ToList();
-            //}
             keys2 =
             table.AsEnumerable().GroupBy(e => e.Field<string>("個案代碼"))
                     .Where(e => e != null && !string.IsNullOrEmpty(e.Key) && e.Count() > 1
@@ -476,38 +430,44 @@ namespace NHRIDB_DAL.DAL
                             ))
                     .Select(e => e.Key)
                     .ToList();
+            if(keys2.Count > 0)
+            {
+                isSuccess = false;
+                DataRow drNew = table.NewRow();
+                drNew[0] = "年齡不符";
+                row.Add(drNew);
+            }
 
             row.AddRange(
                 table.AsEnumerable().Where(e => keys2.Contains(e.Field<string>("個案代碼"))).ToList()
                 );
 
-            //foreach (string key in keys)
-            //{
-            //    var datas = table.AsEnumerable().Where(e => e["個案代碼"].ToString().Trim().Equals(key.Trim()));
-            //    int sexCount = datas.GroupBy(e => e["性別"]).Count();
 
-            //    if (sexCount > 1)
-            //    {
-            //        //msg = msg + "個案代碼:" + key + "性別欄位輸入錯誤" + Environment.NewLine;
-            //        isSuccess = false;
-            //    }
+            List<string> keys3;
+            keys3 =
+            table.AsEnumerable()
+                    .GroupBy(e => new { 
+                        patientKey = e.Field<string>("個案代碼"),
+                        regionKey = e.Field<string>("器官/部位代碼"),
+                        diagnosisKey = e.Field<string>("診斷代碼"),
+                        age = e.Field<string>("年齡 (歲)"),
+                        gender = e.Field<string>("性別")
+                    })
+                    .Where(e => e.Count() > 1)
+                    .Select(e => e.Key.patientKey)
+                    .ToList();
+            
+            if (keys3.Count > 0)
+            {
+                isSuccess = false;
+                DataRow drNew = table.NewRow();
+                drNew[0] = "主鍵值重覆";
+                row.Add(drNew);
+            }
 
-            //    double sings = 0;
-            //    foreach (var item in datas)
-            //    {
-            //        double sing = double.Parse(item["收案年份 (西元年)"].ToString()) - double.Parse(item["年齡 (歲)"].ToString());
-            //        if (sings == 0)
-            //        {
-            //            sings = sing;
-            //        }
-
-            //        if ((sings - sing) > 1.5 || (sings - sing) < -1.5)
-            //        {
-            //            //msg = msg + "個案代碼:" + key + "年齡欄位輸入錯誤(誤差值大於+-1.5)" + Environment.NewLine;
-            //            isSuccess = false;
-            //        }
-            //    }
-            //}//end foreach key
+            row.AddRange(
+                table.AsEnumerable().Where(e => keys3.Contains(e.Field<string>("個案代碼"))).ToList()
+                );
 
             return isSuccess;
         }
@@ -618,45 +578,194 @@ namespace NHRIDB_DAL.DAL
             return datas;
         }
 
+        //public DataSaveAns Create(List<TubeDataType> datas, Guid hkey, Guid uid)
+        //{
+        //    DataSaveAns _DataSaveAns = new DataSaveAns();
+
+        //    try
+        //    {
+        //        List<TubeData> adds = new List<TubeData>();
+        //        DateTime now = DateTime.Now;
+        //        foreach (TubeDataType data in datas)
+        //        {
+        //            TubeData tube = new TubeData();
+        //            foreach (var info in _columns)
+        //            {
+        //                var value = data.GetType().GetProperty(info.Name).GetValue(data);
+        //                tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
+        //            }
+        //            tube.hospitalId = hkey;
+        //            tube.createUser = uid;
+        //            tube.createDate = now;
+
+        //            adds.Add(tube);
+        //        }
+
+        //        List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+        //        TubeDataToLog(old, hkey, uid);
+        //        _db.TubeData.RemoveRange(old);
+        //        _db.TubeData.AddRange(adds);
+        //        _db.SaveChanges();
+
+        //        _DataSaveAns.isSuccess = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _DataSaveAns.StrMsg = e.Message;
+        //        _DataSaveAns.StackTrace = e.StackTrace;
+        //        _DataSaveAns.isSuccess = false;
+        //    }
+
+        //    return _DataSaveAns;
+        //}
         public DataSaveAns Create(List<TubeDataType> datas,Guid hkey,Guid uid) 
         {
             DataSaveAns _DataSaveAns = new DataSaveAns();
 
+            var transaction = _db.Database.BeginTransaction();
             try
             {
+                System.Diagnostics.Debug.WriteLine(string.Format("TransData:{0}", DateTime.Now));
+
                 List<TubeData> adds = new List<TubeData>();
                 DateTime now = DateTime.Now;
-                foreach (TubeDataType data in datas)
-                {
-                    TubeData tube = new TubeData();
-                    foreach (var info in _columns)
-                    {
-                        var value = data.GetType().GetProperty(info.Name).GetValue(data);
-                        tube.GetType().GetProperty(info.Name).SetValue(tube, Convert.ChangeType(value, info.PropertyType), null);
-                    }
-                    tube.hospitalId = hkey;
-                    tube.createUser = uid;
-                    tube.createDate = now;
+                adds.AddRange(
+                    tubeDataTypeToListtubeDataList(datas, hkey, uid)
+                    );
 
-                    adds.Add(tube);
+                System.Diagnostics.Debug.WriteLine(string.Format("InsertLog:{0}", DateTime.Now));
+
+                using (_db = new NHRIDBEntitiesDB())
+                {
+                    List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+                    TubeDataToLog(old, hkey, uid);
+                }
+                System.Diagnostics.Debug.WriteLine(string.Format("RemveOldData:{0}", DateTime.Now));
+                int oldCursor = 0;
+                int oldCount = 20000;
+
+                using (_db = new NHRIDBEntitiesDB())
+                {
+                    List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
+
+                    if (old.AsEnumerable().Count() > oldCount)
+                    {
+                        do
+                        {
+                            List<TubeData> oldItem = old.Skip(oldCount * oldCursor)
+                                .Take(oldCount)
+                                .ToList();
+                            _db.TubeData.RemoveRange(oldItem);
+                            oldCursor++;
+                            _db.SaveChanges();
+
+                        } while (old.AsEnumerable().Count() > oldCount * oldCursor);
+                    }
+                    else
+                    {
+                        _db.TubeData.RemoveRange(old);
+                        _db.SaveChanges();
+                    }
                 }
 
-                List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
-                TubeDataToLog(old, hkey, uid);
-                _db.TubeData.RemoveRange(old);
-                _db.TubeData.AddRange(adds);
-                _db.SaveChanges();
+                System.Diagnostics.Debug.WriteLine(string.Format("InsertData:{0}", DateTime.Now));
+                int addsCursor = 0;
+                int addCount = 20000;
 
+                using (_db = new NHRIDBEntitiesDB())
+                {
+                    if (adds.AsEnumerable().Count() > addCount)
+                    {
+                        do
+                        {
+                            List<TubeData> addItem = adds.Skip(addCount * addsCursor)
+                                .Take(addCount)
+                                .ToList();
+                            _db.TubeData.AddRange(addItem);
+                            addsCursor++;
+                            _db.SaveChanges();
+
+                        } while (adds.AsEnumerable().Count() > addCount * addsCursor);
+                    }
+                    else
+                    {
+                        _db.TubeData.AddRange(adds);
+                        _db.SaveChanges();
+                    }
+                }
+
+                transaction.Commit();
                 _DataSaveAns.isSuccess = true;
             }
             catch(Exception e)
             {
+                transaction.Rollback();
+                NHRIDBEntitiesDB _db;
+                ErrorLogDA _ErrorLogDA;
+                _db = new NHRIDBEntitiesDB();
+                _ErrorLogDA = new ErrorLogDA(_db);
+                string id = DateTime.Now.ToString("yyyyMMddHHmmss");
+                string message = string.Empty;
+                if (e.InnerException != null && e.InnerException.InnerException != null)
+                {
+                    message = e.Message + Environment.NewLine + e.InnerException.InnerException.Message;
+                }
+                else
+                {
+                    message = e.Message;
+                }
+                _ErrorLogDA.Create(id: id, controller: string.Empty, action: string.Empty, message: message, stacktrace: e.StackTrace);
                 _DataSaveAns.StrMsg = e.Message;
                 _DataSaveAns.StackTrace= e.StackTrace;
                 _DataSaveAns.isSuccess = false;
             }
 
             return _DataSaveAns;
+        }
+        private List<TubeData> tubeDataTypeToListtubeDataList(List<TubeDataType> datas, Guid hkey, Guid uid)
+        {
+            var result =
+            datas.Select(e => new TubeData
+            {
+                planKey = e.planKey,
+                patientKey = e.patientKey,
+                regionKey = e.regionKey,
+                diagnosisKey = e.diagnosisKey,
+                endYear = e.endYear,
+                age = e.age,
+                gender = e.gender,
+                blood = e.blood,
+                frozenTissue = e.frozenTissue,
+                waxBlock = e.waxBlock,
+                urine = e.urine,
+                tissueDNA = e.tissueDNA,
+                tissueRNA = e.tissueRNA,
+                sampleless = e.sampleless,
+                pleuraleffusion = e.pleuraleffusion,
+                CSF = e.CSF,
+                ascites = e.ascites,
+                boneMarrow = e.boneMarrow,
+                serum = e.serum,
+                plasma = e.plasma,
+                buffyCoat = e.buffyCoat,
+                paraffinSection = e.paraffinSection,
+                bloodDNA = e.bloodDNA,
+                CDM = e.CDM,
+                questionnaire = e.questionnaire,
+                CT = e.CT,
+                MRI = e.MRI,
+                ultrasound = e.ultrasound,
+                digit_pathology_image_data = e.digit_pathology_image_data,
+                DNA_WGS = e.DNA_WGS,
+                DNA_WES = e.DNA_WES,
+                DNA_pannel = e.DNA_pannel,
+                RNA = e.RNA,
+                hospitalId = hkey,
+                createUser = uid,
+                createDate = DateTime.Now
+            }).ToList();
+
+            return result;
         }
 
         public DataSaveAns BatchCreate(List<TubeDataType> datas, Guid hkey, Guid uid,bool isFirst)
@@ -727,7 +836,28 @@ namespace NHRIDB_DAL.DAL
                 adds.Add(tube);
             }
 
-            _db.TubeDataLog.AddRange(adds);            
+            int addsCursor = 0;
+            int addCount = 20000;
+
+            if (adds.AsEnumerable().Count() > addCount)
+            {
+                do
+                {
+                    List<TubeDataLog> addItem = adds.Skip(addCount * addsCursor)
+                        .Take(addCount)
+                        .ToList();
+                    _db.TubeDataLog.AddRange(addItem);
+                    addsCursor++;
+                    _db.SaveChanges();
+
+                } while (adds.AsEnumerable().Count() > addCount * addsCursor);
+            }
+            else
+            {
+                _db.TubeDataLog.AddRange(adds);
+                _db.SaveChanges();
+            }
+            _db.Dispose();
         }
 
         public DataTable GetEmptyDataTable()

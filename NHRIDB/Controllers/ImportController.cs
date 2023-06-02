@@ -403,15 +403,10 @@ namespace NHRIDB.Controllers
         {
             EPPlusExcel epp = new EPPlusExcel();
             List<DataTable> table = new List<DataTable>();
-            //DataTable tb = _dataTubeDA.GetEmptyDataTable();
             if(TempData["dataErr"]!= null)
             {
-                //ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
-                ViewDatasViewModel importView = (TempData["dataErr"] as ViewDatasViewModel);
-                //table.Add(importView.dataErr);
-
-                //DataTable tb2 = _rLinkDDA.GetDataTable();
-                //table.Add(tb2);
+                ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
+                table.Add(importView.dataErr);
 
                 string[] names = new string[] { "錯誤資料" };
 
