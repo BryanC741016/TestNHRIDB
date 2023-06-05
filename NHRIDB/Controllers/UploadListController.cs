@@ -56,5 +56,38 @@ namespace NHRIDB.Controllers
             ViewData.Model = model;
             return View();
         }
+        public JsonResult GetClassData()
+        {
+            HospitalPie model = new HospitalPie();
+
+            List<HospitalPieItem> pies = new List<HospitalPieItem>();
+
+            var hospitalData = _db.TubeFileUploadData.Where(e => e.count > 0).Select(e => e.hospitalId).ToList();
+
+            HospitalPieItem pie = new HospitalPieItem();
+            pies.Add(new HospitalPieItem
+            {
+                label = "已上傳檔案翳院數",
+                value = _db.Hospital
+                            .Where(e => hospitalData.Contains(e.id)).Count()
+            });
+
+            pies.Add(new HospitalPieItem
+            {
+                label = "未上傳檔案翳院數",
+                value = _db.Hospital
+                            .Where(e => !hospitalData.Contains(e.id)).Count()
+            });
+            model.N = _db.Hospital.Count();
+
+            model.tName = "檔案上傳";
+            model.qContext = "未上傳醫院數";
+            model.items = pies;
+
+            HospitalJson json = new HospitalJson();
+            json.isSuccess = true;
+            json.hospitalPie = model;
+            return Json(json);
+        }
     }
 }

@@ -69,4 +69,28 @@ namespace NHRIDB.Models.ViewModels
         [Display(Name = "最後上傳時間")]
         public DateTime? LastDate { get; set; }
     }
+    public class HospitalPieItem
+    {
+        public string label { get; set; }
+        public int value { get; set; }
+    }
+    public class HospitalPie
+    {
+        public string tName { get; set; }
+        public string qContext { get; set; }
+        public Guid qId { get; set; }
+
+
+        public int N { get; set; }
+        public int notfillinN { get; set; }
+
+        public List<HospitalPieItem> items { get; set; }
+
+        public string type { get; set; }
+
+    }
+    public class HospitalJson : MakeHTML.Models.Rs
+    {
+        public HospitalPie hospitalPie { get; set; }
+    }
 }
