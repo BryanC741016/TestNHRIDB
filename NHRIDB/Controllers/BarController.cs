@@ -34,7 +34,7 @@ namespace NHRIDB.Controllers
             model.leapProject = _leapProject;
             model.selfHos = _hospitalDA.GetHospital(_hos);
             model.conditions.hosId = model.selfHos.id;
-            model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw");
+            model.hospitalSelect = new SelectList(_hospitalDA.GetQuery().ToList(), "id", "name_tw", model.selfHos.id.ToString());
             model.genderSelect = new List<SelectListItem>
             {
                 new SelectListItem { Text = "男" , Value = "M" },
@@ -157,10 +157,6 @@ namespace NHRIDB.Controllers
             if (Request.Form["hosId"] != null && !string.IsNullOrEmpty(Request.Form["hosId"]))
             {
                 model.conditions.hospitalId = Guid.Parse(Request.Form["hosId"]);
-            }
-            else
-            {
-                model.conditions.hospitalId = _hos;
             }
             model.datas = _tubeTotal.GetTotal(model.conditions);
 
