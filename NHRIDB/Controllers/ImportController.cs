@@ -145,6 +145,7 @@ namespace NHRIDB.Controllers
             upload.SaveAs(path);//為了方便csv讀取
             ViewDatasViewModel model = new ViewDatasViewModel();
             model.fileName = fileName;
+            model.ToExcelfileName = Path.GetFileName(upload.FileName).Split(',').First();
 
             /***
              * 1.欄位名稱是否相符
@@ -256,8 +257,9 @@ namespace NHRIDB.Controllers
                     }
                 });
                 modelErr.dataErr = dtTemp;
+                model.dataErr = dtTemp;
+                Session["dataErr"] = model;
                 return Index(StrAllMsg, modelErr);
-                //return Index(StrAllMsg, hosId);
             }
 
             model.datas = _dataTubeDA.GetDatasByDataTable(table);
@@ -403,20 +405,20 @@ namespace NHRIDB.Controllers
         {
             EPPlusExcel epp = new EPPlusExcel();
             List<DataTable> table = new List<DataTable>();
-            if(TempData["dataErr"]!= null)
+            if(Session["dataErr"]!= null)
             {
-                ImportViewModel importView = (TempData["dataErr"] as ImportViewModel);
+                ViewDatasViewModel importView = (Session["dataErr"] as ViewDatasViewModel);
                 table.Add(importView.dataErr);
 
                 string[] names = new string[] { "錯誤資料" };
 
                 MemoryStream stream = epp.ExportSample(names, table);
 
-                string fileName = "ErrorData" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
+                string fileNameHead = importView.ToExcelfileName + "_Err";
+                string fileName = fileNameHead + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                 stream.Position = 0;
-                TempData["dataErr"] = null;
 
                 return File(stream, contentType, fileName);
             }
