@@ -44,7 +44,7 @@ namespace NHRIDB_DAL.DAL
 
         public bool HasLock(int count, string userName) {
             List<GetLockUser_Result> datas = GetLockList(count);
-            return datas.Any(e => e.userName.Equals(userName));
+            return datas.Any(e => e.userName.ToUpper().Equals(userName.ToUpper()));
         }
 
         public void UnLock(string userName) {

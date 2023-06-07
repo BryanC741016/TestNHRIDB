@@ -24,7 +24,7 @@ namespace NHRIDB_DAL.DAL
             }
             if (!string.IsNullOrEmpty(userName))
             {
-                qu = qu.Where(e => e.userName.Equals(userName));
+                qu = qu.Where(e => e.userName.ToUpper().Equals(userName.ToUpper()));
             }
 
             if (noID.HasValue)
