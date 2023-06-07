@@ -33,20 +33,26 @@ namespace NHRIDB.Controllers
                         name_tw = e.name_tw,
                         name_en = e.name_en,
                         fileUploadCount = _db.TubeFileUploadData
-                                .Where(f => f.hospitalId.Equals(e.id)).FirstOrDefault().count??0,
+                                .Where(f => f.hospitalId.Equals(e.id) 
+                                         && f.createDate.Value.Month.Equals(DateTime.Now.Month)).FirstOrDefault().count??0,
                         fileUploadHasRow = _db.TubeFileUploadData
-                                .Where(f => f.hospitalId.Equals(e.id)).Count() > 0 ? true : false,
+                                .Where(f => f.hospitalId.Equals(e.id)
+                                         && f.createDate.Value.Month.Equals(DateTime.Now.Month)).Count() > 0 ? true : false,
                         fileUploadLastDate = _db.TubeFileUploadData
-                                .Where(f => f.hospitalId.Equals(e.id))
+                                .Where(f => f.hospitalId.Equals(e.id)
+                                         && f.createDate.Value.Month.Equals(DateTime.Now.Month))
                                 .OrderByDescending(f => f.createDate)
                                 .Select(f => f.createDate)
                                 .FirstOrDefault(),
                         Count = _db.TubeData
-                                .Where(f => f.hospitalId.Equals(e.id)).Count(),
+                                .Where(f => f.hospitalId.Equals(e.id)
+                                         && f.createDate.Month.Equals(DateTime.Now.Month)).Count(),
                         HasRow = _db.TubeData
-                                .Where(f => f.hospitalId.Equals(e.id)).Count() > 0 ? true : false,
+                                .Where(f => f.hospitalId.Equals(e.id)
+                                         && f.createDate.Month.Equals(DateTime.Now.Month)).Count() > 0 ? true : false,
                         LastDate = _db.TubeData
-                                .Where(f => f.hospitalId.Equals(e.id))
+                                .Where(f => f.hospitalId.Equals(e.id)
+                                         && f.createDate.Month.Equals(DateTime.Now.Month))
                                 .OrderByDescending(f => f.createDate)
                                 .Select(f => f.createDate)
                                 .FirstOrDefault()
@@ -62,19 +68,21 @@ namespace NHRIDB.Controllers
 
             List<HospitalPieItem> pies = new List<HospitalPieItem>();
 
-            var hospitalData = _db.TubeFileUploadData.Where(e => e.count > 0).Select(e => e.hospitalId).ToList();
+            var hospitalData = _db.TubeFileUploadData.Where(e => e.count > 0 
+                                                              && e.createDate.Value.Month.Equals(DateTime.Now.Month))
+                                                     .Select(e => e.hospitalId).ToList();
 
             HospitalPieItem pie = new HospitalPieItem();
             pies.Add(new HospitalPieItem
             {
-                label = "已上傳檔案翳院數",
+                label = "已上傳檔案醫院數",
                 value = _db.Hospital
                             .Where(e => hospitalData.Contains(e.id)).Count()
             });
 
             pies.Add(new HospitalPieItem
             {
-                label = "未上傳檔案翳院數",
+                label = "未上傳檔案醫院數",
                 value = _db.Hospital
                             .Where(e => !hospitalData.Contains(e.id)).Count()
             });
