@@ -23,6 +23,12 @@ namespace NHRIDB_DAL.DAL
             _TubeFileUploadData.createUser = Guid.Parse(userId);
             _TubeFileUploadData.createDate = DateTime.Now;
 
+            List<TubeFileUploadData> rows = _db.TubeFileUploadData.Where(e => e.hospitalId.ToString() == hospitalId).ToList();
+
+            if (rows.Count > 0)
+            {
+                _db.TubeFileUploadData.RemoveRange(rows);
+            }
             _db.TubeFileUploadData.Add(_TubeFileUploadData);
             _db.SaveChanges();
         }
