@@ -304,12 +304,8 @@ namespace NHRIDB_DAL.DAL
 
             foreach (var column in _columns)
             {
-                if(table.Columns[column.DisplayName] == null)
-                {
-                    continue;
-                }
-                var datas = table.AsEnumerable()
-                    .Where(p => p[column.DisplayName] != DBNull.Value || !string.IsNullOrEmpty(p[column.DisplayName].ToString()));
+                var datas = table.AsEnumerable().Where(e => !e.Field<string>(column.DisplayName).Equals(""));
+
                 List<DataRow> datas1 = new List<DataRow>();
                 decimal age;
                 int endYear;
@@ -334,8 +330,8 @@ namespace NHRIDB_DAL.DAL
                         commit = !datas1.Any();
                         break;
                     default:
-                        datas1 = datas.Where(p => !p[column.DisplayName].ToString().Equals("0") && !p[column.DisplayName].ToString().Equals("1")).ToList();
-                        commit = !datas1.Any();
+                        datas1 = datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).ToList();
+                        commit = !datas.Where(e => !e.Field<string>(column.DisplayName).Equals("0") && !e.Field<string>(column.DisplayName).Equals("1")).Any();
                         break;
                 }
 

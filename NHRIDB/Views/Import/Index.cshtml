@@ -17,13 +17,14 @@
                 TempData["dataErr"] = Model;
                 <script nonce="cm1vaw==">
             $(function () {
-                let result = new Promise((resolve) => {
-                    resolve(window.location.href = "@Url.Action("ExportDataFromDataTable")");
-                }).then((data) => {
+                    var timeOut = @Model.dataErr.Rows.Count > 100000 ? (@Model.dataErr.Rows.Count / 10000) * 3000 * 5 : 3000;
+                    let result = new Promise((resolve) => {
+                        resolve(window.location.href = "@Url.Action("ExportDataFromDataTable")");
+                    }).then((data) => {
                         setTimeout(() => {
                             window.location.href = "@Url.Action("Index")";
-                        }, 3000);
-                });
+                        }, timeOut );
+                    });
             });
                 </script>
             }
