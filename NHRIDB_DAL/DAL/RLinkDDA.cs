@@ -190,8 +190,8 @@ namespace NHRIDB_DAL.DAL
                     row.AddRange(
                                 table.AsEnumerable()
                                     .Where(e =>
-                                        (e["器官/部位代碼"] != DBNull.Value && e.Field<string>("器官/部位代碼").Equals(data.diagnosisKey)) &&
-                                        (e["器官/部位代碼"] != DBNull.Value && e.Field<string>("診斷代碼").Equals(data.regionKey)))
+                                        (e["器官/部位代碼"] != DBNull.Value && e.Field<string>("器官/部位代碼").Equals(data.regionKey)) &&
+                                        (e["診斷代碼"] != DBNull.Value && e.Field<string>("診斷代碼").Equals(data.diagnosisKey)))
                                     .ToList()
                         );                    
                     isSuccess = false;

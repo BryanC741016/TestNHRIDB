@@ -4,6 +4,227 @@
     ViewBag.Title = "當月已/未上傳之機構";
 }
 
+<script src="~/Scripts/chartjs.js"></script>
+<script src="~/Scripts/chartjs-plugin-datalabels.js"></script>
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/ajax.js"></script>
+
+<style>
+    .panel {
+        margin: 0px !important;
+    }
+
+    #numTable {
+        margin-bottom: 20px;
+    }
+
+
+
+    .showChart {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        position: relative;
+        border-bottom: solid 1px #ccc;
+        display: flex;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+
+
+        .showChart .fa {
+            font-size: 30px;
+            position: absolute;
+            left: 20px;
+            color: #ccc;
+        }
+
+            .showChart .fa:hover {
+                color: #AE0000;
+            }
+
+        .showChart .container {
+            width: 40vw;
+        }
+
+    .itemSum {
+        background-color: #FFECEC;
+    }
+
+    .itemNoSum {
+        background-color: #F0F0F0;
+    }
+
+    .classTable {
+        max-width: 50%;
+        margin: auto 0px;
+    }
+
+        .classTable label {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+    .nav-tabs {
+        border-bottom: none;
+    }
+
+
+    #excelForm > input {
+        display: none;
+    }
+
+
+    ul {
+        padding-inline-start: 10px;
+    }
+
+    #editDialog ul {
+        overflow-y: auto;
+        height: 300px;
+        border: solid 1px #ccc;
+    }
+
+    #editDialog li {
+        border-bottom: solid 1px #ccc;
+        display: flex;
+    }
+
+    canvas {
+        height: 300px !important;
+    }
+
+    #total-panel table td > div {
+        border-bottom: solid 1px #ccc;
+    }
+
+    @@media (max-width: 768px) {
+        .showChart {
+            display: block;
+        }
+
+        .panel-body {
+            overflow: auto;
+        }
+
+        .classTable {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div id="mainDiv">
+
+    <ul class="nav nav-tabs">
+        <li>
+            @*<button class="btn fa fa-plus" id="dialogSure"><span>顯示圖表</span></button>*@
+            <button class="btn fa fa-plus" v-on:click="dialogSure"><span>顯示圖表</span></button>
+
+
+        </li>
+    </ul>
+
+    @*<div id="class-panel1">
+
+
+
+        <div class="showChart" >
+            <div class='fa fa-times' v-on:click="removeChart(index)"></div>
+            <div class="container">
+
+            </div>
+
+            <table class="classTable table table-bordered">
+                <thead>
+                    <tr>
+
+                        <th>項目</th>
+                        <th>數量</th>
+                        <th>百分比</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+
+
+    </div>*@
+
+
+    <div v-bind:class="{panel:true, 'panel-default':true, hide:isActive!='classDiv'}" id="class-panel">
+
+
+
+        <div class="showChart" v-bind:style="{ opacity: dragIndex==index? 0.5:1 , 'padding-bottom': dropIndex==index?'100px':'10px'}" v-for="(item, index) in chartList" draggable="true" v-on:dragstart="dragStart(index, $event)" v-on:dragenter="dragenter(index,$event)" v-on:drop="drop(index,$event)" @@dragover.prevent @@dragenter.prevent>
+            <div class='fa fa-times' v-on:click="removeChart(index)"></div>
+            <div class="container" v-bind:id="item.qId+'Div'">
+
+            </div>
+
+            <table class="classTable table table-bordered">
+                <thead>
+                    <tr>
+
+                        <th>項目</th>
+                        <th>數量</th>
+                        <th>百分比</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(qitem,index ) in item.items">
+                        <td>
+                            <label v-bind:style="{'background-color':colors[index]}"></label>
+                            {{qitem.label}}
+                        </td>
+                        <td>{{qitem.value}}</td>
+                        <td>{{ Math.round((qitem.value/item.N)*100 ) }} %</td>
+                    </tr>
+                    <tr class='itemSum'>
+                        <td>總數</td>
+                        <td colspan="2">{{item.N}}</td>
+                    </tr>
+                    @*<tr class='itemNoSum'>
+                            <td>未填寫</td>
+                            <td colspan="2">{{item.notfillinN}}</td>
+                        </tr>*@
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+
+
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="chartDialog">
+        <div class="modal-dialog" role="document">
+            <span>
+                <select id="chartSelect" v-model="chartSelect">
+                    <option value="horizontalBar">長條圖</option>
+                    <option value="pie">圓餅圖</option>
+                </select>
+            </span>
+            <span>
+                <button class="btn cancel" data-dismiss="modal" type="button">取消</button>
+                <button class="btn sure" type="button" v-on:click="dialogChartSure">確定</button>
+            </span>
+            @*<button class="btn sure" type="button" id="dialogChartSure">確定</button>*@
+
+        </div>
+    </div>
+</div>
+
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -66,3 +287,441 @@
     }
 
 </table>
+
+<script nonce="cm1vaw==">
+    var searchText= '' //小視窗的
+        searchList = [],//小視窗例表
+        selectItem = {},//小視窗選擇的項目
+        chartSelect = 'pie',//選擇圖示的小視窗
+        numberList = [],
+        tabList = [{ name: "數值分析", id: "numDiv" }, { name: "類別分析", id: "classDiv" }, { name: "資料整表", id: "totalDiv" }],
+        isActive = 'numDiv', //tab
+        chartList = [],
+        updateChart = false,
+        colors = ["#ffb6b9", "#fae3d9", "#bbded6", "#8ac6d1", "#d5a4cf", "#fff1ac", "#a1bad0", "#d0a727", "#667572", "#a47c64"],
+        dragIndex = -1,
+        dropIndex = -1;
+
+    $(function () {
+        $("#dialogSure").on("click", function () {
+            //alert('test');
+            $("#editDialog").modal("hide");
+            let context = this;
+            switch (selectItem.type) {
+                case "display":
+                    ajaxJsonByTonkenDone('@Url.Action("TestDisplay")', {}, "@Form.GetAniForgeryToken()", function (result) {
+                        if (result.isSuccess) {
+                            context.setNumDiv();
+                        } else {
+                            $("#chartDialog").modal("show");
+                        }
+                    });
+                    break;
+                case "number":
+                    this.setNumDiv();
+                    break;
+                default:
+                    $("#chartDialog").modal("show");
+                    break;
+            }
+        });
+        $("#dialogChartSure").on("click", function () {
+            $("#chartDialog").modal("hide");
+            //let chartSelect = this.chartSelect; //圖示
+            let charSelect = $("#chartSelect").val();
+            let context = this;
+
+            this.isActive = 'classDiv';
+            ajaxJsonByTonkenDone('@Url.Action("GetClassData")', { qId: "309e8f90-ac12-4e71-848f-efa23e4f8c9c" }, "@Form.GetAniForgeryToken()", function (result) {
+                if (result.isSuccess) {
+                    //let findIndex = context.isRepeat(context.chartList, result.hospitalPie.qId);
+                    let findIndex = fun_isRepeat(chartList, result.hospitalPie.qId);
+                    if (findIndex < 0) {
+                        result.hospitalPie.type = this.chartSelect;
+                        //context.chartList.unshift(result.hospitalPie);
+                        chartList.unshift(result.hospitalPie);
+
+                    } else {
+                        //context.chartList[findIndex].type = chartSelect;
+                        chartList[findIndex].type = chartSelect;
+                    }
+                    updateChart = true;
+                    fun_updated();
+                } else {
+                    showMessage(result.message);
+                }
+                selectItem = {};//清除小視窗的選取
+            });
+        });
+    });
+
+    function fun_isRepeat (list, qId) {
+        let indexx = -1;
+        list.forEach(function (item, index, array) {
+            if (item.qId == qId) {
+                indexx = index;
+            }
+        });
+
+        return indexx;
+    }
+    function fun_updated() {
+        if (updateChart) {
+            $("canvas").remove();
+            for (var i = 0; i < chartList.length; i++) {
+                let id = chartList[i].qId + "chart";
+
+                //let div = $('#' + chartList[i].qId + "Div");
+                $('#class-panel').css('display', 'inline');
+                let div = $('.container');
+                // let width = div[0].clientWidth;
+                div.append('<canvas id="' + id + '"><canvas>');
+                renderChart(chartList[i], colors);
+            }
+
+
+            updateChart = false;
+        }
+    }
+</script>
+
+<script nonce="cm1vaw==">
+
+
+
+        var mainDiv = new Vue({
+            el: '#mainDiv',
+            data: {
+             searchText:'',//小視窗的
+             searchList: [],//小視窗例表
+                selectItem: {},//小視窗選擇的項目
+             chartSelect:'pie',//選擇圖示的小視窗
+                numberList: [],
+                tabList: [{ name: "數值分析", id: "numDiv" }, { name: "類別分析", id: "classDiv" }, {name:"資料整表",id:"totalDiv"}],
+                isActive: 'numDiv', //tab
+                chartList: [],
+                updateChart: false,
+                colors: ["#ffb6b9", "#fae3d9", "#bbded6", "#8ac6d1", "#d5a4cf", "#fff1ac", "#a1bad0", "#d0a727", "#667572", "#a47c64"],
+                dragIndex: -1,
+                dropIndex:-1
+            },
+            updated: function () {
+                if (this.updateChart) {
+                     $("canvas").remove();
+                    for (var i = 0; i < this.chartList.length; i++) {
+                        let id =  this.chartList[i].qId + "chart";
+
+                        let div = $('#' + this.chartList[i].qId + "Div");
+                       // let width = div[0].clientWidth;
+                        div.append('<canvas id="'+id+'"><canvas>');
+                     renderChart(this.chartList[i],this.colors);
+                    }
+
+
+                    this.updateChart = false;
+                }
+
+
+            },
+
+            methods: {
+
+               create: function (event) {
+                    this.searchList = [];
+                    this.searchText = '';
+                    $("#editDialog").modal("show");
+                },
+
+                tabClick: function (item) {
+                    this.isActive = item.id;
+                },
+                dragStart: function (index, event) {
+                    event.dataTransfer.dropEffect = 'move';
+                    event.dataTransfer.effectAllowed = 'move';
+                    this.dragIndex = index;
+                },
+                dragenter: function (index, event) {
+                     if (index == this.dragIndex) {
+                        return;
+                    }
+                    this.dropIndex = index;
+                },
+                drop: function (index, ev) {
+
+                    if (index == this.dragIndex) {
+                        return;
+                    }
+
+                    let dragIndex = this.dragIndex;
+                    let dropIndex = this.dropIndex;
+                        let chartList = this.chartList;
+                    if (dragIndex != -1 && dropIndex != -1) {
+                         // chartList.splice(dropIndex, 0,  chartList[dragIndex]);
+                        chartList.splice(dropIndex, 0, chartList.splice(dragIndex, 1)[0]);
+                    }
+
+
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    ev.dataTransfer.dropEffect = "move";
+                    this.dragIndex = -1;
+                    this.dropIndex = -1;
+                     this.updateChart = true;
+                },
+
+                search: function () {
+                this.searchList = [];
+                let data = new FormData();
+                let context = this;
+                data.append("q", $("[name='search']").val());
+                ajaxFromDataByTonken("@Url.Action("GetAutoComplete")", data, "@Form.GetAniForgeryToken()", function (result) {
+                    if (result.result.length > 0) {
+                        context.searchList=result.result;
+                    }
+                });
+            },
+            dialogSure: function () {
+                //if (Object.entries(this.selectItem).length == 0) {
+                //    return;
+                //}
+                $("#editDialog").modal("hide");
+                  let context = this;
+                switch (this.selectItem.type) {
+                    case "display":
+                        ajaxJsonByTonkenDone('@Url.Action("TestDisplay")', {}, "@Form.GetAniForgeryToken()", function (result) {
+                            if (result.isSuccess) {
+                                 context.setNumDiv();
+                            } else {
+                                 $("#chartDialog").modal("show");
+                            }
+                        });
+                        break;
+                    case "number":
+                        this.setNumDiv();
+                        break;
+                    default:
+                          $("#chartDialog").modal("show");
+                        break;
+                }
+
+
+
+
+                },
+                setNumDiv: function () {
+                       let context = this;
+                      this.isActive= 'numDiv';
+                        ajaxJsonByTonkenDone('@Url.Action("GetNumData")', { qId:this.selectItem.id }, "@Form.GetAniForgeryToken()", function (result) {
+                            if (result.isSuccess) {
+                                if (context.isRepeat(context.numberList, result.analsisNum.qId) < 0) {
+                                     context.numberList.push(result.analsisNum);
+                                }
+
+                            } else {
+                                showMessage(result.message);
+                            }
+                              context.selectItem = {};//清除小視窗的選取
+                        });
+                },
+                dialogChartSure: function () {
+                        $("#chartDialog").modal("hide");
+                    let chartSelect = this.chartSelect; //圖示
+                    let context = this;
+
+                      this.isActive= 'classDiv';
+                        ajaxJsonByTonkenDone('@Url.Action("GetClassData")', { qId:"309e8f90-ac12-4e71-848f-efa23e4f8c9c" }, "@Form.GetAniForgeryToken()", function (result) {
+                            if (result.isSuccess) {
+                                let findIndex = context.isRepeat(context.chartList, result.hospitalPie.qId);
+                                if ( findIndex < 0) {
+                                     result.hospitalPie.type = chartSelect;
+                                    context.chartList.unshift(result.hospitalPie);
+
+                                } else {
+                                    context.chartList[findIndex].type = chartSelect;
+                                }
+                                  context.updateChart = true;
+
+                            } else {
+                                showMessage(result.message);
+                            }
+                             context.selectItem = {};//清除小視窗的選取
+                        });
+                },
+                removeChart: function (index) {
+
+                     this.chartList.splice(index, 1);
+                    this.updateChart = true;
+
+                },
+                isRepeat: function (list, qId) {
+                    let indexx = -1;
+                    list.forEach(function(item, index, array) {
+                        if (item.qId == qId) {
+                             indexx = index;
+                        }
+                    });
+
+                    return indexx;
+                },
+                exportExcel: function () {
+                    let data = {numberList:this.numberList, chartList:this.chartList };
+                    ajaxJsonByTonkenDone('@Url.Action("SaveExcel")',data , "@Form.GetAniForgeryToken()", function (result) {
+                         window.open('@Url.Action("ExportExcel")', "_blank");
+                    });
+                }
+            }//end methods
+
+        });//end Vue
+
+
+        function renderChart(hospitalPie,colors) {
+              let data = [];
+              let labels = [];
+            let text = [];
+            let color = [];
+
+
+                                  $.each(hospitalPie.items, function (d, i) {
+                                        data.push(i.value);
+                                      text.push(i.label);
+                                      labels.push(i.label);
+                                      color.push(colors[d]);
+
+                                    });
+                                    var ctx = $("#"+hospitalPie.qId+"chart");
+                                    var myChart = new Chart(ctx, {
+                                        type: hospitalPie.type,
+                                        data: {
+                                            text: text,
+                                            labels:labels,
+                                            datasets: [{
+                                                label: '',
+                                                data: data,
+                                                backgroundColor: color,
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: chartOptions(hospitalPie.type, hospitalPie.tName + " / " + hospitalPie.qContext,parseInt(hospitalPie.N))
+                                    });
+
+        }
+
+
+    function chartOptions(type,title,sum) {
+        switch (type) {
+            case 'pie':
+                return {
+                      responsive: true,
+                    maintainAspectRatio: false,
+                    cutoutPercentage: 40,
+                    title: {
+                        display: true,
+                            text:title,
+                                position: 'top',
+                                    fontSize: 16,
+                                        fontColor: '#000',
+                                            padding: 20
+                    },
+                    legend: {
+                        display: false,
+
+                    },
+                    tooltips: {
+
+                        borderColor: '#cccccc',
+                        borderWidth:1,
+                        callbacks: {
+                            title: function (tooltipItem, data) {
+                                return data['text'][tooltipItem[0]['index']];
+                            },
+                            label: function (tooltipItem, data) {
+                                return data['datasets'][0]['data'][tooltipItem['index']];
+                            },
+                            afterLabel: function (tooltipItem, data) {
+                                var dataset = data['datasets'][0];
+                                var percent = Math.round((dataset['data'][tooltipItem['index']] / sum) * 100)
+                                return '(' + percent + '%)';
+                            }
+                        },
+                        backgroundColor: '#FFF',
+                        titleFontSize: 16,
+                        titleFontColor: '#0066ff',
+                        bodyFontColor: '#000',
+                        bodyFontSize: 14,
+                        displayColors: false
+                    },
+                    plugins: {
+                        datalabels: {
+                             color: '#000',
+                            textAlign: 'center',
+
+                            font: {
+                               size: 20,
+                                lineHeight: 1.6
+                            },
+                            formatter: function (value, ctx) {
+                             //   return ctx.chart.data.labels[ctx.dataIndex] + '\n' + Math.round((value/sum)*100) + '%';
+                                return   Math.round((value / sum) * 100) + '%';
+
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'horizontalBar':
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    title: {
+                        display: true,
+                        text: title,
+                        position: 'top',
+                        fontSize: 16,
+                        fontColor: '#000',
+                        padding: 20
+                    },
+                    legend: {
+                        display: false,
+
+                    },
+                    tooltips: {
+
+                        borderColor: '#cccccc',
+                        borderWidth: 1,
+                        callbacks: {
+                            title: function (tooltipItem, data) {
+                                return data['text'][tooltipItem[0]['index']];
+                            },
+                            label: function (tooltipItem, data) {
+                                return data['datasets'][0]['data'][tooltipItem['index']];
+                            },
+
+                        },
+                        backgroundColor: '#FFF',
+                        titleFontSize: 16,
+                        titleFontColor: '#0066ff',
+                        bodyFontColor: '#000',
+                        bodyFontSize: 14,
+                        displayColors: false
+                    },
+                    plugins: {
+                        datalabels: {
+                            align: 'end',
+                            anchor: 'start',
+                            color: '#000',
+                            clamp :true,
+                            font: {
+                                size: 20,
+                                lineHeight: 1.6
+                            },
+                            formatter: function (value, ctx) {
+                                return  value;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+    }
+</script>

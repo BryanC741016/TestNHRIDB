@@ -113,7 +113,6 @@ namespace NHRIDB_DAL.DAL
 
             {
                 result = false;
-                //return false;
             }
 
             //性別是否統一、年齡是否統一
@@ -196,7 +195,7 @@ namespace NHRIDB_DAL.DAL
 
                     row.Add(drNew);
                     row.AddRange(
-                        rowCurrent
+                        rowCurrent.OrderBy(e => e.Field<string>("個案代碼"))
                         );
                     isSuccess = false;
                 }
@@ -233,7 +232,7 @@ namespace NHRIDB_DAL.DAL
 
         public bool MatchKey(DataTable table, ref List<DataRow> row)
         {
-            var data = table.AsEnumerable().GroupBy(e => new { key1 = e["個案代碼"], key2 = e["器官/部位代碼"], key3 = e["診斷代碼"], key4 = e["收案年份 (西元年)"], key5 = e["年齡 (歲)"] })
+            var data = table.AsEnumerable().GroupBy(e => new { key1 = e["個案代碼"]?.ToString().ToUpper(), key2 = e["器官/部位代碼"], key3 = e["診斷代碼"], key4 = e["收案年份 (西元年)"], key5 = e["年齡 (歲)"] })
                             .Where(e => e.Count() > 1)
                             .Select(x => x.Key.key1)
                             .ToList();
@@ -241,14 +240,15 @@ namespace NHRIDB_DAL.DAL
 
             if (data.Count() > 0)
             {
-                var rowCurrent = table.AsEnumerable().Where(x => data.Any(y=>y == x["個案代碼"])).ToList();
+                var rowCurrent = table.AsEnumerable().Where(x => data.Contains(x["個案代碼"]?.ToString().ToUpper())).ToList();
 
                 DataRow drNew = table.NewRow();
-                drNew[0] = data.ToArray().Aggregate("", (current, s) => current + (s + ",")).Replace(" ", string.Empty).TrimEnd(',') + "資料重複";
+                drNew[0] = "欄位值[個案代碼]、[器官/部位代碼]、[診斷代碼]、[收案年份 (西元年)]、[年齡(歲)] 資料重覆："
+                    + data.ToArray().Aggregate("", (current, s) => current + (s + ",")).Replace(" ", string.Empty).TrimEnd(',');
 
                 row.Add(drNew);
                 row.AddRange(
-                    rowCurrent
+                    rowCurrent.OrderBy(e => e.Field<string>("個案代碼")).ToList()
                     );
                 return false;
             }
@@ -341,17 +341,38 @@ namespace NHRIDB_DAL.DAL
 
                 if (!commit)
                 {
-                    var exRow = row.Except(datas1).Where(e=> e["個案代碼"] != DBNull.Value && string.IsNullOrEmpty(e.Field<string>("個案代碼"))).ToList();
-                    if(exRow.Count() > 0)
-                    {
-                        DataRow drNew = table.NewRow();
-                        drNew[0] = "「" + column.DisplayName + "」型別不正確";
+                    var rowArr = row.Select(e => e["個案代碼"]).ToArray();
+                    var exRow = datas1.Where(e => e["個案代碼"] != DBNull.Value && string.IsNullOrEmpty(e.Field<string>("個案代碼")));
+                    exRow = exRow.Where(e => !rowArr.Contains(e["個案代碼"])).ToList();
 
-                        row.Add(drNew);
-                        row.AddRange(
-                            datas1
-                            );
-                        isSuccess = false;
+                    if (datas1.Count > 0)
+                    {
+                        if (row.Count > 0)
+                        {
+                            if (exRow.Count() > 0)
+                            {
+                                DataRow drNew = table.NewRow();
+                                drNew[0] = "「" + column.DisplayName + "」型別不正確";
+
+                                row.Add(drNew);
+                                row.AddRange(
+                                    exRow
+                                    );
+                                isSuccess = false;
+                            }
+                        }
+                        else
+                        {
+                            DataRow drNew = table.NewRow();
+                            drNew[0] = "「" + column.DisplayName + "」型別不正確";
+
+                            row.Add(drNew);
+                            row.AddRange(
+                                datas1
+                                );
+                            isSuccess = false;
+
+                        }
                     }
                 }
             }
@@ -413,7 +434,7 @@ namespace NHRIDB_DAL.DAL
             }
 
             row.AddRange(
-                table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).ToList()
+                table.AsEnumerable().Where(e => keys1.Contains(e.Field<string>("個案代碼"))).OrderBy(e => e.Field<string>("個案代碼")).ToList()
                 );
 
             List<string> keys2;
@@ -439,35 +460,10 @@ namespace NHRIDB_DAL.DAL
             }
 
             row.AddRange(
-                table.AsEnumerable().Where(e => keys2.Contains(e.Field<string>("個案代碼"))).ToList()
+                table.AsEnumerable().Where(e => keys2.Contains(e.Field<string>("個案代碼"))).OrderBy(e => e.Field<string>("個案代碼")).ToList()
                 );
 
 
-            List<string> keys3;
-            keys3 =
-            table.AsEnumerable()
-                    .GroupBy(e => new { 
-                        patientKey = e.Field<string>("個案代碼"),
-                        regionKey = e.Field<string>("器官/部位代碼"),
-                        diagnosisKey = e.Field<string>("診斷代碼"),
-                        age = e.Field<string>("年齡 (歲)"),
-                        gender = e.Field<string>("性別")
-                    })
-                    .Where(e => e.Count() > 1)
-                    .Select(e => e.Key.patientKey)
-                    .ToList();
-            
-            if (keys3.Count > 0)
-            {
-                isSuccess = false;
-                DataRow drNew = table.NewRow();
-                drNew[0] = "主鍵值重覆";
-                row.Add(drNew);
-            }
-
-            row.AddRange(
-                table.AsEnumerable().Where(e => keys3.Contains(e.Field<string>("個案代碼"))).ToList()
-                );
 
             return isSuccess;
         }
@@ -625,22 +621,17 @@ namespace NHRIDB_DAL.DAL
             var transaction = _db.Database.BeginTransaction();
             try
             {
-                System.Diagnostics.Debug.WriteLine(string.Format("TransData:{0}", DateTime.Now));
-
                 List<TubeData> adds = new List<TubeData>();
                 DateTime now = DateTime.Now;
                 adds.AddRange(
                     tubeDataTypeToListtubeDataList(datas, hkey, uid)
                     );
 
-                System.Diagnostics.Debug.WriteLine(string.Format("InsertLog:{0}", DateTime.Now));
-
                 using (_db = new NHRIDBEntitiesDB())
                 {
                     List<TubeData> old = _db.TubeData.Where(e => e.hospitalId == hkey).ToList();
                     TubeDataToLog(old, hkey, uid);
                 }
-                System.Diagnostics.Debug.WriteLine(string.Format("RemveOldData:{0}", DateTime.Now));
                 int oldCursor = 0;
                 int oldCount = 20000;
 
@@ -668,7 +659,6 @@ namespace NHRIDB_DAL.DAL
                     }
                 }
 
-                System.Diagnostics.Debug.WriteLine(string.Format("InsertData:{0}", DateTime.Now));
                 int addsCursor = 0;
                 int addCount = 20000;
 

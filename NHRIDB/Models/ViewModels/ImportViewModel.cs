@@ -23,6 +23,8 @@ namespace NHRIDB.Models.ViewModels
         public List<TubeDataType> datas { get; set; }
         public List<InfoColummns> columns { get; set; }
         public string fileName { get; set; }
+        public System.Data.DataTable dataErr { get; set; }
+        public string ToExcelfileName { get; set; }
     }
     public class DiffViewModel {
         public List<GetDifferentTotal_Result> datas { get; set; }
