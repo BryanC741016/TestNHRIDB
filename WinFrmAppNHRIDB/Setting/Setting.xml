@@ -1,0 +1,10 @@
+<set>
+	<SysEmailSet Subject="系統排程修改[填單填寫者]密碼" Body="系統排程修改[填單填寫者]密碼:" FromMail="nbctdata@nhri.edu.tw" FromUsr="nbctdata" 
+				 mailServer="sender.nhri.edu.tw" account="nbctdata@nhri.edu.tw" password="" port="25">
+	</SysEmailSet>
+	<SysEmpid username="黃俊溢" email="960866@nhri.org.tw">
+		<!--ProjectSetController.cs.Index-->
+	</SysEmpid>
+	<SysEmpid username="蘇晧翔" email="Michael.sue@nhri.edu.tw">
+	</SysEmpid>
+</set>
