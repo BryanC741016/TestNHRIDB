@@ -1,7 +1,12 @@
 <set>
-  <startDate>2021/3/24 上午 12:00:00</startDate>
-  <endDate>2022/3/25 下午 11:59:59</endDate>
-  <regex>^(?=.*\d)(?=.*[A-Za-z]).{10,30}$</regex><!--OLD:\w*-->
-  <regexMsg>只容許英文數字</regexMsg>
-  <errorOutCount>5</errorOutCount>
+	<startDate>2021/3/24 上午 12:00:00</startDate>
+	<endDate>2026/3/25 下午 11:59:59</endDate>
+	<regex>^(?=.*\d)(?=.*[A-Za-z]).{10,30}$</regex>
+	<regexMsg>只容許英文數字</regexMsg>
+	<errorOutCount>5</errorOutCount>
+	<SysEmpid username="黃俊溢" email="960866@nhri.org.tw">
+		<!--ProjectSetController.cs.Index-->
+	</SysEmpid>
+	<SysEmpid username="蘇晧翔" email="Michael.sue@nhri.edu.tw">
+	</SysEmpid>
 </set>

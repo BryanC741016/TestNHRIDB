@@ -1,4 +1,5 @@
-﻿using MakeHTML.Models;
+﻿using ClassLibrary;
+using MakeHTML.Models;
 using NHRIDB.Filter;
 using NHRIDB.Models.ViewModels;
 using NHRIDB_DAL.DAL;
@@ -182,7 +183,7 @@ namespace NHRIDB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [MvcAdminRightAuthorizeFilter(param = 'w')]
-        public ActionResult ChangePasswd(ChangePasswd model,Guid uid)
+        public ActionResult ChangePasswd(ChangePasswd model,Guid uid)// ChangePasswdController.cs / AccountController.cs
         {
             if (!ModelState.IsValid)
             {
@@ -215,6 +216,62 @@ namespace NHRIDB.Controllers
             _userDA.ChagePasswd(uid, model.newpasswd);
             _UserLogDA.Create(userId: uid, userName: Convert.ToString(Session["name"]), password: model.newpasswd);
             TempData["msg"] = "修改完畢";
+
+            #region send email
+            UserDA uda = new UserDA(_db);
+
+            List<User> _LitSendUser = new List<User>();
+            List<User> _ListUsers = uda.GetQuery().ToList();
+
+            User userLock = uda.GetUser(uid);
+
+            GroupDA _GroupDA = new GroupDA(_db);
+            List<GroupUser> _LitGroupUser = _GroupDA.GetQuery(gName: "主管理者").ToList();
+            Guid groupId = _LitGroupUser.Count > 0 ? _LitGroupUser[0].groupId : Guid.NewGuid();
+
+            if (userLock != null)
+            {
+                //Session["name"] = userLock.userName;
+
+                foreach (User _User in _ListUsers)
+                {
+                    if (!userLock.userId.Equals(_User.userId) && userLock.id_Hospital.Equals(_User.id_Hospital) && _User.groupId.Equals(groupId))
+                    {
+                        _LitSendUser.Add(_User);
+                    }
+                }
+            }
+
+            #region 國衛院系統管理者mail
+            foreach (SysEmpid _SysEmpid in _set._LitSysEmpid)
+            {
+                User _UserSys = new User();// 國衛院系統管理者mail
+                _UserSys.email = _SysEmpid.email;
+                _UserSys.userName = _SysEmpid.username;
+
+                _LitSendUser.Add(_UserSys);
+            }
+            #endregion
+
+            MailData mailData = new MailData();
+            SendMailer sendMailer = new SendMailer();
+
+            foreach (User _User in _LitSendUser)
+            {
+                if (!string.IsNullOrEmpty(_User.email))
+                {
+                    mailData.Set_StrSubject("密碼修改,帳號為:" + userLock.userName + ",醫院:" + userLock.Hospital.name_tw);
+                    mailData.Set_StrBody("密碼修改,帳號為:" + userLock.userName + ",醫院:" + userLock.Hospital.name_tw);
+                    mailData.Set_StrMail(_User.email);// 被寄的Email,email
+                    mailData.Set_StrUsr(_User.userName);// 被寄的人員
+                    mailData.Set_StrFromMail("nbctdata@nhri.edu.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
+                    mailData.Set_StrFromUsr("nbctdata");// 寄的人員,""
+
+                    sendMailer.Set_MailData(mailData);
+                    sendMailer.MailSender("sender.nhri.edu.tw", "nbctdata@nhri.edu.tw", string.Empty, 25);
+                }
+            }
+            #endregion
 
             return RedirectToAction("Edit",new { id= uid });
         }

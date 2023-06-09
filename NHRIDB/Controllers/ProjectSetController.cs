@@ -12,12 +12,11 @@ namespace NHRIDB.Controllers
     public class ProjectSetController : BasicController
     {
        
-       [HttpGet]
+        [HttpGet]
         [MvcAdminRightAuthorizeFilter(param = 'r')]
         public ActionResult Index()
         {
             ProjectSetViewModel model = new ProjectSetViewModel(_path);
-
 
             return View(model);
         }
@@ -34,10 +33,12 @@ namespace NHRIDB.Controllers
                 ModelState.AddModelError(string.Empty, "開始時間不得大於結束時間");
                 return View(model);
             }
+
             if (model.errorOutCount < 0) {
                 ModelState.AddModelError(string.Empty, "次數必須大於0");
                 return View(model);
             }
+
             XmlDocument xmlDoc = new XmlDocument();
             string xml = "<set>" +
                 "<startDate>" +
@@ -55,10 +56,15 @@ namespace NHRIDB.Controllers
                  "<errorOutCount>" +
                       model.errorOutCount.ToString() +
                "</errorOutCount>" +
+               "<SysEmpid username=\"黃俊溢\" email=\"960866@nhri.org.tw\">" +
+               "</SysEmpid>" +
+               "<SysEmpid username=\"蘇晧翔\" email=\"Michael.sue @nhri.edu.tw\">" +
+               "</SysEmpid>" +
                "</set>";
             xmlDoc.LoadXml(xml);
             xmlDoc.Save(_path);
             ModelState.AddModelError(string.Empty, "修改完成");
+
             return View(model);
         }
     }

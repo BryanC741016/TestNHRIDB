@@ -141,11 +141,16 @@ namespace NHRIDB.Controllers
                     }
                 }
 
-                User _UserSys = new User();// 國衛院系統管理者mail
-                _UserSys.email = "Michael.sue@nhri.edu.tw";
-                _UserSys.userName = "Michael.sue";
+                #region 國衛院系統管理者mail
+                foreach(SysEmpid _SysEmpid in _set._LitSysEmpid)
+                {
+                    User _UserSys = new User();// 國衛院系統管理者mail
+                    _UserSys.email = _SysEmpid.email;
+                    _UserSys.userName = _SysEmpid.username;
 
-                _LitSendUser.Add(_UserSys);
+                    _LitSendUser.Add(_UserSys);
+                }                
+                #endregion
 
                 MailData mailData = new MailData();
                 SendMailer sendMailer = new SendMailer();                             
@@ -158,11 +163,13 @@ namespace NHRIDB.Controllers
                         mailData.Set_StrBody("國衛院登入帳號已被鎖住,帳號為:"+ userLock.userName+",醫院:"+ userLock.Hospital.name_tw);
                         mailData.Set_StrMail(_User.email);// 被寄的Email,email
                         mailData.Set_StrUsr(_User.userName);// 被寄的人員
-                        mailData.Set_StrFromMail("noreply@nhri.edu.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
-                        mailData.Set_StrFromUsr("noreply");// 寄的人員,""
+                        mailData.Set_StrFromMail("nbctdata@nhri.edu.tw");// 寄的Email,emailUserName->參數多"EmailFromAddr"
+                        mailData.Set_StrFromUsr("nbctdata");// 寄的人員,""
 
                         sendMailer.Set_MailData(mailData);
-                        sendMailer.MailSender("sender.nhri.edu.tw", "noreply@nhri.edu.tw", string.Empty, 25);
+                        sendMailer.MailSender("sender.nhri.edu.tw", "nbctdata@nhri.edu.tw", string.Empty, 25);
+
+                        //_SysLogDA.Create(evettype: "帳號被鎖住", ip: DateTime.Now.ToString("yyyyMMddHHmmss"), userName: _User.userName);
                     }
                 }  
                 #endregion
@@ -279,177 +286,177 @@ namespace NHRIDB.Controllers
         }
     }
 
-    public class MailData
-    {
-        private string _strFromUsr = "";
-        private string _strFromMail = "";
-        private string _strUsr = "";
-        private string _strMail = "";
-        private string _strBody = "";
-        private string _strSubject = "";
-        private string _strCC = "";
+    //public class MailData
+    //{
+    //    private string _strFromUsr = "";
+    //    private string _strFromMail = "";
+    //    private string _strUsr = "";
+    //    private string _strMail = "";
+    //    private string _strBody = "";
+    //    private string _strSubject = "";
+    //    private string _strCC = "";
 
-        // PURPOSE :設定變數值
-        // PARAM1 : STRING 要設定的變數之值
-        public void Set_StrFromUsr(string strVal)
-        {
-            _strFromUsr = strVal;
-        }
-        public void Set_StrFromMail(string strVal)
-        {
-            _strFromMail = strVal;
-        }
-        public void Set_StrUsr(string strVal)
-        {
-            _strUsr = strVal;
-        }
-        public void Set_StrMail(string strVal)
-        {
-            _strMail = strVal;
-        }
-        public void Set_StrBody(string strVal)
-        {
-            _strBody = strVal;
-        }
-        public void Set_StrSubject(string strVal)
-        {
-            _strSubject = strVal;
-        }
-        public void Set_StrCC(string strVal)
-        {
-            _strCC = strVal;
-        }
+    //    // PURPOSE :設定變數值
+    //    // PARAM1 : STRING 要設定的變數之值
+    //    public void Set_StrFromUsr(string strVal)
+    //    {
+    //        _strFromUsr = strVal;
+    //    }
+    //    public void Set_StrFromMail(string strVal)
+    //    {
+    //        _strFromMail = strVal;
+    //    }
+    //    public void Set_StrUsr(string strVal)
+    //    {
+    //        _strUsr = strVal;
+    //    }
+    //    public void Set_StrMail(string strVal)
+    //    {
+    //        _strMail = strVal;
+    //    }
+    //    public void Set_StrBody(string strVal)
+    //    {
+    //        _strBody = strVal;
+    //    }
+    //    public void Set_StrSubject(string strVal)
+    //    {
+    //        _strSubject = strVal;
+    //    }
+    //    public void Set_StrCC(string strVal)
+    //    {
+    //        _strCC = strVal;
+    //    }
 
 
-        // PURPOSE :取得變數值
-        // RETURN : STRING
-        public string Get_StrFromUsr()
-        {
-            return _strFromUsr;
-        }
-        public string Get_StrFromMail()
-        {
-            return _strFromMail;
-        }
-        public string Get_StrUsr()
-        {
-            return _strUsr;
-        }
-        public string Get_StrMail()
-        {
-            return _strMail;
-        }
-        public string Get_StrBody()
-        {
-            return _strBody;
-        }
-        public string Get_StrSubject()
-        {
-            return _strSubject;
-        }
-        public string Get_StrCC()
-        {
-            return _strCC;
-        }
-    }
+    //    // PURPOSE :取得變數值
+    //    // RETURN : STRING
+    //    public string Get_StrFromUsr()
+    //    {
+    //        return _strFromUsr;
+    //    }
+    //    public string Get_StrFromMail()
+    //    {
+    //        return _strFromMail;
+    //    }
+    //    public string Get_StrUsr()
+    //    {
+    //        return _strUsr;
+    //    }
+    //    public string Get_StrMail()
+    //    {
+    //        return _strMail;
+    //    }
+    //    public string Get_StrBody()
+    //    {
+    //        return _strBody;
+    //    }
+    //    public string Get_StrSubject()
+    //    {
+    //        return _strSubject;
+    //    }
+    //    public string Get_StrCC()
+    //    {
+    //        return _strCC;
+    //    }
+    //}
 
-    public class SendMailer
-    {
-        private MailData _maildata = new MailData();
+    //public class SendMailer
+    //{
+    //    private MailData _maildata = new MailData();
 
-        // PURPOSE :設定變數值
-        public void Set_MailData(MailData MailData)
-        {
-            _maildata = MailData;
-        }
+    //    // PURPOSE :設定變數值
+    //    public void Set_MailData(MailData MailData)
+    //    {
+    //        _maildata = MailData;
+    //    }
 
-        // PURPOSE :email 處理
-        public void MailSender(string mailServer, string account, string password, int port)
-        {
-            #region Old
-            //SmtpClient smtp = new SmtpClient(mailServer, port);
+    //    // PURPOSE :email 處理
+    //    public void MailSender(string mailServer, string account, string password, int port)
+    //    {
+    //        #region Old
+    //        //SmtpClient smtp = new SmtpClient(mailServer, port);
 
-            //if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(password))
-            //{
-            //    smtp.Credentials = new NetworkCredential(account, password);
-            //}
-            //smtp.Port = port;
-            //MailMessage Msg = new MailMessage();
-            //System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-            //System.Text.Encoding headerEncoding = System.Text.Encoding.BigEndianUnicode;
+    //        //if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(password))
+    //        //{
+    //        //    smtp.Credentials = new NetworkCredential(account, password);
+    //        //}
+    //        //smtp.Port = port;
+    //        //MailMessage Msg = new MailMessage();
+    //        //System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+    //        //System.Text.Encoding headerEncoding = System.Text.Encoding.BigEndianUnicode;
 
-            //MailAddress mailFrom = new MailAddress(this._maildata.Get_StrFromMail(), this._maildata.Get_StrFromUsr(), encoding);
+    //        //MailAddress mailFrom = new MailAddress(this._maildata.Get_StrFromMail(), this._maildata.Get_StrFromUsr(), encoding);
 
-            //Msg.From = mailFrom;
+    //        //Msg.From = mailFrom;
 
-            //try
-            //{
-            //    MailAddress mailTo = new MailAddress(this._maildata.Get_StrMail(), this._maildata.Get_StrUsr(), headerEncoding);
+    //        //try
+    //        //{
+    //        //    MailAddress mailTo = new MailAddress(this._maildata.Get_StrMail(), this._maildata.Get_StrUsr(), headerEncoding);
 
-            //    // 內容使用html
-            //    Msg.IsBodyHtml = true;
-            //    Msg.BodyEncoding = System.Text.Encoding.UTF8;
-            //    // 前面是發信email後面是顯示的名稱
-            //    // Msg.From = New MailAddress("system@mail.com", "system")
-            //    // 收信者email 
-            //    Msg.To.Add(mailTo);
+    //        //    // 內容使用html
+    //        //    Msg.IsBodyHtml = true;
+    //        //    Msg.BodyEncoding = System.Text.Encoding.UTF8;
+    //        //    // 前面是發信email後面是顯示的名稱
+    //        //    // Msg.From = New MailAddress("system@mail.com", "system")
+    //        //    // 收信者email 
+    //        //    Msg.To.Add(mailTo);
 
-            //    // CC
-            //    if (_maildata.Get_StrCC().Length > 0)
-            //        Msg.CC.Add(_maildata.Get_StrCC());
-            //    // 設定優先權
-            //    Msg.Priority = MailPriority.Normal;
-            //    // 標題
-            //    Msg.Subject = _maildata.Get_StrSubject();
-            //    // 內容
-            //    Msg.Body = _maildata.Get_StrBody();
-            //    smtp.EnableSsl = false;
-            //    smtp.Send(Msg);
-            //    Msg.Dispose();
-            //}
-            //catch (Exception ex)
-            //{
+    //        //    // CC
+    //        //    if (_maildata.Get_StrCC().Length > 0)
+    //        //        Msg.CC.Add(_maildata.Get_StrCC());
+    //        //    // 設定優先權
+    //        //    Msg.Priority = MailPriority.Normal;
+    //        //    // 標題
+    //        //    Msg.Subject = _maildata.Get_StrSubject();
+    //        //    // 內容
+    //        //    Msg.Body = _maildata.Get_StrBody();
+    //        //    smtp.EnableSsl = false;
+    //        //    smtp.Send(Msg);
+    //        //    Msg.Dispose();
+    //        //}
+    //        //catch (Exception ex)
+    //        //{
 
-            //}
-            #endregion
+    //        //}
+    //        #endregion
 
-            SmtpClient smtp = new SmtpClient(mailServer, port);
+    //        SmtpClient smtp = new SmtpClient(mailServer, port);
 
-            if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(password))
-            {
-                smtp.Credentials = new NetworkCredential(account, password);
-            }
-            smtp.Port = port;
-            MailMessage Msg = new MailMessage();
-            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-            System.Text.Encoding headerEncoding = System.Text.Encoding.BigEndianUnicode;
+    //        if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(password))
+    //        {
+    //            smtp.Credentials = new NetworkCredential(account, password);
+    //        }
+    //        smtp.Port = port;
+    //        MailMessage Msg = new MailMessage();
+    //        System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+    //        System.Text.Encoding headerEncoding = System.Text.Encoding.BigEndianUnicode;
 
-            MailAddress mailFrom = new MailAddress(this._maildata.Get_StrFromMail(), this._maildata.Get_StrFromUsr(), encoding);
+    //        MailAddress mailFrom = new MailAddress(this._maildata.Get_StrFromMail(), this._maildata.Get_StrFromUsr(), encoding);
 
-            Msg.From = mailFrom;
+    //        Msg.From = mailFrom;
 
-            MailAddress mailTo = new MailAddress(this._maildata.Get_StrMail(), this._maildata.Get_StrUsr(), headerEncoding);
+    //        MailAddress mailTo = new MailAddress(this._maildata.Get_StrMail(), this._maildata.Get_StrUsr(), headerEncoding);
 
-            // 內容使用html
-            Msg.IsBodyHtml = true;
-            Msg.BodyEncoding = System.Text.Encoding.UTF8;
-            // 前面是發信email後面是顯示的名稱
-            // Msg.From = New MailAddress("system@mail.com", "system")
-            // 收信者email 
-            Msg.To.Add(mailTo);
+    //        // 內容使用html
+    //        Msg.IsBodyHtml = true;
+    //        Msg.BodyEncoding = System.Text.Encoding.UTF8;
+    //        // 前面是發信email後面是顯示的名稱
+    //        // Msg.From = New MailAddress("system@mail.com", "system")
+    //        // 收信者email 
+    //        Msg.To.Add(mailTo);
 
-            // CC
-            if (_maildata.Get_StrCC().Length > 0)
-                Msg.CC.Add(_maildata.Get_StrCC());
-            // 設定優先權
-            Msg.Priority = MailPriority.Normal;
-            // 標題
-            Msg.Subject = _maildata.Get_StrSubject();
-            // 內容
-            Msg.Body = _maildata.Get_StrBody();
-            smtp.EnableSsl = false;
-            smtp.Send(Msg);
-            Msg.Dispose();
-        }
-    }
+    //        // CC
+    //        if (_maildata.Get_StrCC().Length > 0)
+    //            Msg.CC.Add(_maildata.Get_StrCC());
+    //        // 設定優先權
+    //        Msg.Priority = MailPriority.Normal;
+    //        // 標題
+    //        Msg.Subject = _maildata.Get_StrSubject();
+    //        // 內容
+    //        Msg.Body = _maildata.Get_StrBody();
+    //        smtp.EnableSsl = false;
+    //        smtp.Send(Msg);
+    //        Msg.Dispose();
+    //    }
+    //}
 }
