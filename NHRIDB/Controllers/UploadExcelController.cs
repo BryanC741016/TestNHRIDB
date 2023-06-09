@@ -105,7 +105,6 @@ namespace NHRIDB.Controllers
             }
             catch (Exception e)
             {
-                StrAllMsg = "檔案轉換失敗,請確定檔案格式是否正確";
                 isSuccess = false;
 
                 //System.IO.File.Delete(path);
@@ -125,10 +124,10 @@ namespace NHRIDB.Controllers
                 }
                 _ErrorLogDA.Create(id: id, controller: string.Empty, action: string.Empty, message: message, stacktrace: e.StackTrace);
 
-                return Index(StrAllMsg);
+                return Index(e.Message);
             }
 
             return Index("上傳完成，待管理者審核");
-        }  
+        }
     }
 }
