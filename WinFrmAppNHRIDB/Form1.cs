@@ -4,6 +4,7 @@ using NHRIDB_DAL.DbModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace WinFrmAppNHRIDB
 {
     public partial class Form1 : Form
     {
+        bool isClose;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,15 +30,24 @@ namespace WinFrmAppNHRIDB
 
             if (args != null && args.Length.Equals(1) && args[0].Equals("SendMult"))
             {
-                SendMult();
+                SendMultEditPassword();
             }
+            else if(args != null && !args.Length.Equals(1))
+            {
+                isClose = true;
+            }
+            else if (args != null && args.Length.Equals(1) && !args[0].Equals("SendMult"))
+            {
+                isClose = true;
+            }
+        }
 
-          
-
-            NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
-            UserDA uda = new UserDA(db);
-
-            List<User> _ListUsers = uda.GetQuery().ToList();
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (isClose)
+            {
+                this.Close();
+            }
         }
 
         private void BtnSend_Click(object sender, EventArgs e)
@@ -45,7 +57,7 @@ namespace WinFrmAppNHRIDB
 
         private void BtnEditPassword_Click(object sender, EventArgs e)
         {
-            SendMult();
+            SendMultEditPassword();
         }
 
         private void SendSing()
@@ -87,7 +99,7 @@ namespace WinFrmAppNHRIDB
             });            
         }
 
-        private void SendMult()
+        private void SendMultEditPassword()
         {
             TxtANS.Text = string.Empty;
 
@@ -108,7 +120,7 @@ namespace WinFrmAppNHRIDB
                     List<GroupUser> _LitGroupUserSetData = _GroupDA.GetQuery(gName: "填單填寫者").ToList();
                     Guid groupIdSetData = _LitGroupUserSetData.Count > 0 ? _LitGroupUserSetData[0].groupId : Guid.NewGuid();
 
-                    ClassSetting _ClassSetting = ProjectSet(System.IO.Path.GetFullPath("~/Setting/Setting.xml"));                    
+                    ClassSetting _ClassSetting = ProjectSet(ConfigurationManager.AppSettings["setaddr"]);                    
 
                     MailData mailData = new MailData();
                     SendMailer sendMailer = new SendMailer();
@@ -176,6 +188,11 @@ namespace WinFrmAppNHRIDB
                 }
                 catch (Exception ex)
                 {
+                    NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
+                    ErrorLogDA _ErrorLogDA = new ErrorLogDA(db);
+                    string id = DateTime.Now.ToString("yyyyMMddHHmmss") + "system";
+                    _ErrorLogDA.Create(id: id, controller: "WinFrmAppNHRIDB", action: "SendMult", message: ex.Message, stacktrace: ex.StackTrace);
+
                     this.TxtANS.BeginInvoke(new Action(() =>
                     {
                         TxtANS.Text = TxtANS.Text + ex.Message + Environment.NewLine;
@@ -228,6 +245,6 @@ namespace WinFrmAppNHRIDB
             {
                 BtnEditPassword.Visible = false;
             }
-        }
+        }        
     }
 }
