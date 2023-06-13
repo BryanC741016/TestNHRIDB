@@ -18,6 +18,7 @@ namespace WinFrmAppNHRIDB
     public partial class Form1 : Form
     {
         bool isClose;
+        bool isScheculd;
 
         public Form1()
         {
@@ -30,6 +31,7 @@ namespace WinFrmAppNHRIDB
 
             if (args != null && args.Length.Equals(1) && args[0].Equals("SendMult"))
             {
+                isScheculd = true;
                 SendMultEditPassword();
             }
             else if(args != null && args.Length>1)
@@ -109,7 +111,7 @@ namespace WinFrmAppNHRIDB
                 {
                     NHRIDBEntitiesDB db = new NHRIDBEntitiesDB();
                     UserDA uda = new UserDA(db);
-                    
+
                     List<User> _ListUsers = uda.GetQuery().ToList();
 
                     GroupDA _GroupDA = new GroupDA(db);
@@ -120,7 +122,7 @@ namespace WinFrmAppNHRIDB
                     List<GroupUser> _LitGroupUserSetData = _GroupDA.GetQuery(gName: "填單填寫者").ToList();
                     Guid groupIdSetData = _LitGroupUserSetData.Count > 0 ? _LitGroupUserSetData[0].groupId : Guid.NewGuid();
 
-                    ClassSetting _ClassSetting = ProjectSet(ConfigurationManager.AppSettings["setaddr"]);                    
+                    ClassSetting _ClassSetting = ProjectSet(ConfigurationManager.AppSettings["setaddr"]);
 
                     MailData mailData = new MailData();
                     SendMailer sendMailer = new SendMailer();
@@ -163,7 +165,7 @@ namespace WinFrmAppNHRIDB
                                 {
                                     mailData.Set_StrSubject(_ClassSetting.Subject);
                                     mailData.Set_StrBody(_ClassSetting.Body
-                                        +","+"帳號:"+ _UserChagePasswd.userName+","+"醫院:"+ _UserChagePasswd.Hospital.name_tw+","+"密碼:"+ StrPaswword);
+                                        + "," + "帳號:" + _UserChagePasswd.userName + "," + "醫院:" + _UserChagePasswd.Hospital.name_tw + "," + "密碼:" + StrPaswword);
                                     mailData.Set_StrMail(_User.email);// 被寄的Email,email
                                     mailData.Set_StrUsr(_User.userName);// 被寄的人員
                                     mailData.Set_StrFromMail(_ClassSetting.FromMail);// 寄的Email,emailUserName->參數多"EmailFromAddr"
@@ -179,12 +181,20 @@ namespace WinFrmAppNHRIDB
                                 }
                             }
                         }
-                    }                    
+                    }
 
                     this.TxtANS.BeginInvoke(new Action(() =>
                     {
                         TxtANS.Text = TxtANS.Text + "Success!!";
                     }));
+
+                    if(isScheculd)
+                    {
+                        this.BeginInvoke(new Action(() =>
+                        {
+                            this.Close();
+                        }));
+                    }                                      
                 }
                 catch (Exception ex)
                 {
@@ -200,6 +210,14 @@ namespace WinFrmAppNHRIDB
                         TxtANS.Text = TxtANS.Text + ex.StackTrace + Environment.NewLine;
                         TxtANS.Text = TxtANS.Text + "------------------------------------------->" + Environment.NewLine;
                     }));
+
+                    if (isScheculd)
+                    {
+                        this.BeginInvoke(new Action(() =>
+                        {
+                            this.Close();
+                        }));
+                    }
                 }
             });            
         }
