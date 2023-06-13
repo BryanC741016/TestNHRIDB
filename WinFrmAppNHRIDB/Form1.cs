@@ -32,7 +32,7 @@ namespace WinFrmAppNHRIDB
             {
                 SendMultEditPassword();
             }
-            else if(args != null && !args.Length.Equals(1))
+            else if(args != null && args.Length>1)
             {
                 isClose = true;
             }
